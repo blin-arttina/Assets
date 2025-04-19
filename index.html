@@ -1,156 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Assets Alert - Web3 Sign-Up</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assets Alert</title>
   <style>
     body {
       background-color: #121212;
-      color: white;
+      color: #ffffff;
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
     }
-    header, section, footer {
+    header {
+      text-align: center;
       padding: 20px;
-      border-bottom: 1px solid #444;
     }
-    h1, h2 {
-      color: #f4f4f4;
+    header img {
+      max-height: 100px;
     }
-    img {
-      border: 2px solid gray;
-      max-width: 100%;
-      height: auto;
-      margin-bottom: 10px;
+    .section {
+      padding: 30px;
+      text-align: center;
     }
-    .container {
-      width: 90%;
-      max-width: 1000px;
-      margin: auto;
-    }
-    input, button, textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      background-color: #222;
-      color: white;
-      border: 1px solid #555;
-      border-radius: 4px;
-    }
-    button:hover {
-      background-color: #333;
-      cursor: pointer;
-    }
-    #admin-section {
-      display: none;
-      background-color: #1e1e1e;
-      padding: 20px;
-      border: 1px solid gray;
-      margin-top: 30px;
-    }
-    .dashboard-toggle {
-      background-color: #444;
+    .nft-gallery, .app-screenshots {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
       margin-top: 20px;
     }
-    .logo {
-      width: 200px;
-      margin: 20px 0;
+    .nft-gallery img, .app-screenshots img {
+      width: 150px;
+      height: 150px;
+      border: 3px solid #777;
+      border-radius: 10px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    input[type="text"], input[type="email"] {
+      padding: 10px;
+      width: 100%;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background-color: #d62828;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #bb1e1e;
+    }
+    footer {
+      margin-top: 40px;
+      padding: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <img src="logo.png" alt="Assets Alert Logo" class="logo">
-      <h1>Assets Alert Beta Tester Sign-Up</h1>
-      <p>Be one of the first to test the app and receive exclusive NFT airdrops.</p>
-      <button onclick="connectWallet()">Connect Wallet</button>
-    </header>
 
-    <section id="signup">
-      <h2>Sign Up for Beta Access</h2>
-      <form id="signup-form">
-        <input type="text" placeholder="Full Name" required>
-        <input type="email" placeholder="Email Address" required>
-        <input type="text" id="wallet" placeholder="Wallet Address" required>
-        <button type="submit">Submit</button>
-      </form>
-      <p id="signup-message"></p>
-    </section>
+  <header>
+    <img src="logo.png" alt="Assets Alert Logo" />
+  </header>
 
-    <section id="nft-showcase">
-      <h2>Featured NFTs</h2>
-      <img src="placeholder-nft1.png" alt="NFT 1">
-      <img src="placeholder-nft2.png" alt="NFT 2">
-      <img src="placeholder-nft3.png" alt="NFT 3">
-    </section>
+  <section class="section">
+    <h2>NFT Showcase</h2>
+    <div class="nft-gallery">
+      <img src="images/nft1.png" alt="NFT 1" />
+      <img src="images/nft2.png" alt="NFT 2" />
+      <img src="images/nft3.png" alt="NFT 3" />
+      <img src="images/nft4.png" alt="NFT 4" />
+    </div>
+  </section>
 
-    <section id="donation">
-      <h2>Support Us</h2>
-      <p>Donate in any cryptocurrency to support development.</p>
-      <textarea readonly>0xYourWalletAddressHere</textarea>
-    </section>
+  <section class="section">
+    <h2>App Screenshots</h2>
+    <div class="app-screenshots">
+      <img src="images/app1.png" alt="App Screenshot 1" />
+      <img src="images/app2.png" alt="App Screenshot 2" />
+    </div>
+  </section>
 
-    <button class="dashboard-toggle" onclick="toggleAdmin()">Toggle Admin Dashboard</button>
+  <section class="section">
+    <h2>Sign Up for Beta Access</h2>
+    <form>
+      <input type="text" name="name" placeholder="Name" required />
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="text" name="wallet" placeholder="Wallet Address" required />
+      <button type="submit">Sign Up</button>
+    </form>
+  </section>
 
-    <section id="admin-section">
-      <h2>Admin Dashboard</h2>
-      <p><strong>Download Beta Tester Info:</strong></p>
-      <button onclick="downloadUserList()">Download CSV</button>
-      <p><strong>Manual NFT Minting & Airdrop:</strong></p>
-      <button onclick="mintNFTs()">Mint NFTs</button>
-      <button onclick="airdropNFTs()">Airdrop NFTs</button>
-    </section>
+  <section class="section">
+    <h2>Support the Project</h2>
+    <button onclick="alert('Crypto donation wallet will appear here.')">Donate</button>
+  </section>
 
-    <footer>
-      <p>© 2025 Assets Alert | Powered by Blind Art</p>
-    </footer>
-  </div>
+  <section class="section">
+    <h2>Admin Dashboard</h2>
+    <button onclick="alert('Admin login or WalletConnect goes here.')">Go to Admin Dashboard</button>
+  </section>
 
-  <script>
-    function connectWallet() {
-      alert("WalletConnect integration coming soon.");
-    }
+  <footer>
+    &copy; 2025 Assets Alert by Blind Art | All Rights Reserved
+  </footer>
 
-    document.getElementById('signup-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const email = this.elements[1].value;
-      const name = this.elements[0].value;
-
-      // Replace this with real API call & Mail service
-      document.getElementById('signup-message').textContent = 'Thank you for signing up!';
-      
-      // Auto email placeholder (replace with email API like EmailJS or SendGrid)
-      console.log(`Sending email to ${email}:
-      "Thank you for being a tester. We hope you refer your friends and family. 
-      Any comments, questions, or suggestions for new ideas please email us at Tina nort66@gmail.com."`);
-    });
-
-    function toggleAdmin() {
-      const admin = document.getElementById('admin-section');
-      admin.style.display = admin.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function downloadUserList() {
-      // Placeholder CSV generator
-      const csvContent = "data:text/csv;charset=utf-8,Name,Email,Wallet\nJohn Doe,john@example.com,0x123...";
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "beta_testers.csv");
-      document.body.appendChild(link);
-      link.click();
-    }
-
-    function mintNFTs() {
-      alert("Minting NFTs... (Web3 logic will go here)");
-    }
-
-    function airdropNFTs() {
-      alert("Airdropping NFTs... (Web3 logic will go here)");
-    }
-  </script>
 </body>
 </html>
