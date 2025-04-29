@@ -1,90 +1,67 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Assets Alert</title>
-  <style>
-    body { background: #111; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    header, footer { background: #1e1e1e; padding: 1rem; text-align: center; border-bottom: 2px solid gray; }
-    section { border: 2px solid gray; border-radius: 10px; margin: 2rem auto; padding: 1rem; max-width: 800px; }
-    button { background: #ff4444; color: white; border: none; padding: 10px 20px; margin: 10px; border-radius: 5px; cursor: pointer; }
-    input { padding: 10px; margin: 5px; border-radius: 5px; border: none; width: 80%; }
-    img { max-width: 100%; border: 2px solid gray; border-radius: 10px; margin: 1rem 0; }
-    audio { margin: 1rem 0; }
-    .wallet-status { margin-top: 10px; }
-  </style>
-  <script src="https://unpkg.com/@walletconnect/web3-provider/dist/umd/index.min.js"></script>
-  <script src="https://unpkg.com/web3modal"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assets Alert</title>
+  <style>
+    body { background: #111; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    header { background: #1e1e1e; padding: 2rem; text-align: center; border-bottom: 2px solid gray; }
+    header img { max-width: 150px; margin-bottom: 1rem; }
+    header h1 { margin: 0; font-size: 2rem; }
+    .cta-buttons button { background: #ff4444; border: none; padding: 10px 20px; margin: 10px; border-radius: 5px; color: white; cursor: pointer; }
+    section { border: 2px solid gray; border-radius: 10px; margin: 2rem auto; padding: 1rem; max-width: 800px; }
+    section img { max-width: 100%; border: 2px solid gray; border-radius: 10px; margin: 1rem 0; }
+    footer { background: #1e1e1e; color: gray; text-align: center; padding: 1rem; margin-top: 2rem; border-top: 2px solid gray; }
+  </style>
 </head>
 <body>
-
 <header>
-  <h1>Assets Alert</h1>
-  <button id="connectWallet">Connect Wallet</button>
-  <div id="walletAddress" class="wallet-status"></div>
+  <img src="logo.png" alt="Assets Alert Logo">
+  <h1>Assets Alert</h1>
+  <p>Stay informed on crypto, Bitcoin, and stock prices with NFT rewards and customization options.</p>
+  <div class="cta-buttons">
+    <button onclick="document.getElementById('beta').scrollIntoView()">Join Beta Program</button>
+    <button onclick="document.getElementById('nfts').scrollIntoView()">View NFT Collection</button>
+  </div>
 </header>
 
-<section id="about">
-  <h2>About Assets Alert</h2>
-  <p>Monitor crypto, Bitcoin, and stock prices with real-time alerts and NFT rewards. Customize your notifications and enjoy exclusive collectibles.</p>
+<section id="app">
+  <h2>App Preview</h2>
+  <p>Get real-time alerts and customize your notification experience.</p>
+  <img src="app_preview.png" alt="App Preview">
 </section>
 
-<section id="beta">
-  <h2>Join the Beta Program</h2>
-  <form>
-    <input type="text" placeholder="Full Name" required><br>
-    <input type="email" placeholder="Email Address" required><br>
-    <input type="text" placeholder="Wallet Address" required><br>
-    <button type="submit">Sign Up</button>
-  </form>
+<section id="alerts">
+  <h2>Alert Settings</h2>
+  <p>Set custom thresholds for price alerts across multiple assets.</p>
 </section>
 
 <section id="nfts">
-  <h2>NFT Showcase</h2>
-  <img src="skater_mouse.gif" alt="Skater Mouse NFT">
-  <audio controls src="skater_mouse.mp3"></audio>
+  <h2>NFT Rewards</h2>
+  <p>Earn exclusive NFTs as part of our beta program and app engagement.</p>
+  <img src="skater_mouse.gif" alt="Skater Mouse NFT">
+  <audio controls src="skater_mouse.mp3"></audio>
 </section>
 
-<section id="donate">
-  <h2>Donations</h2>
-  <p>Support the project with crypto donations:</p>
-  <p>ETH: 0xdca9A5554605B4f5D1efb40BBf838A92481237dA</p>
-  <p>BTC: xpub6DWqHV5U7CUH3Xs736XyDm9d8Y5LomrWkZS2pw5zokUTMR3p7bzuV4c6LCPfECgiH9o2oihNxrvSjPz8kJNxRKTm9J3jLCuGJtCcbPj7vr4</p>
-  <p>DOGE: xpub6CU9iQAPcvKJ43r5Kkc7ht2aZfJWZtuWBGHNKqhmhmN8fr6JYfgmUUytwvLdAA6unvShvtMRnAgFfRc7ZznEKQbi9HEU5hvf8yKvDTCcbMv</p>
+<section id="customization">
+  <h2>Customization Options</h2>
+  <p>Personalize the app with free and premium skins, including dark mode, space themes, and more.</p>
+</section>
+
+<section id="beta">
+  <h2>Join the Beta Program</h2>
+  <form>
+    <input type="text" placeholder="Full Name" required><br>
+    <input type="email" placeholder="Email Address" required><br>
+    <input type="text" placeholder="Wallet Address" required><br>
+    <button type="submit">Sign Up</button>
+  </form>
 </section>
 
 <footer>
-  <a href="admin.html" style="color: #aaa;">Go to Admin Dashboard</a>
-  <p>Powered by Blind Art</p>
+  <p>Powered by Blind Art</p>
 </footer>
-
-<script>
-  let web3Modal;
-  let provider;
-
-  async function init() {
-    const providerOptions = {
-      walletconnect: {
-        package: window.WalletConnectProvider.default,
-        options: { infuraId: "INFURA_ID" } // Replace with your Infura ID
-      }
-    };
-    web3Modal = new window.Web3Modal.default({ cacheProvider: false, providerOptions });
-  }
-
-  async function connectWallet() {
-    provider = await web3Modal.connect();
-    const ethersProvider = new ethers.providers.Web3Provider(provider);
-    const signer = ethersProvider.getSigner();
-    const address = await signer.getAddress();
-    document.getElementById('walletAddress').innerText = address.slice(0, 6) + "..." + address.slice(-4);
-  }
-
-  document.getElementById('connectWallet').addEventListener('click', connectWallet);
-  window.addEventListener('load', init);
-</script>
-
 </body>
 </html>
