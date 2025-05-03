@@ -1,1 +1,81 @@
-Placeholder for admin.html with Web3Modal integration.
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assets Alert Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3modal"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: #111; color: white; font-family: sans-serif; padding: 1em; }
+    h1 { color: #f00; }
+    .wallet-status { float: right; margin-top: 1em; }
+    .admin-panel { background: #222; padding: 1.5em; border: 1px solid gray; border-radius: 8px; max-width: 600px; margin: auto; }
+    label, input, button { display: block; width: 100%; margin-top: 1em; }
+    input { padding: 0.5em; background: #333; border: 1px solid gray; color: white; }
+    button { background: #f00; color: white; border: none; padding: 0.7em; cursor: pointer; }
+    nav { margin-top: 2em; text-align: center; }
+    nav a { color: #ccc; margin: 0 1em; text-decoration: none; }
+    nav a:hover { color: white; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin Dashboard</h1>
+    <span class="wallet-status" id="walletStatus">Wallet: Not Connected</span>
+  </header>  <div class="admin-panel">
+    <h2>Mint NFT</h2>
+    <label for="tokenId">NFT Token ID</label>
+    <input type="text" id="tokenId" placeholder="e.g. 1"><label for="amount">Quantity</label>
+<input type="number" id="amount" placeholder="e.g. 1">
+
+<button onclick="mintNFT()">Mint NFT</button>
+
+  </div>  <nav>
+    <a href="index.html">Home</a>
+    <a href="nft.html">NFT Showcase</a>
+  </nav>  <script>
+    let signer;
+    const providerOptions = {};
+    const web3Modal = new window.Web3Modal.default({ cacheProvider: false, providerOptions });
+
+    async function connectWallet() {
+      try {
+        const instance = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(instance);
+        signer = provider.getSigner();
+        const address = await signer.getAddress();
+        document.getElementById('walletStatus').textContent = `Wallet: ${address.slice(0, 6)}...${address.slice(-4)}`;
+      } catch (err) {
+        console.error("Wallet connection failed:", err);
+      }
+    }
+
+    async function mintNFT() {
+      const tokenId = document.getElementById('tokenId').value;
+      const amount = document.getElementById('amount').value;
+
+      if (!signer || !tokenId || !amount) {
+        alert("Please connect wallet and fill in all fields.");
+        return;
+      }
+
+      try {
+        // Replace with your contract address and ABI
+        const contractAddress = "YOUR_CONTRACT_ADDRESS";
+        const abi = ["function mint(address to, uint256 id, uint256 amount, bytes data)"];
+        const contract = new ethers.Contract(contractAddress, abi, signer);
+
+        const userAddress = await signer.getAddress();
+        const tx = await contract.mint(userAddress, tokenId, amount, "0x");
+        await tx.wait();
+        alert("NFT minted successfully!");
+      } catch (err) {
+        console.error(err);
+        alert("Minting failed.");
+      }
+    }
+
+    window.onload = connectWallet;
+  </script></body>
+</html>
