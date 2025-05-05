@@ -11,71 +11,84 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
+      line-height: 1.7;
+      letter-spacing: 0.5px;
     }
 
     header, footer {
       text-align: center;
-      padding: 20px;
+      padding: 40px 20px 30px 20px;
     }
 
     img {
       border: 2px solid gray;
       max-width: 100%;
       height: auto;
+      display: block;
+      margin: 0 auto;
     }
 
     .container {
       width: 90%;
       max-width: 1000px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 40px 20px;
+    }
+
+    h1, h2, h3, p {
+      margin-bottom: 20px;
     }
 
     h1 {
       color: #ff2e2e;
+      font-size: 2rem;
     }
 
     .button {
       background-color: #ff2e2e;
       border: 2px solid gray;
       color: white;
-      padding: 10px 20px;
+      padding: 12px 24px;
       text-decoration: none;
       display: inline-block;
       margin: 10px;
       cursor: pointer;
+      font-size: 1rem;
     }
 
     .preview-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-top: 20px;
+      gap: 25px;
+      margin-top: 30px;
     }
 
     form input, form button {
       display: block;
       width: 100%;
-      margin: 10px 0;
-      padding: 10px;
+      margin: 15px 0;
+      padding: 12px;
       background: #1e1e1e;
       color: white;
       border: 1px solid gray;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
     }
 
     .nav-links {
-      margin: 20px 0;
+      margin: 40px 0 20px 0;
       text-align: center;
     }
 
     .nav-links a {
-      margin: 0 10px;
+      margin: 0 15px;
       color: #ff2e2e;
       text-decoration: underline;
+      font-size: 1.1rem;
     }
 
     .donation {
-      margin-top: 40px;
+      margin-top: 60px;
       text-align: center;
     }
   </style>
@@ -92,13 +105,13 @@
   <div class="container">
     <h2>App Previews</h2>
     <div class="preview-grid">
-      <img src="app_preview1.png" alt="App Screenshot 1" />
-      <img src="app_preview2.png" alt="App Screenshot 2" />
-      <img src="app_preview3.png" alt="App Screenshot 3" />
-      <img src="app_preview4.png" alt="App Screenshot 4" />
+      <img src="" alt="App Screenshot 1" />
+      <img src="" alt="App Screenshot 2" />
+      <img src="" alt="App Screenshot 3" />
+      <img src="" alt="App Screenshot 4" />
     </div>
 
-    <h2>Beta Tester Sign-Up</h2>
+    <h2 style="margin-top: 60px;">Beta Tester Sign-Up</h2>
     <form id="signup-form">
       <input type="text" name="name" placeholder="Your Name" required />
       <input type="email" name="email" placeholder="Your Email" required />
