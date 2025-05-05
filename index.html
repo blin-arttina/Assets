@@ -1,1 +1,141 @@
-This is a placeholder for index.html.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assets Alert</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header, footer {
+      text-align: center;
+      padding: 20px;
+    }
+
+    img {
+      border: 2px solid gray;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #ff2e2e;
+    }
+
+    .button {
+      background-color: #ff2e2e;
+      border: 2px solid gray;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      display: inline-block;
+      margin: 10px;
+      cursor: pointer;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    form input, form button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      background: #1e1e1e;
+      color: white;
+      border: 1px solid gray;
+    }
+
+    .nav-links {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .nav-links a {
+      margin: 0 10px;
+      color: #ff2e2e;
+      text-decoration: underline;
+    }
+
+    .donation {
+      margin-top: 40px;
+      text-align: center;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/web3modal"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="Assets Alert Logo" style="max-height: 100px;" />
+    <h1>Welcome to the Assets Alert Project!</h1>
+    <p>This app provides real-time alerts for Bitcoin, crypto, and stock prices. Set your thresholds and stay informed automatically.</p>
+  </header>
+
+  <div class="container">
+    <h2>App Previews</h2>
+    <div class="preview-grid">
+      <img src="app_preview1.png" alt="App Screenshot 1" />
+      <img src="app_preview2.png" alt="App Screenshot 2" />
+      <img src="app_preview3.png" alt="App Screenshot 3" />
+      <img src="app_preview4.png" alt="App Screenshot 4" />
+    </div>
+
+    <h2>Beta Tester Sign-Up</h2>
+    <form id="signup-form">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <input type="email" name="email" placeholder="Your Email" required />
+      <input type="text" name="wallet" placeholder="Wallet Address" required />
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <div class="nav-links">
+      <a href="nft.html">View NFTs</a>
+      <a href="admin.html">Admin Dashboard</a>
+    </div>
+
+    <div class="donation">
+      <h3>Support Our Project</h3>
+      <p>Connect your wallet to donate in crypto.</p>
+      <button class="button" onclick="connectWallet()">Connect Wallet</button>
+      <p id="wallet-address"></p>
+    </div>
+  </div>
+
+  <footer>
+    <img src="blind_art_logo.png" alt="Blind Art Brand Logo" style="max-height: 60px;" />
+  </footer>
+
+  <script>
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          document.getElementById('wallet-address').textContent = "Connected: " + accounts[0];
+        } catch (error) {
+          console.error("User denied wallet connection");
+        }
+      } else {
+        alert("Please install a Web3 wallet like MetaMask to use this feature.");
+      }
+    }
+  </script>
+</body>
+</html>
