@@ -105,10 +105,10 @@
   <div class="container">
     <h2>App Previews</h2>
     <div class="preview-grid">
-      <img src="" alt="App Screenshot 1" />
-      <img src="" alt="App Screenshot 2" />
-      <img src="" alt="App Screenshot 3" />
-      <img src="" alt="App Screenshot 4" />
+      <img src="app_preview.png" alt="App Screenshot 1" />
+      <img src="app_preview2.png" alt="App Screenshot 2" />
+      <img src="app_preview3.png" alt="App Screenshot 3" />
+      <img src="app_preview4.png" alt="App Screenshot 4" />
     </div>
 
     <h2 style="margin-top: 60px;">Beta Tester Sign-Up</h2>
@@ -129,26 +129,3 @@
       <p>Connect your wallet to donate in crypto.</p>
       <button class="button" onclick="connectWallet()">Connect Wallet</button>
       <p id="wallet-address"></p>
-    </div>
-  </div>
-
-  <footer>
-    <img src="blind_art_logo.png" alt="Blind Art Brand Logo" style="max-height: 60px;" />
-  </footer>
-
-  <script>
-    async function connectWallet() {
-      if (window.ethereum) {
-        try {
-          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-          document.getElementById('wallet-address').textContent = "Connected: " + accounts[0];
-        } catch (error) {
-          console.error("User denied wallet connection");
-        }
-      } else {
-        alert("Please install a Web3 wallet like MetaMask to use this feature.");
-      }
-    }
-  </script>
-</body>
-</html>
