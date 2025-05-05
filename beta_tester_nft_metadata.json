@@ -1,0 +1,11 @@
+{
+  "name": "Beta Tester NFT",
+  "description": "Reward NFT for helping test the Assets Alert app.",
+  "image": "beta_tester_nft.png",
+  "attributes": [
+    {
+      "trait_type": "Tier",
+      "value": "Free"
+    }
+  ]
+}

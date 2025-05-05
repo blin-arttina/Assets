@@ -1,0 +1,11 @@
+{
+  "name": "Skater Mouse NFT",
+  "description": "Exclusive NFT for early beta testers of the Assets Alert app.",
+  "image": "skater_mouse.gif",
+  "attributes": [
+    {
+      "trait_type": "Access",
+      "value": "Beta Exclusive"
+    }
+  ]
+}

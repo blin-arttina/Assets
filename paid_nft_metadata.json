@@ -1,0 +1,15 @@
+{
+  "name": "Paid NFT",
+  "description": "Standard NFT in the Assets Alert collection.",
+  "image": "paid_nft.png",
+  "attributes": [
+    {
+      "trait_type": "Tier",
+      "value": "Paid"
+    },
+    {
+      "trait_type": "Cost",
+      "value": "0.01 ETH"
+    }
+  ]
+}
