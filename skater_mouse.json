@@ -1,0 +1,34 @@
+{
+    "name": "Skater Mouse Trick",
+    "description": "An animated video of Skater Mouse performing a trick, complete with skatepark audio.",
+    "creator": "Blind Art",
+    "collection": "Assets Alert NFT Series",
+    "type": "video/mp4",
+    "format": "MP4",
+    "attributes": [
+        {
+            "trait_type": "Character",
+            "value": "Skater Mouse"
+        },
+        {
+            "trait_type": "Theme",
+            "value": "Skatepark"
+        },
+        {
+            "trait_type": "Animation",
+            "value": "Yes"
+        },
+        {
+            "trait_type": "Sound",
+            "value": "Yes"
+        },
+        {
+            "trait_type": "Edition",
+            "value": "1 of 1"
+        },
+        {
+            "trait_type": "Loop",
+            "value": "No"
+        }
+    ]
+}
