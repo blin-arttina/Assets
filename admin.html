@@ -1,132 +1,102 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assets Alert Admin Dashboard</title>
   <style>
     body {
       background-color: #121212;
       color: white;
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      line-height: 1.7;
-      letter-spacing: 0.5px;
     }
-
-    header, footer {
-      text-align: center;
-      padding: 40px 20px;
-    }
-
     .container {
-      width: 90%;
       max-width: 800px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 2rem;
+      border: 1px solid #444;
     }
-
     h1 {
-      color: #ff2e2e;
       text-align: center;
+      margin-bottom: 2rem;
     }
-
-    input, select, button {
-      display: block;
-      width: 100%;
-      margin: 15px 0;
-      padding: 12px;
-      background-color: #1e1e1e;
+    button {
+      background-color: #d32f2f;
+      color: white;
       border: 1px solid gray;
-      color: white;
+      padding: 0.5rem 1rem;
       font-size: 1rem;
-    }
-
-    .button {
-      background-color: #ff2e2e;
-      border: 2px solid gray;
-      color: white;
       cursor: pointer;
+      margin-right: 1rem;
+      margin-top: 1rem;
     }
-
-    .nav-links {
-      margin: 40px 0 20px 0;
-      text-align: center;
+    input, select {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      width: 100%;
+      background-color: #222;
+      color: white;
+      border: 1px solid #555;
     }
-
-    .nav-links a {
-      margin: 0 15px;
-      color: #ff2e2e;
-      text-decoration: underline;
-      font-size: 1.1rem;
+    .nav {
+      text-align: right;
+      margin-bottom: 1rem;
+    }
+    a {
+      color: white;
+      text-decoration: none;
+      margin-left: 1rem;
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/web3modal"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Assets Alert – Admin Dashboard</h1>
-    <p>Mint and airdrop NFTs directly from your wallet</p>
-  </header>
-
   <div class="container">
-    <button class="button" onclick="connectWallet()">Connect Wallet</button>
-    <p id="wallet-address">Wallet not connected</p>
+    <div class="nav">
+      <a href="index.html">Home</a>
+      <a href="nft.html">NFT Showcase</a>
+    </div>
+    <h1>Admin Dashboard</h1>
+    <p><strong>Mint NFTs:</strong></p>
+    <input type="text" id="nftId" placeholder="Enter NFT ID (e.g., 1)" />
+    <input type="number" id="quantity" placeholder="Enter quantity (e.g., 5)" />
+    <button onclick="mintNFT()">Mint</button>
 
-    <h2>Mint NFT</h2>
-    <input type="text" id="mint-id" placeholder="NFT ID (e.g. 1)" />
-    <input type="number" id="mint-qty" placeholder="Quantity" />
-    <button class="button" onclick="mintNFT()">Mint NFT</button>
+    <p><strong>Airdrop NFT:</strong></p>
+    <input type="text" id="airdropAddress" placeholder="Enter Wallet Address" />
+    <input type="text" id="airdropId" placeholder="Enter NFT ID" />
+    <button onclick="airdropNFT()">Airdrop</button>
 
-    <h2>Airdrop NFT</h2>
-    <input type="text" id="airdrop-address" placeholder="Recipient Wallet Address" />
-    <input type="text" id="airdrop-id" placeholder="NFT ID (e.g. 1)" />
-    <button class="button" onclick="airdropNFT()">Airdrop NFT</button>
+    <p><strong>Download Tester List:</strong></p>
+    <button onclick="downloadTesters()">Download Tester List</button>
   </div>
-
-  <div class="nav-links">
-    <a href="index.html">Back to Home</a>
-    <a href="nft.html">NFT Showcase</a>
-  </div>
-
-  <footer>
-    <img src="blind_art_logo.png" alt="Blind Art Brand Logo" style="max-height: 60px;" />
-  </footer>
 
   <script>
-    let provider;
-    async function connectWallet() {
-      if (window.ethereum) {
-        try {
-          provider = new ethers.providers.Web3Provider(window.ethereum);
-          await provider.send("eth_requestAccounts", []);
-          const signer = provider.getSigner();
-          const address = await signer.getAddress();
-          document.getElementById("wallet-address").textContent = "Connected: " + address;
-        } catch (err) {
-          console.error("Connection denied");
-        }
-      } else {
-        alert("Please install MetaMask or a Web3 wallet");
-      }
-    }
-
     function mintNFT() {
-      const id = document.getElementById("mint-id").value;
-      const qty = document.getElementById("mint-qty").value;
-      alert(`Minting NFT ID ${id} with quantity ${qty}...`);
-      // Your contract call goes here
+      const nftId = document.getElementById('nftId').value;
+      const quantity = document.getElementById('quantity').value;
+      alert(`Minting ${quantity} of NFT ID ${nftId}`);
+      // Add actual Web3 mint code here
     }
 
     function airdropNFT() {
-      const address = document.getElementById("airdrop-address").value;
-      const id = document.getElementById("airdrop-id").value;
-      alert(`Airdropping NFT ID ${id} to ${address}...`);
-      // Your contract call goes here
+      const address = document.getElementById('airdropAddress').value;
+      const nftId = document.getElementById('airdropId').value;
+      alert(`Airdropping NFT ID ${nftId} to ${address}`);
+      // Add actual Web3 airdrop code here
+    }
+
+    function downloadTesters() {
+      const dummyData = "Name,Email,Wallet\nTester One,test1@example.com,0x123\nTester Two,test2@example.com,0x456";
+      const blob = new Blob([dummyData], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'testers.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
   </script>
 </body>
 </html>
+,
