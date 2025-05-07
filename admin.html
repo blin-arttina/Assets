@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -56,33 +55,50 @@
       <a href="nft.html">NFT Showcase</a>
     </div>
     <h1>Admin Dashboard</h1>
-    <p><strong>Mint NFTs:</strong></p>
-    <input type="text" id="nftId" placeholder="Enter NFT ID (e.g., 1)" />
-    <input type="number" id="quantity" placeholder="Enter quantity (e.g., 5)" />
-    <button onclick="mintNFT()">Mint</button>
+    <p><strong>Wallet Connection:</strong></p>
+    <button onclick="connectWallet()">Connect Wallet</button>
+    <p id="walletAddress">Wallet: Not connected</p><p><strong>Mint NFTs:</strong></p>
+<input type="text" id="nftId" placeholder="Enter NFT ID (e.g., 1)" />
+<input type="number" id="quantity" placeholder="Enter quantity (e.g., 5)" />
+<button onclick="mintNFT()">Mint</button>
 
-    <p><strong>Airdrop NFT:</strong></p>
-    <input type="text" id="airdropAddress" placeholder="Enter Wallet Address" />
-    <input type="text" id="airdropId" placeholder="Enter NFT ID" />
-    <button onclick="airdropNFT()">Airdrop</button>
+<p><strong>Airdrop NFT:</strong></p>
+<input type="text" id="airdropAddress" placeholder="Enter Wallet Address" />
+<input type="text" id="airdropId" placeholder="Enter NFT ID" />
+<button onclick="airdropNFT()">Airdrop</button>
 
-    <p><strong>Download Tester List:</strong></p>
-    <button onclick="downloadTesters()">Download Tester List</button>
-  </div>
+<p><strong>Download Tester List:</strong></p>
+<button onclick="downloadTesters()">Download Tester List</button>
 
-  <script>
+  </div>  <script>
+    let connectedAddress = null;
+
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          connectedAddress = accounts[0];
+          document.getElementById("walletAddress").innerText = `Wallet: ${connectedAddress}`;
+        } catch (error) {
+          alert("Wallet connection failed.");
+        }
+      } else {
+        alert("MetaMask not detected. Please install it.");
+      }
+    }
+
     function mintNFT() {
       const nftId = document.getElementById('nftId').value;
       const quantity = document.getElementById('quantity').value;
-      alert(`Minting ${quantity} of NFT ID ${nftId}`);
-      // Add actual Web3 mint code here
+      alert(`Minting ${quantity} of NFT ID ${nftId} for ${connectedAddress}`);
+      // Insert smart contract mint function here
     }
 
     function airdropNFT() {
       const address = document.getElementById('airdropAddress').value;
       const nftId = document.getElementById('airdropId').value;
       alert(`Airdropping NFT ID ${nftId} to ${address}`);
-      // Add actual Web3 airdrop code here
+      // Insert smart contract airdrop function here
     }
 
     function downloadTesters() {
@@ -96,7 +112,5 @@
       a.click();
       document.body.removeChild(a);
     }
-  </script>
-</body>
+  </script></body>
 </html>
-,
