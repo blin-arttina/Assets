@@ -29,13 +29,14 @@
       margin-right: 1rem;
       margin-top: 1rem;
     }
-    input, select {
+    input, select, textarea {
       margin: 0.5rem 0;
-      padding: 0.5rem;
+      padding: 1rem;
       width: 100%;
       background-color: #222;
       color: white;
       border: 1px solid #555;
+      font-size: 1rem;
     }
     .nav {
       text-align: right;
@@ -102,12 +103,12 @@
     }
 
     function downloadTesters() {
-      const dummyData = "Name,Email,Wallet\nTester One,test1@example.com,0x123\nTester Two,test2@example.com,0x456";
+      const dummyData = "Name,Email Address,Wallet Address\nJohn Smith,john@example.com,0xABC123...\nJane Doe,jane@example.com,0xDEF456...";
       const blob = new Blob([dummyData], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'testers.csv';
+      a.download = 'beta_tester_list.csv';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
