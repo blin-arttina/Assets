@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -26,12 +27,11 @@
       padding: 0.5rem 1rem;
       font-size: 1rem;
       cursor: pointer;
-      margin-right: 1rem;
       margin-top: 1rem;
     }
-    input, select, textarea {
+    input, select {
       margin: 0.5rem 0;
-      padding: 1rem;
+      padding: 0.75rem;
       width: 100%;
       background-color: #222;
       color: white;
@@ -47,6 +47,11 @@
       text-decoration: none;
       margin-left: 1rem;
     }
+    .mint-stats {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
   </style>
 </head>
 <body>
@@ -56,23 +61,40 @@
       <a href="nft.html">NFT Showcase</a>
     </div>
     <h1>Admin Dashboard</h1>
+
     <p><strong>Wallet Connection:</strong></p>
     <button onclick="connectWallet()">Connect Wallet</button>
-    <p id="walletAddress">Wallet: Not connected</p><p><strong>Mint NFTs:</strong></p>
-<input type="text" id="nftId" placeholder="Enter NFT ID (e.g., 1)" />
-<input type="number" id="quantity" placeholder="Enter quantity (e.g., 5)" />
-<button onclick="mintNFT()">Mint</button>
+    <p id="walletAddress">Wallet: Not connected</p>
 
-<p><strong>Airdrop NFT:</strong></p>
-<input type="text" id="airdropAddress" placeholder="Enter Wallet Address" />
-<input type="text" id="airdropId" placeholder="Enter NFT ID" />
-<button onclick="airdropNFT()">Airdrop</button>
+    <p><strong>Mint NFTs:</strong></p>
+    <select id="nftSelect">
+      <option value="1">Beta Tester NFT</option>
+      <option value="2">Skater Mouse NFT</option>
+      <option value="3">Paid NFT</option>
+      <option value="4">Premium NFT</option>
+    </select>
+    <input type="number" id="quantity" placeholder="Enter quantity (e.g., 5)" />
+    <button onclick="mintNFT()">Mint</button>
 
-<p><strong>Download Tester List:</strong></p>
-<button onclick="downloadTesters()">Download Tester List</button>
+    <div class="mint-stats" id="mintStats"></div>
 
-  </div>  <script>
+    <p><strong>Airdrop NFT:</strong></p>
+    <input type="text" id="airdropAddress" placeholder="Enter Wallet Address" />
+    <select id="airdropSelect">
+      <option value="1">Beta Tester NFT</option>
+      <option value="2">Skater Mouse NFT</option>
+      <option value="3">Paid NFT</option>
+      <option value="4">Premium NFT</option>
+    </select>
+    <button onclick="airdropNFT()">Airdrop</button>
+
+    <p><strong>Download Tester List:</strong></p>
+    <button onclick="downloadTesters()">Download Tester List</button>
+  </div>
+
+  <script>
     let connectedAddress = null;
+    const mintCounts = {1: 0, 2: 0, 3: 0, 4: 0};
 
     async function connectWallet() {
       if (window.ethereum) {
@@ -89,29 +111,41 @@
     }
 
     function mintNFT() {
-      const nftId = document.getElementById('nftId').value;
-      const quantity = document.getElementById('quantity').value;
-      alert(`Minting ${quantity} of NFT ID ${nftId} for ${connectedAddress}`);
-      // Insert smart contract mint function here
+      const nftId = document.getElementById('nftSelect').value;
+      const quantity = parseInt(document.getElementById('quantity').value);
+      if (!connectedAddress || !quantity) return alert("Wallet and quantity required.");
+      mintCounts[nftId] += quantity;
+      updateMintStats();
+      alert(`Minting ${quantity} of NFT ID ${nftId} to ${connectedAddress}`);
     }
 
     function airdropNFT() {
       const address = document.getElementById('airdropAddress').value;
-      const nftId = document.getElementById('airdropId').value;
+      const nftId = document.getElementById('airdropSelect').value;
+      if (!address) return alert("Wallet address required.");
       alert(`Airdropping NFT ID ${nftId} to ${address}`);
-      // Insert smart contract airdrop function here
     }
 
-    function downloadTesters() {
-      const dummyData = "Name,Email Address,Wallet Address\nJohn Smith,john@example.com,0xABC123...\nJane Doe,jane@example.com,0xDEF456...";
-      const blob = new Blob([dummyData], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'beta_tester_list.csv';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+    function updateMintStats() {
+      let text = 'Minted NFTs:';
+      for (let id in mintCounts) {
+        text += `<br>NFT ${id}: ${mintCounts[id]} minted`;
+      }
+      document.getElementById('mintStats').innerHTML = text;
     }
-  </script></body>
+
+    async function downloadTesters() {
+      const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1FGU2A8p8YXMyxGPHxoxuLud0oz5rCHdzJ--_z9o1qF0E6tp_EK0bJ9A0HDnVdx0FCxxghjFrc21U/pub?output=csv';
+      const response = await fetch(url);
+      const data = await response.text();
+      const blob = new Blob([data], { type: 'text/csv' });
+      const downloadLink = document.createElement('a');
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = 'beta_testers.csv';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
+  </script>
+</body>
 </html>

@@ -1,147 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Assets Alert NFTs</title>
+  <meta charset="UTF-8">
+  <title>NFT Showcase</title>
   <style>
     body {
       background-color: #121212;
       color: white;
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      line-height: 1.7;
-      letter-spacing: 0.5px;
     }
-
-    header, footer {
-      text-align: center;
-      padding: 40px 20px;
-    }
-
     .container {
-      width: 90%;
-      max-width: 1000px;
+      max-width: 800px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 2rem;
     }
-
-    h1, h2 {
-      color: #ff2e2e;
+    h1 {
       text-align: center;
     }
-
-    .nft-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 30px;
-      margin-top: 40px;
-    }
-
     .nft-card {
-      border: 2px solid gray;
-      padding: 20px;
+      border: 1px solid gray;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
       background-color: #1e1e1e;
-      text-align: center;
     }
-
-    .nft-card img {
-      max-width: 100%;
-      border: 2px solid gray;
-      margin-bottom: 15px;
-    }
-
-    .nft-card p {
-      margin: 10px 0;
-    }
-
-    .button {
-      background-color: #ff2e2e;
-      border: 2px solid gray;
-      color: white;
-      padding: 10px 20px;
-      text-decoration: none;
-      display: inline-block;
-      margin-top: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    .nav-links {
-      margin: 40px 0 20px 0;
-      text-align: center;
-    }
-
-    .nav-links a {
-      margin: 0 15px;
-      color: #ff2e2e;
-      text-decoration: underline;
-      font-size: 1.1rem;
-    }
-
-    .donation {
-      text-align: center;
-      margin-top: 60px;
+    .nft-title {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Assets Alert NFT Showcase</h1>
-    <p>Explore your limited edition digital rewards</p>
-  </header>
-
   <div class="container">
-    <div class="nft-grid">
-
-      <!-- Beta Tester NFT -->
-      <div class="nft-card">
-        <img src="beta_tester_nft.png" alt="Beta Tester NFT" />
-        <h3>Beta Tester NFT</h3>
-        <p>Free reward for early testers</p>
-        <a href="#" class="button">View Metadata</a>
-      </div>
-
-      <!-- Skater Mouse NFT -->
-      <div class="nft-card">
-        <img src="skater_mouse.gif" alt="Skater Mouse NFT" />
-        <h3>Skater Mouse NFT</h3>
-        <p>Exclusive animated NFT with sound</p>
-        <a href="#" class="button">View Metadata</a>
-      </div>
-
-      <!-- Paid NFT -->
-      <div class="nft-card">
-        <img src="paid_nft.png" alt="Paid NFT" />
-        <h3>Paid NFT</h3>
-        <p>Cost: 0.01 ETH</p>
-        <a href="#" class="button">View Metadata</a>
-      </div>
-
-      <!-- Premium NFT -->
-      <div class="nft-card">
-        <img src="premium_nft.png" alt="Premium NFT" />
-        <h3>Premium NFT</h3>
-        <p>Cost: 0.05 ETH</p>
-        <a href="#" class="button">View Metadata</a>
-      </div>
-
-    </div>
-
-    <div class="nav-links">
-      <a href="index.html">Back to Home</a>
-      <a href="admin.html">Admin Dashboard</a>
-    </div>
-
-    <div class="donation">
-      <h3>Support the Project</h3>
-      <p>You can donate using your connected wallet.</p>
-    </div>
+    <h1>NFT Showcase</h1>
+    <div class="nft-card"><div class="nft-title">Beta Tester NFT</div><p>Earned by signing up and testing the app.</p></div>
+    <div class="nft-card"><div class="nft-title">Skater Mouse NFT</div><p>Exclusive NFT with animated skater mouse.</p></div>
+    <div class="nft-card"><div class="nft-title">Paid NFT</div><p>Available via in-app purchase or promotion.</p></div>
+    <div class="nft-card"><div class="nft-title">Premium NFT</div><p>High-value reward with special animation/sound.</p></div>
   </div>
-
-  <footer>
-    <img src="blind_art_logo.png" alt="Blind Art Brand Logo" style="max-height: 60px;" />
-  </footer>
 </body>
 </html>
