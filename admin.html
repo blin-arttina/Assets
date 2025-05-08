@@ -2,95 +2,109 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assets Alert Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
   <style>
     body {
       background-color: #121212;
       color: white;
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.7;
+    }
+    header, footer {
+      text-align: center;
+      padding: 30px 20px;
     }
     .container {
-      max-width: 800px;
+      width: 90%;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 2rem;
-      border: 1px solid #444;
+      padding: 40px 20px;
     }
     h1 {
+      color: #ff2e2e;
       text-align: center;
-      margin-bottom: 2rem;
     }
-    button {
-      background-color: #d32f2f;
-      color: white;
-      border: 1px solid gray;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-    input, select {
-      margin: 0.5rem 0;
-      padding: 0.75rem;
+    label, select, input, button {
+      display: block;
       width: 100%;
-      background-color: #222;
-      color: white;
-      border: 1px solid #555;
+      margin: 12px 0;
+      padding: 12px;
       font-size: 1rem;
-    }
-    .nav {
-      text-align: right;
-      margin-bottom: 1rem;
-    }
-    a {
+      background-color: #1e1e1e;
+      border: 1px solid gray;
       color: white;
-      text-decoration: none;
-      margin-left: 1rem;
+    }
+    .button {
+      background-color: #ff2e2e;
+      border: 1px solid gray;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
     }
     .mint-stats {
-      margin-top: 1rem;
+      margin-top: 20px;
       font-size: 0.9rem;
       color: #ccc;
+    }
+    .nav-links {
+      text-align: center;
+      margin: 30px 0;
+    }
+    .nav-links a {
+      margin: 0 15px;
+      color: #ff2e2e;
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="nav">
-      <a href="index.html">Home</a>
-      <a href="nft.html">NFT Showcase</a>
-    </div>
-    <h1>Admin Dashboard</h1>
+  <header>
+    <h1>Assets Alert Admin Panel</h1>
+    <p>Mint NFTs, airdrop rewards, and download your beta tester list.</p>
+  </header>
 
-    <p><strong>Wallet Connection:</strong></p>
-    <button onclick="connectWallet()">Connect Wallet</button>
+  <div class="container">
+    <button class="button" onclick="connectWallet()">Connect Wallet</button>
     <p id="walletAddress">Wallet: Not connected</p>
 
-    <p><strong>Mint NFTs:</strong></p>
+    <label for="nftSelect">Select NFT to Mint:</label>
     <select id="nftSelect">
       <option value="1">Beta Tester NFT</option>
       <option value="2">Skater Mouse NFT</option>
       <option value="3">Paid NFT</option>
       <option value="4">Premium NFT</option>
     </select>
-    <input type="number" id="quantity" placeholder="Enter quantity (e.g., 5)" />
-    <button onclick="mintNFT()">Mint</button>
+    <input type="number" id="quantity" placeholder="Quantity" />
+    <button class="button" onclick="mintNFT()">Mint NFT</button>
 
     <div class="mint-stats" id="mintStats"></div>
 
-    <p><strong>Airdrop NFT:</strong></p>
-    <input type="text" id="airdropAddress" placeholder="Enter Wallet Address" />
+    <label for="airdropAddress">Wallet to Airdrop To:</label>
+    <input type="text" id="airdropAddress" placeholder="Wallet Address" />
+    <label for="airdropSelect">Select NFT to Airdrop:</label>
     <select id="airdropSelect">
       <option value="1">Beta Tester NFT</option>
       <option value="2">Skater Mouse NFT</option>
       <option value="3">Paid NFT</option>
       <option value="4">Premium NFT</option>
     </select>
-    <button onclick="airdropNFT()">Airdrop</button>
+    <button class="button" onclick="airdropNFT()">Airdrop NFT</button>
 
-    <p><strong>Download Tester List:</strong></p>
-    <button onclick="downloadTesters()">Download Tester List</button>
+    <h3 style="margin-top: 30px;">Download Beta Tester List</h3>
+    <button class="button" onclick="downloadTesters()">Download CSV</button>
   </div>
+
+  <div class="nav-links">
+    <a href="index.html">Back to Home</a>
+    <a href="nft.html">View NFT Showcase</a>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Assets Alert</p>
+  </footer>
 
   <script>
     let connectedAddress = null;
@@ -102,28 +116,28 @@
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
           connectedAddress = accounts[0];
           document.getElementById("walletAddress").innerText = `Wallet: ${connectedAddress}`;
-        } catch (error) {
+        } catch {
           alert("Wallet connection failed.");
         }
       } else {
-        alert("MetaMask not detected. Please install it.");
+        alert("MetaMask not found.");
       }
     }
 
     function mintNFT() {
-      const nftId = document.getElementById('nftSelect').value;
-      const quantity = parseInt(document.getElementById('quantity').value);
-      if (!connectedAddress || !quantity) return alert("Wallet and quantity required.");
-      mintCounts[nftId] += quantity;
+      const id = document.getElementById("nftSelect").value;
+      const qty = parseInt(document.getElementById("quantity").value);
+      if (!connectedAddress || !qty) return alert("Missing wallet or quantity.");
+      mintCounts[id] += qty;
       updateMintStats();
-      alert(`Minting ${quantity} of NFT ID ${nftId} to ${connectedAddress}`);
+      alert(`Minting ${qty} of NFT ID ${id} to ${connectedAddress}`);
     }
 
     function airdropNFT() {
-      const address = document.getElementById('airdropAddress').value;
-      const nftId = document.getElementById('airdropSelect').value;
-      if (!address) return alert("Wallet address required.");
-      alert(`Airdropping NFT ID ${nftId} to ${address}`);
+      const id = document.getElementById("airdropSelect").value;
+      const address = document.getElementById("airdropAddress").value;
+      if (!address) return alert("Missing airdrop address.");
+      alert(`Airdropping NFT ID ${id} to ${address}`);
     }
 
     function updateMintStats() {
@@ -131,7 +145,7 @@
       for (let id in mintCounts) {
         text += `<br>NFT ${id}: ${mintCounts[id]} minted`;
       }
-      document.getElementById('mintStats').innerHTML = text;
+      document.getElementById("mintStats").innerHTML = text;
     }
 
     async function downloadTesters() {
@@ -139,12 +153,12 @@
       const response = await fetch(url);
       const data = await response.text();
       const blob = new Blob([data], { type: 'text/csv' });
-      const downloadLink = document.createElement('a');
-      downloadLink.href = URL.createObjectURL(blob);
-      downloadLink.download = 'beta_testers.csv';
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'beta_testers.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   </script>
 </body>
