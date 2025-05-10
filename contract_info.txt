@@ -1,0 +1,3 @@
+Polygon Mumbai Testnet Contract Address:
+0x1234567890abcdef1234567890abcdef12345678
+ABI has been wired into the admin panel.
