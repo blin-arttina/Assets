@@ -1,36 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Dashboard - Testnet Minting</title>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - Live Minting</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://unpkg.com/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
   <style>
-    body { background-color: #121212; color: white; font-family: Arial, sans-serif; padding: 20px; }
-    h1 { color: #ff2e2e; }
-    input, select, button {
-      width: 100%; margin: 10px 0; padding: 10px;
-      background: #1e1e1e; color: white; border: 1px solid gray;
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      font-size: 20px;
     }
-    .button { background: #ff2e2e; border: 1px solid gray; cursor: pointer; }
+    h1 {
+      color: #ff2e2e;
+      font-size: 28px;
+    }
+    input, select, button {
+      width: 100%;
+      margin: 14px 0;
+      padding: 14px;
+      background: #1e1e1e;
+      color: white;
+      border: 1px solid gray;
+      font-size: 20px;
+    }
+    .button {
+      background-color: #ff2e2e;
+      border: 1px solid gray;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h1>Live Minting Panel (Polygon Mumbai)</h1>
+
   <button class="button" onclick="connectWallet()">Connect Wallet</button>
   <p id="walletAddress">Wallet: Not connected</p>
+
   <select id="nftSelect">
     <option value="1">Beta Tester NFT</option>
     <option value="2">Skater Mouse NFT</option>
     <option value="3">Paid NFT</option>
     <option value="4">Premium NFT</option>
   </select>
+
   <input type="number" id="quantity" placeholder="Quantity" />
+
   <button class="button" onclick="mintNFT()">Mint NFT</button>
 
   <script>
     const contractAddress = "0x06Fe9E5feF1C3F3AeAF4Aa2cCFAB4989B21AB59F";
-    const abi = [{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+    const abi = [
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "id", "type": "uint256" },
+          { "internalType": "uint256", "name": "amount", "type": "uint256" }
+        ],
+        "name": "mint",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
 
     let provider;
     let signer;
