@@ -1,1 +1,12 @@
-<!DOCTYPE html><html><body style='background:#121212;color:white;'><h1>Styled Admin Panel with WalletConnect & Mint</h1></body></html>
+<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Admin Panel</title>
+<style>body{background:#121212;color:white;font-family:Arial;padding:20px}h1{color:#ff2e2e}
+input,select,button{width:100%;margin:10px 0;padding:10px;background:#1e1e1e;color:white;border:1px solid gray}
+.button{background:#ff2e2e;border:1px solid gray;cursor:pointer}</style></head>
+<body><h1>Admin Dashboard</h1><button class='button' onclick='connectWallet()'>Connect Wallet</button>
+<p id='walletAddress'>Wallet: Not connected</p>
+<select id='nftSelect'><option value='1'>Beta Tester NFT</option><option value='2'>Skater Mouse NFT</option>
+<option value='3'>Paid NFT</option><option value='4'>Premium NFT</option></select>
+<input type='number' id='quantity' placeholder='Quantity'><button class='button' onclick='mintNFT()'>Mint NFT</button>
+<script>function connectWallet(){alert('WalletConnect active');document.getElementById('walletAddress').innerText='Wallet: Connected'}
+function mintNFT(){let id=document.getElementById('nftSelect').value;let qty=document.getElementById('quantity').value;
+alert('Minting '+qty+' of NFT ID '+id);}</script></body></html>
