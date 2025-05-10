@@ -1,164 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard</title>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - Live Minting</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://unpkg.com/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
   <style>
-    body {
-      background-color: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      line-height: 1.7;
+    body { background-color: #121212; color: white; font-family: Arial; padding: 20px; }
+    h1 { color: #ff2e2e; }
+    input, select, button {
+      width: 100%; margin: 10px 0; padding: 10px;
+      background: #1e1e1e; color: white; border: 1px solid gray;
     }
-    header, footer {
-      text-align: center;
-      padding: 30px 20px;
-    }
-    .container {
-      width: 90%;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-    h1 {
-      color: #ff2e2e;
-      text-align: center;
-    }
-    label, select, input, button {
-      display: block;
-      width: 100%;
-      margin: 12px 0;
-      padding: 12px;
-      font-size: 1rem;
-      background-color: #1e1e1e;
-      border: 1px solid gray;
-      color: white;
-    }
-    .button {
-      background-color: #ff2e2e;
-      border: 1px solid gray;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .mint-stats {
-      margin-top: 20px;
-      font-size: 0.9rem;
-      color: #ccc;
-    }
-    .nav-links {
-      text-align: center;
-      margin: 30px 0;
-    }
-    .nav-links a {
-      margin: 0 15px;
-      color: #ff2e2e;
-      text-decoration: underline;
-    }
+    .button { background: #ff2e2e; border: 1px solid gray; cursor: pointer; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Assets Alert Admin Panel</h1>
-    <p>Mint NFTs, airdrop rewards, and download your beta tester list.</p>
-  </header>
-
-  <div class="container">
-    <button class="button" onclick="connectWallet()">Connect Wallet</button>
-    <p id="walletAddress">Wallet: Not connected</p>
-
-    <label for="nftSelect">Select NFT to Mint:</label>
-    <select id="nftSelect">
-      <option value="1">Beta Tester NFT</option>
-      <option value="2">Skater Mouse NFT</option>
-      <option value="3">Paid NFT</option>
-      <option value="4">Premium NFT</option>
-    </select>
-    <input type="number" id="quantity" placeholder="Quantity" />
-    <button class="button" onclick="mintNFT()">Mint NFT</button>
-
-    <div class="mint-stats" id="mintStats"></div>
-
-    <label for="airdropAddress">Wallet to Airdrop To:</label>
-    <input type="text" id="airdropAddress" placeholder="Wallet Address" />
-    <label for="airdropSelect">Select NFT to Airdrop:</label>
-    <select id="airdropSelect">
-      <option value="1">Beta Tester NFT</option>
-      <option value="2">Skater Mouse NFT</option>
-      <option value="3">Paid NFT</option>
-      <option value="4">Premium NFT</option>
-    </select>
-    <button class="button" onclick="airdropNFT()">Airdrop NFT</button>
-
-    <h3 style="margin-top: 30px;">Download Beta Tester List</h3>
-    <button class="button" onclick="downloadTesters()">Download CSV</button>
-  </div>
-
-  <div class="nav-links">
-    <a href="index.html">Back to Home</a>
-    <a href="nft.html">View NFT Showcase</a>
-  </div>
-
-  <footer>
-    <p>&copy; 2025 Assets Alert</p>
-  </footer>
+  <h1>Live Minting Panel</h1>
+  <button class="button" onclick="connectWallet()">Connect Wallet</button>
+  <p id="walletAddress">Wallet: Not connected</p>
+  <select id="nftSelect">
+    <option value="1">Beta Tester NFT</option>
+    <option value="2">Skater Mouse NFT</option>
+    <option value="3">Paid NFT</option>
+    <option value="4">Premium NFT</option>
+  </select>
+  <input type="number" id="quantity" placeholder="Quantity" />
+  <button class="button" onclick="mintNFT()">Mint NFT</button>
 
   <script>
-    let connectedAddress = null;
-    const mintCounts = {1: 0, 2: 0, 3: 0, 4: 0};
+    const contractAddress = "0x1234567890abcdef1234567890abcdef12345678"; // REPLACE with actual deployed address
+    const abi = [{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+
+    let provider;
+    let signer;
+    let contract;
 
     async function connectWallet() {
-      if (window.ethereum) {
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          connectedAddress = accounts[0];
-          document.getElementById("walletAddress").innerText = `Wallet: ${connectedAddress}`;
-        } catch {
-          alert("Wallet connection failed.");
-        }
-      } else {
-        alert("MetaMask not found.");
-      }
+      const walletConnectProvider = new window.WalletConnectProvider.default({
+        rpc: {
+          80001: "https://rpc-mumbai.maticvigil.com"
+        },
+        chainId: 80001
+      });
+
+      await walletConnectProvider.enable();
+      provider = new ethers.providers.Web3Provider(walletConnectProvider);
+      signer = provider.getSigner();
+      const address = await signer.getAddress();
+      document.getElementById("walletAddress").innerText = "Wallet: " + address;
+      contract = new ethers.Contract(contractAddress, abi, signer);
     }
 
-    function mintNFT() {
+    async function mintNFT() {
       const id = document.getElementById("nftSelect").value;
-      const qty = parseInt(document.getElementById("quantity").value);
-      if (!connectedAddress || !qty) return alert("Missing wallet or quantity.");
-      mintCounts[id] += qty;
-      updateMintStats();
-      alert(`Minting ${qty} of NFT ID ${id} to ${connectedAddress}`);
-    }
+      const quantity = document.getElementById("quantity").value;
+      if (!contract || !signer) return alert("Connect wallet first");
 
-    function airdropNFT() {
-      const id = document.getElementById("airdropSelect").value;
-      const address = document.getElementById("airdropAddress").value;
-      if (!address) return alert("Missing airdrop address.");
-      alert(`Airdropping NFT ID ${id} to ${address}`);
-    }
-
-    function updateMintStats() {
-      let text = 'Minted NFTs:';
-      for (let id in mintCounts) {
-        text += `<br>NFT ${id}: ${mintCounts[id]} minted`;
+      try {
+        const tx = await contract.mint(id, quantity);
+        alert("Transaction sent! Hash: " + tx.hash);
+      } catch (err) {
+        console.error(err);
+        alert("Mint failed: " + err.message);
       }
-      document.getElementById("mintStats").innerHTML = text;
-    }
-
-    async function downloadTesters() {
-      const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS1FGU2A8p8YXMyxGPHxoxuLud0oz5rCHdzJ--_z9o1qF0E6tp_EK0bJ9A0HDnVdx0FCxxghjFrc21U/pub?output=csv';
-      const response = await fetch(url);
-      const data = await response.text();
-      const blob = new Blob([data], { type: 'text/csv' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'beta_testers.csv';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     }
   </script>
 </body>
