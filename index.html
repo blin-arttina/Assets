@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +20,7 @@
       max-width: 100%;
       border: 1px solid gray;
     }
-    input, button {
+    input, button, .button {
       width: 100%;
       padding: 14px;
       margin: 10px 0;
@@ -27,15 +28,13 @@
       background-color: #1e1e1e;
       color: white;
       border: 1px solid gray;
+      text-align: center;
+      display: block;
     }
     .button {
       background-color: #ff2e2e;
-      border: 1px solid gray;
-      color: white;
-      text-align: center;
-      cursor: pointer;
-      display: block;
       text-decoration: none;
+      cursor: pointer;
     }
     .screenshot-grid {
       display: flex;
@@ -59,7 +58,7 @@
 
   <!-- App Description -->
   <h1>Welcome to the Assets Alert Project</h1>
-  <p>This app provides real-time price alerts for Bitcoin, cryptocurrencies, and stocks. Set custom alerts, stay notified, and receive rewards through NFTs.</p>
+  <p>This app provides real-time price alerts for Bitcoin, cryptocurrencies, and stocks. Customize alerts, upload your own sounds, and explore premium skins.</p>
 
   <!-- Screenshots -->
   <h2>App Previews</h2>
@@ -81,7 +80,11 @@
 
   <!-- APK Download -->
   <h2>Download the Android App</h2>
-  <a class="button" href="AssetsAlert.apk" download>Download APK</a>
+  <div class="button" style="pointer-events: none; opacity: 0.6;">Coming Soon</div>
+
+  <!-- Navigation Links -->
+  <a class="button" href="nft.html">NFT Showcase</a>
+  <a class="button" href="admin.html">Admin Dashboard</a>
 
   <!-- Donation Section -->
   <h2>Support the Project</h2>
@@ -95,3 +98,4 @@
 
 </body>
 </html>
+  <!-- D
