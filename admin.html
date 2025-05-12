@@ -44,11 +44,107 @@
       padding: 10px 18px;
       background-color: #ff2e2e;
     }
-    .tester-entry {
-      border: 1px solid gray;
-      padding: 10px;
-      margin-top: 10px;
-      background-color: #1e1e1e;
-    }
   </style>
 </head>
+<body>
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="nft.html">NFT Showcase</a>
+    <a href="https://github.com/blin-arttina/Assets" target="_blank">GitHub Repo</a>
+  </div>
+
+  <h1>Admin Dashboard (Testnet - Polygon Mumbai)</h1>
+  <button class="button" onclick="connectWallet()">Connect Wallet</button>
+  <p id="walletAddress">Wallet: Not connected</p>
+
+  <h2>Mint NFT</h2>
+  <select id="nftSelect">
+    <option value="1">Beta Tester NFT</option>
+    <option value="2">Skater Mouse NFT</option>
+    <option value="3">Paid NFT</option>
+    <option value="4">Premium NFT</option>
+  </select>
+  <input type="number" id="quantity" placeholder="Quantity" />
+  <button class="button" onclick="mintNFT()">Mint NFT</button>
+
+  <h2>Airdrop NFT</h2>
+  <input type="text" id="airdropAddress" placeholder="Wallet Address (0x...)" />
+  <select id="airdropSelect">
+    <option value="1">Beta Tester NFT</option>
+    <option value="2">Skater Mouse NFT</option>
+    <option value="3">Paid NFT</option>
+    <option value="4">Premium NFT</option>
+  </select>
+  <button class="button" onclick="airdropNFT()">Send Airdrop</button>
+
+  <h2>Download Beta Tester List</h2>
+  <button class="button" onclick="downloadTesters()">Download CSV</button>
+
+  <script>
+    const contractAddress = "0x06Fe9E5feF1C3F3AeAF4Aa2cCFAB4989B21AB59F";
+    const abi = [
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "id", "type": "uint256" },
+          { "internalType": "uint256", "name": "amount", "type": "uint256" }
+        ],
+        "name": "mint",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
+
+    let provider, signer, contract;
+
+    async function connectWallet() {
+      const walletConnectProvider = new window.WalletConnectProvider.default({
+        rpc: { 80001: "https://rpc-mumbai.maticvigil.com" },
+        chainId: 80001
+      });
+
+      await walletConnectProvider.enable();
+      provider = new ethers.providers.Web3Provider(walletConnectProvider);
+      signer = provider.getSigner();
+      const address = await signer.getAddress();
+      document.getElementById("walletAddress").innerText = "Wallet: " + address;
+      contract = new ethers.Contract(contractAddress, abi, signer);
+    }
+
+    async function mintNFT() {
+      const id = document.getElementById("nftSelect").value;
+      const qty = document.getElementById("quantity").value;
+      if (!contract || !signer) return alert("Connect wallet first.");
+      try {
+        const tx = await contract.mint(id, qty);
+        alert("Transaction sent: " + tx.hash);
+      } catch (err) {
+        alert("Mint failed: " + err.message);
+      }
+    }
+
+    async function airdropNFT() {
+      const address = document.getElementById("airdropAddress").value;
+      const id = document.getElementById("airdropSelect").value;
+      if (!contract || !signer) return alert("Connect wallet first.");
+      try {
+        const tx = await contract.mint(id, 1, { to: address }); // Simulated direct mint
+        alert("Airdrop sent: " + tx.hash);
+      } catch (err) {
+        alert("Airdrop failed: " + err.message);
+      }
+    }
+
+    async function downloadTesters() {
+      const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1FGU2A8p8YXMyxGPHxoxuLud0oz5rCHdzJ--_z9o1qF0E6tp_EK0bJ9A0HDnVdx0FCxxghjFrc21U/pub?output=csv";
+      const res = await fetch(url);
+      const data = await res.text();
+      const blob = new Blob([data], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "beta_testers.csv";
+      a.click();
+    }
+  </script>
+</body>
+</html>
