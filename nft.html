@@ -2,28 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>NFT Showcase</title>
+  <title>Assets Alert NFT Showcase</title>
   <style>
     body {
       background-color: #121212;
       color: white;
       font-family: Arial, sans-serif;
-      padding: 20px;
-      font-size: 20px;
+      font-size: 24px;
+      padding: 24px;
     }
-    h1 {
+    h1, h2 {
       color: #ff2e2e;
-      font-size: 28px;
+      font-size: 34px;
     }
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
+      gap: 24px;
+      margin: 24px 0;
     }
     .card {
-      background: #1e1e1e;
+      background-color: #1e1e1e;
       border: 1px solid gray;
-      padding: 14px;
+      padding: 16px;
     }
     .card img {
       width: 100%;
@@ -39,34 +40,77 @@
       border: 1px solid gray;
       text-align: center;
       text-decoration: none;
-      font-size: 20px;
+      font-size: 22px;
       display: block;
+      margin-top: 10px;
+    }
+    .nav {
+      margin-top: 40px;
+      text-align: center;
+    }
+    .nav a {
+      background-color: #ff2e2e;
+      color: white;
+      padding: 14px 28px;
+      margin: 10px;
+      border: 1px solid gray;
+      text-decoration: none;
+      font-size: 22px;
+      display: inline-block;
     }
   </style>
 </head>
 <body>
+
   <h1>Assets Alert NFT Showcase</h1>
+
+  <h2>Beta Tester NFTs</h2>
   <div class="grid">
     <div class="card">
-      <img src="beta_tester_nft.png" alt="Beta Tester NFT" />
-      <p><strong>Beta Tester NFT</strong><br>Cost: Free (sign-up only)</p>
+      <img src="beta_tester_nft.png" alt="Beta Tester NFT 1">
+      <p><strong>Beta Tester NFT 1</strong><br>Cost: Free (Signup)</p>
       <a href="#" class="button">View Metadata</a>
     </div>
     <div class="card">
-      <img src="skater_mouse.gif" alt="Skater Mouse NFT" />
-      <p><strong>Skater Mouse NFT</strong><br>Cost: Free (Beta Testers Only)</p>
+      <img src="skater_mouse.gif" alt="Beta Tester NFT 2">
+      <p><strong>Skater Mouse NFT</strong><br>Cost: Free (Referral Reward)</p>
       <a href="#" class="button">View Metadata</a>
     </div>
+  </div>
+
+  <h2>Premium NFTs</h2>
+  <div class="grid">
     <div class="card">
-      <img src="paid_nft.png" alt="Paid NFT" />
+      <img src="paid_nft.png" alt="Paid NFT">
       <p><strong>Paid NFT</strong><br>Cost: 15 MATIC</p>
       <a href="#" class="button">View Metadata</a>
     </div>
     <div class="card">
-      <img src="premium_nft.png" alt="Premium NFT" />
+      <img src="premium_nft.png" alt="Premium NFT">
       <p><strong>Premium NFT</strong><br>Cost: 50 MATIC</p>
       <a href="#" class="button">View Metadata</a>
     </div>
   </div>
+
+  <h2>Mystery NFTs</h2>
+  <div class="grid">
+    <div class="card">
+      <img src="mystery1.png" alt="Mystery NFT 1">
+      <p><strong>Mystery NFT #1</strong><br>Earned through referral</p>
+      <a href="#" class="button">View Metadata</a>
+    </div>
+    <div class="card">
+      <img src="mystery2.png" alt="Mystery NFT 2">
+      <p><strong>Mystery NFT #2</strong><br>Unlocked during testing</p>
+      <a href="#" class="button">View Metadata</a>
+    </div>
+  </div>
+
+  <!-- Navigation Links -->
+  <div class="nav">
+    <a href="index.html">Return to Home</a>
+    <a href="admin.html">Go to Admin Dashboard</a>
+  </div>
+
 </body>
 </html>
