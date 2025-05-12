@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Assets Alert</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://unpkg.com/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
   <style>
     body {
       background-color: #121212;
@@ -15,10 +17,6 @@
       color: #ff2e2e;
       font-size: 34px;
     }
-    img {
-      max-width: 100%;
-      border: 1px solid gray;
-    }
     input, button, .button {
       width: 100%;
       padding: 18px;
@@ -28,12 +26,12 @@
       color: white;
       border: 1px solid gray;
       text-align: center;
-      display: block;
     }
     .button {
       background-color: #ff2e2e;
       text-decoration: none;
       cursor: pointer;
+      display: inline-block;
     }
     .screenshot-grid {
       display: flex;
@@ -43,6 +41,7 @@
     }
     .screenshot-grid img {
       width: 48%;
+      border: 1px solid gray;
     }
     footer {
       text-align: center;
@@ -68,32 +67,51 @@
     <img src="app_preview4.png" alt="Preview 4" />
   </div>
 
-  <!-- Beta Tester Sign-Up Form -->
+  <!-- Beta Tester Sign-Up -->
   <h2>Sign Up to Be a Beta Tester</h2>
+  <button class="button" onclick="connectWallet()">Connect Wallet</button>
+  <p id="walletStatus">Wallet not connected</p>
+
   <form action="https://docs.google.com/forms/d/e/1FAIpQLScxX8Y2RBgCkXnRW8vYWh4zm2DpzBk1CE8Z7dR3kzqjlT7egw/formResponse" method="POST" target="_blank">
     <input name="entry.1234567890" type="text" placeholder="Full Name" required />
     <input name="entry.0987654321" type="email" placeholder="Email Address" required />
-    <input name="entry.1122334455" type="text" placeholder="Wallet Address (0x...)" required />
+    <input id="walletField" name="entry.1122334455" type="text" placeholder="Wallet Address (Connect above)" required readonly />
     <button class="button" type="submit">Submit</button>
   </form>
 
-  <!-- APK Coming Soon -->
+  <!-- APK Download (Coming Soon) -->
   <h2>Download the Android App</h2>
   <div class="button" style="pointer-events: none; opacity: 0.6;">Coming Soon</div>
 
-  <!-- Navigation Links -->
-  <a class="button" href="nft.html">NFT Showcase</a>
-  <a class="button" href="admin.html">Admin Dashboard</a>
-
   <!-- Donation Section -->
   <h2>Support the Project</h2>
-  <p>You can support development by sending donations to our wallet:</p>
+  <p>Support development by sending donations to our wallet:</p>
   <input type="text" readonly value="0xYourDonationWalletAddressHere" />
+
+  <!-- Navigation Buttons -->
+  <a class="button" href="nft.html">NFT Showcase</a>
+  <a class="button" href="admin.html">Admin Dashboard</a>
 
   <!-- Footer Branding -->
   <footer>
     <img src="blind_art_logo.png" alt="Blind Art Logo" style="max-width: 200px;" />
   </footer>
+
+  <script>
+    async function connectWallet() {
+      const walletConnectProvider = new window.WalletConnectProvider.default({
+        rpc: { 80001: "https://rpc-mumbai.maticvigil.com" },
+        chainId: 80001
+      });
+
+      await walletConnectProvider.enable();
+      const provider = new ethers.providers.Web3Provider(walletConnectProvider);
+      const signer = provider.getSigner();
+      const address = await signer.getAddress();
+      document.getElementById("walletField").value = address;
+      document.getElementById("walletStatus").innerText = "Wallet Connected: " + address;
+    }
+  </script>
 
 </body>
 </html>
