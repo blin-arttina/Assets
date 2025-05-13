@@ -84,6 +84,7 @@
     const abi = [
       {
         "inputs": [
+          { "internalType": "address", "name": "to", "type": "address" },
           { "internalType": "uint256", "name": "id", "type": "uint256" },
           { "internalType": "uint256", "name": "amount", "type": "uint256" }
         ],
@@ -125,7 +126,8 @@
       const qty = document.getElementById("quantity").value;
       if (!contract || !signer) return alert("Wallet not connected.");
       try {
-        const tx = await contract.mint(id, qty);
+        const to = await signer.getAddress();
+        const tx = await contract.mint(to, id, qty);
         alert("Minted! Tx: " + tx.hash);
       } catch (err) {
         alert("Mint failed: " + err.message);
@@ -137,23 +139,7 @@
       const id = document.getElementById("airdropSelect").value;
       if (!contract || !signer) return alert("Wallet not connected.");
       try {
-        const tx = await contract.mint(id, 1); // Simulated airdrop
+        const tx = await contract.mint(address, id, 1);
         alert("Airdrop sent: " + tx.hash);
       } catch (err) {
-        alert("Airdrop failed: " + err.message);
-      }
-    }
-
-    async function downloadTesters() {
-      const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1FGU2A8p8YXMyxGPHxoxuLud0oz5rCHdzJ--_z9o1qF0E6tp_EK0bJ9A0HDnVdx0FCxxghjFrc21U/pub?output=csv";
-      const res = await fetch(url);
-      const data = await res.text();
-      const blob = new Blob([data], { type: "text/csv" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "beta_testers.csv";
-      a.click();
-    }
-  </script>
-</body>
-</html>
+        alert("A
