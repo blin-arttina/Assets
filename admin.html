@@ -125,9 +125,10 @@
       const qty = document.getElementById("quantity").value;
       if (!contract || !signer) return alert("Wallet not connected.");
       try {
-        const to = await signer.getAddress();
+        let to = await signer.getAddress();
+        to = ethers.utils.getAddress(to); // Validates checksummed address
         const tx = await contract.mint(to, id, qty);
-        alert("Mint successful! Tx hash: " + tx.hash);
+        alert("Minted! Tx hash: " + tx.hash);
       } catch (err) {
         console.error(err);
         alert("Mint failed: " + err.message);
