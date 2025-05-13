@@ -53,6 +53,7 @@
 
   <h1>Admin Dashboard – Polygon Mumbai</h1>
   <p id="walletStatus">Wallet: Not connected</p>
+  <button id="connectBtn" class="button" onclick="connectBraveWallet()">Connect Wallet</button>
 
   <h2>Mint NFT</h2>
   <select id="nftSelect">
@@ -83,14 +84,4 @@
     const abi = [
       {
         "inputs": [
-          { "internalType": "uint256", "name": "id", "type": "uint256" },
-          { "internalType": "uint256", "name": "amount", "type": "uint256" }
-        ],
-        "name": "mint",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ];
-
-    let provider, signer, contract;
+          { "internalType": "uint256", "name": "id", "type
