@@ -53,7 +53,7 @@
 
   <h1>Admin Dashboard – Polygon Mumbai</h1>
   <p id="walletStatus">Wallet: Not connected</p>
-  <button id="connectBtn" class="button" onclick="connectBraveWallet()">Connect Wallet</button>
+  <button class="button" onclick="connectWallet()">Connect Wallet</button>
 
   <h2>Mint NFT</h2>
   <select id="nftSelect">
@@ -84,4 +84,76 @@
     const abi = [
       {
         "inputs": [
-          { "internalType": "uint256", "name": "id", "type
+          { "internalType": "uint256", "name": "id", "type": "uint256" },
+          { "internalType": "uint256", "name": "amount", "type": "uint256" }
+        ],
+        "name": "mint",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
+
+    let provider, signer, contract;
+
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert("Brave Wallet not detected. Please enable it in your browser.");
+        return;
+      }
+
+      try {
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        const address = await signer.getAddress();
+
+        if (address.toLowerCase() !== allowedAddress.toLowerCase()) {
+          document.body.innerHTML = "<h1 style='color: red;'>Access Denied</h1><p>You are not authorized to use this page.</p>";
+          return;
+        }
+
+        document.getElementById("walletStatus").innerText = "Wallet Connected: " + address;
+        contract = new ethers.Contract(contractAddress, abi, signer);
+      } catch (err) {
+        alert("Connection failed: " + err.message);
+      }
+    }
+
+    async function mintNFT() {
+      const id = document.getElementById("nftSelect").value;
+      const qty = document.getElementById("quantity").value;
+      if (!contract || !signer) return alert("Wallet not connected.");
+      try {
+        const tx = await contract.mint(id, qty);
+        alert("Minted! Tx: " + tx.hash);
+      } catch (err) {
+        alert("Mint failed: " + err.message);
+      }
+    }
+
+    async function airdropNFT() {
+      const address = document.getElementById("airdropAddress").value;
+      const id = document.getElementById("airdropSelect").value;
+      if (!contract || !signer) return alert("Wallet not connected.");
+      try {
+        const tx = await contract.mint(id, 1); // Simulated airdrop
+        alert("Airdrop sent: " + tx.hash);
+      } catch (err) {
+        alert("Airdrop failed: " + err.message);
+      }
+    }
+
+    async function downloadTesters() {
+      const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1FGU2A8p8YXMyxGPHxoxuLud0oz5rCHdzJ--_z9o1qF0E6tp_EK0bJ9A0HDnVdx0FCxxghjFrc21U/pub?output=csv";
+      const res = await fetch(url);
+      const data = await res.text();
+      const blob = new Blob([data], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "beta_testers.csv";
+      a.click();
+    }
+  </script>
+</body>
+</html>
