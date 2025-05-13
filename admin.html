@@ -98,12 +98,11 @@
     let provider, signer, contract;
 
     async function connectWallet() {
-      if (!window.ethereum) {
-        alert("Brave Wallet not detected. Please enable it in your browser.");
-        return;
-      }
-
       try {
+        if (!window.ethereum) {
+          alert("Brave Wallet not detected.");
+          return;
+        }
         provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         signer = provider.getSigner();
@@ -117,7 +116,7 @@
         document.getElementById("walletStatus").innerText = "Wallet Connected: " + address;
         contract = new ethers.Contract(contractAddress, abi, signer);
       } catch (err) {
-        alert("Connection failed: " + err.message);
+        alert("Wallet connection failed: " + err.message);
       }
     }
 
@@ -128,8 +127,9 @@
       try {
         const to = await signer.getAddress();
         const tx = await contract.mint(to, id, qty);
-        alert("Minted! Tx: " + tx.hash);
+        alert("Mint successful! Tx hash: " + tx.hash);
       } catch (err) {
+        console.error(err);
         alert("Mint failed: " + err.message);
       }
     }
@@ -140,6 +140,27 @@
       if (!contract || !signer) return alert("Wallet not connected.");
       try {
         const tx = await contract.mint(address, id, 1);
-        alert("Airdrop sent: " + tx.hash);
+        alert("Airdrop sent! Tx hash: " + tx.hash);
       } catch (err) {
-        alert("A
+        console.error(err);
+        alert("Airdrop failed: " + err.message);
+      }
+    }
+
+    async function downloadTesters() {
+      try {
+        const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1FGU2A8p8YXMyxGPHxoxuLud0oz5rCHdzJ--_z9o1qF0E6tp_EK0bJ9A0HDnVdx0FCxxghjFrc21U/pub?output=csv";
+        const res = await fetch(url);
+        const data = await res.text();
+        const blob = new Blob([data], { type: "text/csv" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "beta_testers.csv";
+        a.click();
+      } catch (err) {
+        alert("Download failed: " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>
