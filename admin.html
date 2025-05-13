@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!D<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -84,7 +84,6 @@
     const abi = [
       {
         "inputs": [
-          { "internalType": "address", "name": "to", "type": "address" },
           { "internalType": "uint256", "name": "id", "type": "uint256" },
           { "internalType": "uint256", "name": "amount", "type": "uint256" }
         ],
@@ -125,10 +124,8 @@
       const qty = document.getElementById("quantity").value;
       if (!contract || !signer) return alert("Wallet not connected.");
       try {
-        let to = await signer.getAddress();
-        to = ethers.utils.getAddress(to); // Validates checksummed address
-        const tx = await contract.mint(to, id, qty);
-        alert("Minted! Tx hash: " + tx.hash);
+        const tx = await contract.mint(id, qty); // back to simple call
+        alert("Minted! Tx: " + tx.hash);
       } catch (err) {
         console.error(err);
         alert("Mint failed: " + err.message);
@@ -140,8 +137,8 @@
       const id = document.getElementById("airdropSelect").value;
       if (!contract || !signer) return alert("Wallet not connected.");
       try {
-        const tx = await contract.mint(address, id, 1);
-        alert("Airdrop sent! Tx hash: " + tx.hash);
+        const tx = await contract.mint(id, 1); // still simple, unless contract uses different method
+        alert("Airdrop sent! Tx: " + tx.hash);
       } catch (err) {
         console.error(err);
         alert("Airdrop failed: " + err.message);
