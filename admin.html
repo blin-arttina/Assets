@@ -78,7 +78,7 @@
   <button class="button" onclick="downloadTesters()">Download CSV</button>
 
   <script>
-    const allowedAddress = "0xYourBraveWalletAddressHere"; // Replace with your actual Brave wallet address
+    const allowedAddress = "0xB7Acf7F61e360baB855A86742be5273baB69B153";
     const contractAddress = "0x06Fe9E5feF1C3F3AeAF4Aa2cCFAB4989B21AB59F";
     const abi = [
       {
@@ -94,63 +94,3 @@
     ];
 
     let provider, signer, contract;
-
-    async function connectBraveWallet() {
-      if (typeof window.ethereum === 'undefined') {
-        alert("Brave Wallet not detected. Please open in the Brave browser with crypto wallet enabled.");
-        return;
-      }
-
-      provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      signer = provider.getSigner();
-      const address = await signer.getAddress();
-
-      if (address.toLowerCase() !== allowedAddress.toLowerCase()) {
-        document.body.innerHTML = "<h1 style='color: red;'>Access Denied</h1><p>You are not authorized to use this page.</p>";
-        return;
-      }
-
-      document.getElementById("walletStatus").innerText = "Wallet Connected: " + address;
-      contract = new ethers.Contract(contractAddress, abi, signer);
-    }
-
-    connectBraveWallet(); // auto-connect on page load
-
-    async function mintNFT() {
-      const id = document.getElementById("nftSelect").value;
-      const qty = document.getElementById("quantity").value;
-      if (!contract || !signer) return alert("Wallet not connected.");
-      try {
-        const tx = await contract.mint(id, qty);
-        alert("Minted! Tx: " + tx.hash);
-      } catch (err) {
-        alert("Mint failed: " + err.message);
-      }
-    }
-
-    async function airdropNFT() {
-      const address = document.getElementById("airdropAddress").value;
-      const id = document.getElementById("airdropSelect").value;
-      if (!contract || !signer) return alert("Wallet not connected.");
-      try {
-        const tx = await contract.mint(id, 1); // Simulated airdrop
-        alert("Airdrop sent: " + tx.hash);
-      } catch (err) {
-        alert("Airdrop failed: " + err.message);
-      }
-    }
-
-    async function downloadTesters() {
-      const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1FGU2A8p8YXMyxGPHxoxuLud0oz5rCHdzJ--_z9o1qF0E6tp_EK0bJ9A0HDnVdx0FCxxghjFrc21U/pub?output=csv";
-      const res = await fetch(url);
-      const data = await res.text();
-      const blob = new Blob([data], { type: "text/csv" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "beta_testers.csv";
-      a.click();
-    }
-  </script>
-</body>
-</html>
