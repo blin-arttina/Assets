@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Admin Dashboard – Assets Alert</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <script src="https://unpkg.com/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
   <style>
     body {
       background-color: #121212;
@@ -79,9 +78,8 @@
   <button class="button" onclick="downloadTesters()">Download CSV</button>
 
   <script>
-    const allowedAddress = "0xYourBraveWalletAddressHere"; // Replace with your actual wallet address
-    const contractAddress = "0x06Fe9E5feF1C3F3AeAF4Aa2cCFAB4989B21AB59F"; // Polygon Mumbai contract
-
+    const allowedAddress = "0xYourBraveWalletAddressHere"; // Replace with your actual Brave wallet address
+    const contractAddress = "0x06Fe9E5feF1C3F3AeAF4Aa2cCFAB4989B21AB59F";
     const abi = [
       {
         "inputs": [
@@ -97,14 +95,14 @@
 
     let provider, signer, contract;
 
-    async function connectWallet() {
-      const walletConnectProvider = new window.WalletConnectProvider.default({
-        rpc: { 80001: "https://rpc-mumbai.maticvigil.com" },
-        chainId: 80001
-      });
+    async function connectBraveWallet() {
+      if (typeof window.ethereum === 'undefined') {
+        alert("Brave Wallet not detected. Please open in the Brave browser with crypto wallet enabled.");
+        return;
+      }
 
-      await walletConnectProvider.enable();
-      provider = new ethers.providers.Web3Provider(walletConnectProvider);
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
       signer = provider.getSigner();
       const address = await signer.getAddress();
 
@@ -117,7 +115,7 @@
       contract = new ethers.Contract(contractAddress, abi, signer);
     }
 
-    connectWallet(); // Auto-connect on load
+    connectBraveWallet(); // auto-connect on page load
 
     async function mintNFT() {
       const id = document.getElementById("nftSelect").value;
@@ -125,7 +123,7 @@
       if (!contract || !signer) return alert("Wallet not connected.");
       try {
         const tx = await contract.mint(id, qty);
-        alert("Minted! Transaction: " + tx.hash);
+        alert("Minted! Tx: " + tx.hash);
       } catch (err) {
         alert("Mint failed: " + err.message);
       }
@@ -136,7 +134,7 @@
       const id = document.getElementById("airdropSelect").value;
       if (!contract || !signer) return alert("Wallet not connected.");
       try {
-        const tx = await contract.mint(id, 1); // Modify if separate airdrop method exists
+        const tx = await contract.mint(id, 1); // Simulated airdrop
         alert("Airdrop sent: " + tx.hash);
       } catch (err) {
         alert("Airdrop failed: " + err.message);
