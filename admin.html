@@ -84,6 +84,7 @@
     const abi = [
       {
         "inputs": [
+          { "internalType": "address", "name": "to", "type": "address" },
           { "internalType": "uint256", "name": "id", "type": "uint256" },
           { "internalType": "uint256", "name": "amount", "type": "uint256" }
         ],
@@ -108,57 +109,4 @@
         const address = await signer.getAddress();
 
         if (address.toLowerCase() !== allowedAddress.toLowerCase()) {
-          document.body.innerHTML = "<h1 style='color: red;'>Access Denied</h1><p>You are not authorized to use this page.</p>";
-          return;
-        }
-
-        document.getElementById("walletStatus").innerText = "Wallet Connected: " + address;
-        contract = new ethers.Contract(contractAddress, abi, signer);
-      } catch (err) {
-        alert("Wallet connection failed: " + err.message);
-      }
-    }
-
-    async function mintNFT() {
-      const id = document.getElementById("nftSelect").value;
-      const qty = document.getElementById("quantity").value;
-      if (!contract || !signer) return alert("Wallet not connected.");
-      try {
-        const tx = await contract.mint(id, qty);
-        alert("Minted! Tx: " + tx.hash);
-      } catch (err) {
-        console.error(err);
-        alert("Mint failed: " + err.message);
-      }
-    }
-
-    async function airdropNFT() {
-      const address = document.getElementById("airdropAddress").value;
-      const id = document.getElementById("airdropSelect").value;
-      if (!contract || !signer) return alert("Wallet not connected.");
-      try {
-        const tx = await contract.mint(id, 1);
-        alert("Airdrop sent! Tx: " + tx.hash);
-      } catch (err) {
-        console.error(err);
-        alert("Airdrop failed: " + err.message);
-      }
-    }
-
-    async function downloadTesters() {
-      try {
-        const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1FGU2A8p8YXMyxGPHxoxuLud0oz5rCHdzJ--_z9o1qF0E6tp_EK0bJ9A0HDnVdx0FCxxghjFrc21U/pub?output=csv";
-        const res = await fetch(url);
-        const data = await res.text();
-        const blob = new Blob([data], { type: "text/csv" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "beta_testers.csv";
-        a.click();
-      } catch (err) {
-        alert("Download failed: " + err.message);
-      }
-    }
-  </script>
-</body>
-</html>
+          document.body.innerHTML = "<h1 style='color: red;'>Access Denied</h1><p>You are
