@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Dashboard – Assets Alert</title>
+  <title>Admin Dashboard – Assets Alert (Debug Mode)</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     body {
@@ -43,6 +43,12 @@
       padding: 10px 18px;
       background-color: #ff2e2e;
     }
+    .debug {
+      font-size: 18px;
+      color: #aaa;
+      margin-top: 20px;
+      white-space: pre-line;
+    }
   </style>
 </head>
 <body>
@@ -51,62 +57,8 @@
     <a href="nft.html">NFT Showcase</a>
   </div>
 
-  <h1>Admin Dashboard – Polygon Mumbai</h1>
+  <h1>Admin Dashboard – Polygon Mumbai (Debug Mode)</h1>
   <p id="walletStatus">Wallet: Not connected</p>
   <button class="button" onclick="connectWallet()">Connect Wallet</button>
 
-  <h2>Mint NFT</h2>
-  <select id="nftSelect">
-    <option value="1">Beta Tester NFT</option>
-    <option value="2">Skater Mouse NFT</option>
-    <option value="3">Paid NFT</option>
-    <option value="4">Premium NFT</option>
-  </select>
-  <input type="number" id="quantity" placeholder="Quantity" />
-  <button class="button" onclick="mintNFT()">Mint NFT</button>
-
-  <h2>Airdrop NFT</h2>
-  <input type="text" id="airdropAddress" placeholder="Wallet Address (0x...)" />
-  <select id="airdropSelect">
-    <option value="1">Beta Tester NFT</option>
-    <option value="2">Skater Mouse NFT</option>
-    <option value="3">Paid NFT</option>
-    <option value="4">Premium NFT</option>
-  </select>
-  <button class="button" onclick="airdropNFT()">Send Airdrop</button>
-
-  <h2>Download Beta Tester List</h2>
-  <button class="button" onclick="downloadTesters()">Download CSV</button>
-
-  <script>
-    const allowedAddress = "0xB7Acf7F61e360baB855A86742be5273baB69B153";
-    const contractAddress = "0x06Fe9E5feF1C3F3AeAF4Aa2cCFAB4989B21AB59F";
-    const abi = [
-      {
-        "inputs": [
-          { "internalType": "address", "name": "to", "type": "address" },
-          { "internalType": "uint256", "name": "id", "type": "uint256" },
-          { "internalType": "uint256", "name": "amount", "type": "uint256" }
-        ],
-        "name": "mint",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ];
-
-    let provider, signer, contract;
-
-    async function connectWallet() {
-      try {
-        if (!window.ethereum) {
-          alert("Brave Wallet not detected.");
-          return;
-        }
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        const address = await signer.getAddress();
-
-        if (address.toLowerCase() !== allowedAddress.toLowerCase()) {
-          document.body.innerHTML = "<h1 style='color: red;'>Access Denied</h1><p>You are
+  <h2>Mint NFT</h
