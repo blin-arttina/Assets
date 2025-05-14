@@ -61,4 +61,24 @@
   <p id="walletStatus">Wallet: Not connected</p>
   <button class="button" onclick="connectWallet()">Connect Wallet</button>
 
-  <h2>Mint NFT</h
+  <h2>Mint NFT</h2>
+  <select id="nftSelect">
+    <option value="1">Beta Tester NFT</option>
+    <option value="2">Skater Mouse NFT</option>
+    <option value="3">Paid NFT</option>
+    <option value="4">Premium NFT</option>
+  </select>
+  <input type="number" id="quantity" placeholder="Quantity" />
+  <button class="button" onclick="mintNFT()">Mint NFT</button>
+
+  <h2>Airdrop NFT</h2>
+  <input type="text" id="airdropAddress" placeholder="Wallet Address (0x...)" />
+  <select id="airdropSelect">
+    <option value="1">Beta Tester NFT</option>
+    <option value="2">Skater Mouse NFT</option>
+    <option value="3">Paid NFT</option>
+    <option value="4">Premium NFT</option>
+  </select>
+  <button class="button" onclick="airdropNFT()">Send Airdrop</button>
+
+  <h2>Download Beta Tester
