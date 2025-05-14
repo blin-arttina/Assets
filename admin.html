@@ -2,83 +2,126 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Dashboard – Assets Alert (Debug Mode)</title>
+  <title>Assets Alert – Admin Test</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     body {
-      background-color: #121212;
+      background: #121212;
       color: white;
       font-family: Arial, sans-serif;
-      font-size: 24px;
+      font-size: 22px;
       padding: 24px;
     }
-    h1, h2 {
-      color: #ff2e2e;
-      font-size: 34px;
-    }
-    input, select, button {
+    button, select, input {
+      font-size: 20px;
+      padding: 12px;
+      margin: 10px 0;
       width: 100%;
-      padding: 16px;
-      margin: 14px 0;
-      font-size: 22px;
-      background-color: #1e1e1e;
+      background: #1e1e1e;
       color: white;
       border: 1px solid gray;
     }
-    .button {
-      background-color: #ff2e2e;
+    .log {
+      background: #1a1a1a;
+      padding: 12px;
       border: 1px solid gray;
-      color: white;
-      cursor: pointer;
-    }
-    .nav {
-      margin-bottom: 20px;
-    }
-    .nav a {
-      margin-right: 16px;
-      color: white;
-      font-size: 22px;
-      text-decoration: none;
-      border: 1px solid gray;
-      padding: 10px 18px;
-      background-color: #ff2e2e;
-    }
-    .debug {
-      font-size: 18px;
-      color: #aaa;
+      white-space: pre-wrap;
       margin-top: 20px;
-      white-space: pre-line;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
-  <div class="nav">
-    <a href="index.html">Home</a>
-    <a href="nft.html">NFT Showcase</a>
-  </div>
 
-  <h1>Admin Dashboard – Polygon Mumbai (Debug Mode)</h1>
-  <p id="walletStatus">Wallet: Not connected</p>
-  <button class="button" onclick="connectWallet()">Connect Wallet</button>
+<h1>Assets Alert Admin (Test Build)</h1>
+<p id="status">Wallet: Not connected</p>
+<button onclick="connectWallet()">Connect Wallet</button>
 
-  <h2>Mint NFT</h2>
-  <select id="nftSelect">
-    <option value="1">Beta Tester NFT</option>
-    <option value="2">Skater Mouse NFT</option>
-    <option value="3">Paid NFT</option>
-    <option value="4">Premium NFT</option>
-  </select>
-  <input type="number" id="quantity" placeholder="Quantity" />
-  <button class="button" onclick="mintNFT()">Mint NFT</button>
+<h2>Mint NFT</h2>
+<select id="nftId">
+  <option value="1">Beta Tester NFT</option>
+  <option value="2">Skater Mouse NFT</option>
+</select>
+<input type="number" id="quantity" placeholder="Quantity" />
+<button onclick="mintNFT()">Mint</button>
 
-  <h2>Airdrop NFT</h2>
-  <input type="text" id="airdropAddress" placeholder="Wallet Address (0x...)" />
-  <select id="airdropSelect">
-    <option value="1">Beta Tester NFT</option>
-    <option value="2">Skater Mouse NFT</option>
-    <option value="3">Paid NFT</option>
-    <option value="4">Premium NFT</option>
-  </select>
-  <button class="button" onclick="airdropNFT()">Send Airdrop</button>
+<h2>Log</h2>
+<div id="log" class="log">Waiting...</div>
 
-  <h2>Download Beta Tester
+<script>
+  const allowedAddress = "0xB7Acf7F61e360baB855A86742be5273baB69B153";
+  const contractAddress = "0x06Fe9E5feF1C3F3AeAF4Aa2cCFAB4989B21AB59F";
+  const abi = [
+    {
+      inputs: [
+        { internalType: "address", name: "to", type: "address" },
+        { internalType: "uint256", name: "id", type: "uint256" },
+        { internalType: "uint256", name: "amount", type: "uint256" }
+      ],
+      name: "mint",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function"
+    }
+  ];
+
+  let provider, signer, contract;
+
+  function log(msg) {
+    document.getElementById("log").textContent += "\n" + msg;
+    console.log(msg);
+  }
+
+  async function connectWallet() {
+    try {
+      if (!window.ethereum) {
+        alert("Brave Wallet not found.");
+        return;
+      }
+
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const address = accounts[0];
+      log("Wallet address: " + address);
+
+      if (address.toLowerCase() !== allowedAddress.toLowerCase()) {
+        document.body.innerHTML = "<h1 style='color:red;'>Access Denied</h1>";
+        return;
+      }
+
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer = provider.getSigner();
+      contract = new ethers.Contract(contractAddress, abi, signer);
+
+      document.getElementById("status").textContent = "Wallet Connected: " + address;
+      log("Connected and contract loaded.");
+    } catch (err) {
+      alert("Connection failed: " + err.message);
+      log("Connection failed: " + err.message);
+    }
+  }
+
+  async function mintNFT() {
+    if (!contract || !signer) {
+      alert("Wallet not connected.");
+      return;
+    }
+
+    const id = document.getElementById("nftId").value;
+    const qty = document.getElementById("quantity").value;
+
+    try {
+      let to = await signer.getAddress();
+      to = ethers.utils.getAddress(to);
+      log(`Calling mint(to=${to}, id=${id}, qty=${qty})`);
+      const tx = await contract.mint(to, id, qty);
+      log("Minted! Tx: " + tx.hash);
+      alert("Minted!");
+    } catch (err) {
+      alert("Mint failed: " + err.message);
+      log("Mint failed: " + err.message);
+    }
+  }
+</script>
+
+</body>
+</html>
