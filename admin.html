@@ -84,7 +84,6 @@
     const abi = [
       {
         "inputs": [
-          { "internalType": "address", "name": "to", "type": "address" },
           { "internalType": "uint256", "name": "id", "type": "uint256" },
           { "internalType": "uint256", "name": "amount", "type": "uint256" }
         ],
@@ -125,9 +124,7 @@
       const qty = document.getElementById("quantity").value;
       if (!contract || !signer) return alert("Wallet not connected.");
       try {
-        let to = await signer.getAddress();
-        to = ethers.utils.getAddress(to); // checksum & validate
-        const tx = await contract.mint(to, id, qty);
+        const tx = await contract.mint(id, qty);
         alert("Minted! Tx: " + tx.hash);
       } catch (err) {
         console.error(err);
@@ -140,8 +137,7 @@
       const id = document.getElementById("airdropSelect").value;
       if (!contract || !signer) return alert("Wallet not connected.");
       try {
-        const to = ethers.utils.getAddress(address); // checksum validation
-        const tx = await contract.mint(to, id, 1);
+        const tx = await contract.mint(id, 1);
         alert("Airdrop sent! Tx: " + tx.hash);
       } catch (err) {
         console.error(err);
