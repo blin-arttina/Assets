@@ -1,1 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assets Alert Admin – FINAL</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 26px;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: #ff2e2e;
+      font-size: 32px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 16px;
+      margin: 12px 0;
+      font-size: 24px;
+      background-color: #1e1e1e;
+      color: white;
+      border: 1px solid gray;
+    }
+    .log {
+      font-size: 18px;
+      background: #1a1a1a;
+      padding: 12px;
+      margin-top: 20px;
+      border: 1px solid gray;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
 
+<h1>Assets Alert Admin – Final Mint Build</h1>
+<p id="status">Wallet: Not connected</p>
+<button onclick="connectWallet()">Connect Wallet</button>
+
+<h2>Mint NFT</h2>
+<select id="nftId">
+  <option value="1">Beta Tester NFT</option>
+  <option value="2">Skater Mouse NFT</option>
+</select>
+<input type="number" id="quantity" placeholder="Quantity" />
+<button onclick="mintNFT()">Mint NFT</button>
+
+<h2>Log</h2>
+<div class="log" id="log">Waiting...</div>
+
+<script>
+  const contractAddress = "0x0Cc8d8e3AfFCcC9878b8B8653f48A4fAC7026Af0";
+  const walletToMint = "0xB7Acf7F61e360baB855A86742be5273baB69B153";
+
+  const abi = [
+    {
+      "inputs": [
+        { "internalType": "address", "name": "to", "type": "address" },
+        { "internalType": "uint256", "name": "id", "type": "uint256" },
+        { "internalType": "uint256", "name": "amount", "type": "uint256" }
+      ],
+      "name": "mint",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ];
+
+  let provider, signer, contract;
+
+  function log(msg) {
+    const logBox = document.getElementById("log");
+    logBox.textContent += "\\n" + msg;
+    console.log(msg);
+  }
+
+  async function connectWallet() {
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer = provider.getSigner();
+      contract = new ethers.Contract(contractAddress, abi, signer);
+      document.getElementById("status").textContent = "Wallet Connected: " + accounts[0];
+      log("Wallet connected: " + accounts[0]);
+      log("Contract ready: " + contractAddress);
+    } catch (err) {
+      alert("Connection failed: " + err.message);
+      log("Error: " + err.message);
+    }
+  }
+
+  async function mintNFT() {
+    const id = parseInt(document.getElementById("nftId").value);
+    const qty = parseInt(document.getElementById("quantity").value);
+
+    try {
+      log("Minting to: " + walletToMint + " | ID: " + id + ", Qty: " + qty);
+      const tx = await contract.mint(walletToMint, id, qty);
+      alert("Minted! Tx: " + tx.hash);
+      log("Mint success! Tx: " + tx.hash);
+    } catch (err) {
+      alert("Mint failed: " + err.message);
+      log("Mint error: " + err.message);
+    }
+  }
+</script>
+
+</body>
+</html>
