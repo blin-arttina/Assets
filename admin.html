@@ -2,39 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Assets Alert Admin – Working Mint</title>
+  <title>Assets Alert Admin – Final Working Version</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     body {
       background-color: #121212;
       color: white;
       font-family: Arial, sans-serif;
-      font-size: 22px;
+      font-size: 28px;
       padding: 24px;
     }
     h1, h2 {
       color: #ff2e2e;
-      font-size: 32px;
+      font-size: 36px;
     }
     input, select, button {
       width: 100%;
-      padding: 16px;
-      margin: 12px 0;
-      font-size: 20px;
+      padding: 20px;
+      margin: 16px 0;
+      font-size: 26px;
       background-color: #1e1e1e;
       color: white;
       border: 1px solid gray;
     }
-    .button {
-      background-color: #ff2e2e;
-      color: white;
-      border: 1px solid gray;
-      cursor: pointer;
-    }
     .log {
-      font-size: 16px;
+      font-size: 22px;
       background: #1a1a1a;
-      padding: 12px;
+      padding: 16px;
       margin-top: 20px;
       border: 1px solid gray;
       white-space: pre-wrap;
@@ -42,8 +36,7 @@
   </style>
 </head>
 <body>
-
-<h1>Assets Alert Admin – Working Mint</h1>
+<h1>Assets Alert Admin – Final Working Version</h1>
 <p id="status">Wallet: Not connected</p>
 <button onclick="connectWallet()">Connect Wallet</button>
 
@@ -61,7 +54,6 @@
 <script>
   const contractAddress = "0x74Ff2E607dA8C0DA1F62e7AC328FC0EbBeA1c85a";
   const allowedAddress = "0xB7Acf7F61e360baB855A86742be5273baB69B153";
-
   const abi = [
     {
       "inputs": [
@@ -75,29 +67,23 @@
       "type": "function"
     }
   ];
-
   let provider, signer, contract, connectedWallet = null;
-
   function log(msg) {
     const logBox = document.getElementById("log");
     logBox.textContent += "\n" + msg;
     console.log(msg);
   }
-
   async function connectWallet() {
     try {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       connectedWallet = ethers.utils.getAddress(accounts[0]);
-
       if (connectedWallet.toLowerCase() !== allowedAddress.toLowerCase()) {
         document.body.innerHTML = "<h1 style='color:red;'>Access Denied</h1>";
         return;
       }
-
       provider = new ethers.providers.Web3Provider(window.ethereum);
       signer = provider.getSigner();
       contract = new ethers.Contract(contractAddress, abi, signer);
-
       document.getElementById("status").textContent = "Wallet Connected: " + connectedWallet;
       log("Wallet connected: " + connectedWallet);
       log("Contract ready: " + contractAddress);
@@ -106,27 +92,23 @@
       log("Connect error: " + err.message);
     }
   }
-
   async function mintNFT() {
     if (!contract || !connectedWallet) {
       alert("Please connect wallet first.");
       return;
     }
-
     const id = parseInt(document.getElementById("nftId").value);
     const qty = parseInt(document.getElementById("quantity").value);
-
     try {
-      log(`Minting to: ${connectedWallet} | ID: ${id}, Qty: ${qty}`);
+      log("Minting to: " + connectedWallet + " | ID: " + id + ", Qty: " + qty);
       const tx = await contract.mint(connectedWallet, id, qty);
       alert("Minted! Tx: " + tx.hash);
-      log("Mint successful! Tx: " + tx.hash);
+      log("Mint success! Tx: " + tx.hash);
     } catch (err) {
       alert("Mint failed: " + err.message);
       log("Mint error: " + err.message);
     }
   }
 </script>
-
 </body>
 </html>
