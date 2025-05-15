@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Assets Alert Admin – Clean Mint</title>
+  <title>Assets Alert Admin – Working Mint</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     body {
@@ -43,7 +43,7 @@
 </head>
 <body>
 
-<h1>Assets Alert Admin – Clean Mint</h1>
+<h1>Assets Alert Admin – Working Mint</h1>
 <p id="status">Wallet: Not connected</p>
 <button onclick="connectWallet()">Connect Wallet</button>
 
@@ -59,7 +59,7 @@
 <div class="log" id="log">Waiting...</div>
 
 <script>
-  const contractAddress = "0xAbA59d4B7c19Ab04F82eFf6eF82Bd1072167C75A";
+  const contractAddress = "0x74Ff2E607dA8C0DA1F62e7AC328FC0EbBeA1c85a";
   const allowedAddress = "0xB7Acf7F61e360baB855A86742be5273baB69B153";
 
   const abi = [
@@ -76,8 +76,7 @@
     }
   ];
 
-  let provider, signer, contract;
-  let connectedWallet = null;
+  let provider, signer, contract, connectedWallet = null;
 
   function log(msg) {
     const logBox = document.getElementById("log");
@@ -87,11 +86,6 @@
 
   async function connectWallet() {
     try {
-      if (!window.ethereum) {
-        alert("No Ethereum provider found.");
-        return;
-      }
-
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       connectedWallet = ethers.utils.getAddress(accounts[0]);
 
@@ -106,5 +100,33 @@
 
       document.getElementById("status").textContent = "Wallet Connected: " + connectedWallet;
       log("Wallet connected: " + connectedWallet);
-      log("Contract loaded: " + contractAddress);
-    } catch (err
+      log("Contract ready: " + contractAddress);
+    } catch (err) {
+      alert("Wallet connection failed: " + err.message);
+      log("Connect error: " + err.message);
+    }
+  }
+
+  async function mintNFT() {
+    if (!contract || !connectedWallet) {
+      alert("Please connect wallet first.");
+      return;
+    }
+
+    const id = parseInt(document.getElementById("nftId").value);
+    const qty = parseInt(document.getElementById("quantity").value);
+
+    try {
+      log(`Minting to: ${connectedWallet} | ID: ${id}, Qty: ${qty}`);
+      const tx = await contract.mint(connectedWallet, id, qty);
+      alert("Minted! Tx: " + tx.hash);
+      log("Mint successful! Tx: " + tx.hash);
+    } catch (err) {
+      alert("Mint failed: " + err.message);
+      log("Mint error: " + err.message);
+    }
+  }
+</script>
+
+</body>
+</html>
