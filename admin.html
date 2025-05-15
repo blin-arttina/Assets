@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Assets Alert Admin – Verified Fix</title>
+  <title>Assets Alert Admin – Hardcoded Fix</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     body {
@@ -43,7 +43,7 @@
 </head>
 <body>
 
-<h1>Assets Alert Admin – Verified Fix</h1>
+<h1>Assets Alert Admin – Hardcoded Fix</h1>
 <p id="status">Wallet: Not connected</p>
 <button onclick="connectWallet()">Connect Wallet</button>
 
@@ -60,19 +60,18 @@
 
 <script>
   const contractAddress = "0xDf7Bd1c79c5AD5aF9Ca9fca8a3828C1790A9e9c7";
-  const allowedAddress = "0xB7Acf7F61e360baB855A86742be5273baB69B153";
-
+  const hardcodedWallet = "0xB7Acf7F61e360baB855A86742be5273baB69B153";
   const abi = [
     {
-      "inputs": [
-        { "internalType": "address", "name": "to", "type": "address" },
-        { "internalType": "uint256", "name": "id", "type": "uint256" },
-        { "internalType": "uint256", "name": "amount", "type": "uint256" }
+      inputs: [
+        { internalType: "address", name: "to", type: "address" },
+        { internalType: "uint256", name: "id", type: "uint256" },
+        { internalType: "uint256", name: "amount", type: "uint256" }
       ],
-      "name": "mint",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
+      name: "mint",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function"
     }
   ];
 
@@ -94,20 +93,14 @@
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       const address = accounts[0];
 
-      if (address.toLowerCase() !== allowedAddress.toLowerCase()) {
-        document.body.innerHTML = "<h1 style='color:red;'>Access Denied</h1>";
-        return;
-      }
-
       provider = new ethers.providers.Web3Provider(window.ethereum);
       signer = provider.getSigner();
       contract = new ethers.Contract(contractAddress, abi, signer);
 
       document.getElementById("status").textContent = "Wallet Connected: " + address;
-      log("Wallet: " + address);
-      log("Contract ready at: " + contractAddress);
+      log("Wallet connected: " + address);
     } catch (err) {
-      alert("Wallet connection failed: " + err.message);
+      alert("Connection failed: " + err.message);
       log("Connect error: " + err.message);
     }
   }
@@ -115,13 +108,16 @@
   async function mintNFT() {
     const id = parseInt(document.getElementById("nftId").value);
     const qty = parseInt(document.getElementById("quantity").value);
-    if (!contract || !signer) return alert("Connect wallet first.");
+
+    if (!contract || !signer) {
+      alert("Please connect wallet first.");
+      return;
+    }
 
     try {
-      const to = await signer.getAddress();
-      const checksummedTo = ethers.utils.getAddress(to); // force checksum format
-      log(`Minting to: ${checksummedTo}, ID: ${id}, Qty: ${qty}`);
-      const tx = await contract.mint(checksummedTo, id, qty);
+      const to = ethers.utils.getAddress(hardcodedWallet);
+      log(`Minting to: ${to} | ID: ${id}, Qty: ${qty}`);
+      const tx = await contract.mint(to, id, qty);
       alert("Minted! Tx: " + tx.hash);
       log("Success! Tx: " + tx.hash);
     } catch (err) {
