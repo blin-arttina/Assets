@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Assets Alert – Admin</title>
+  <title>Assets Alert Admin (Verified Contract)</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     body {
@@ -43,7 +43,7 @@
 </head>
 <body>
 
-<h1>Assets Alert Admin Dashboard</h1>
+<h1>Assets Alert Admin – Final Deployment</h1>
 <p id="status">Wallet: Not connected</p>
 <button onclick="connectWallet()">Connect Wallet</button>
 
@@ -59,7 +59,7 @@
 <div class="log" id="log">Waiting...</div>
 
 <script>
-  const contractAddress = "0x3C40b0fB107F70d8C602a7A7B71c9f340A37dBe0";
+  const contractAddress = "0xDf7Bd1c79c5AD5aF9Ca9fca8a3828C1790A9e9c7";
   const allowedAddress = "0xB7Acf7F61e360baB855A86742be5273baB69B153";
 
   const abi = [
@@ -122,7 +122,6 @@
 
     try {
       const to = await signer.getAddress();
-      log(`Minting to: ${to}, ID: ${id}, Qty: ${qty}`);
       const tx = await contract.mint(to, id, qty);
       log("Minted! Tx: " + tx.hash);
       alert("Minted successfully!");
