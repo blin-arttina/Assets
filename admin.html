@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Assets Alert Admin – FINAL</title>
+  <title>Assets Alert Admin – Final Verified</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     body {
@@ -10,11 +10,10 @@
       color: white;
       font-family: Arial, sans-serif;
       font-size: 26px;
-      padding: 20px;
+      padding: 24px;
     }
     h1, h2 {
       color: #ff2e2e;
-      font-size: 32px;
     }
     input, select, button {
       width: 100%;
@@ -37,7 +36,7 @@
 </head>
 <body>
 
-<h1>Assets Alert Admin – Final Mint Build</h1>
+<h1>Assets Alert Admin</h1>
 <p id="status">Wallet: Not connected</p>
 <button onclick="connectWallet()">Connect Wallet</button>
 
@@ -53,8 +52,8 @@
 <div class="log" id="log">Waiting...</div>
 
 <script>
-  const contractAddress = "0x0Cc8d8e3AfFCcC9878b8B8653f48A4fAC7026Af0";
-  const walletToMint = "0xB7Acf7F61e360baB855A86742be5273baB69B153";
+  const contractAddress = "0x30a05d1a59a21A6E32fcb60FbD05b6b5A4A759D2"; // Verified working contract
+  const toAddress = "0xB7Acf7F61e360baB855A86742be5273baB69B153";    // Your wallet
 
   const abi = [
     {
@@ -98,8 +97,8 @@
     const qty = parseInt(document.getElementById("quantity").value);
 
     try {
-      log("Minting to: " + walletToMint + " | ID: " + id + ", Qty: " + qty);
-      const tx = await contract.mint(walletToMint, id, qty);
+      log("Minting to: " + toAddress + " | ID: " + id + ", Qty: " + qty);
+      const tx = await contract.mint(toAddress, id, qty);
       alert("Minted! Tx: " + tx.hash);
       log("Mint success! Tx: " + tx.hash);
     } catch (err) {
