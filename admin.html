@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Assets Alert Admin – Final Verified</title>
+  <title>Assets Alert Admin – Live on Polygon</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     body {
@@ -24,6 +24,11 @@
       color: white;
       border: 1px solid gray;
     }
+    a {
+      color: #ff2e2e;
+      font-size: 20px;
+      text-decoration: underline;
+    }
     .log {
       font-size: 18px;
       background: #1a1a1a;
@@ -36,7 +41,7 @@
 </head>
 <body>
 
-<h1>Assets Alert Admin</h1>
+<h1>Assets Alert Admin Dashboard</h1>
 <p id="status">Wallet: Not connected</p>
 <button onclick="connectWallet()">Connect Wallet</button>
 
@@ -45,16 +50,28 @@
   <option value="1">Beta Tester NFT</option>
   <option value="2">Skater Mouse NFT</option>
 </select>
-<input type="number" id="quantity" placeholder="Quantity" />
+<input type="number" id="quantity" placeholder="Quantity to Mint" />
 <button onclick="mintNFT()">Mint NFT</button>
 
+<h2>Airdrop NFT</h2>
+<input type="text" id="airdropAddress" placeholder="Recipient Wallet Address" />
+<select id="airdropId">
+  <option value="1">Beta Tester NFT</option>
+  <option value="2">Skater Mouse NFT</option>
+</select>
+<input type="number" id="airdropAmount" placeholder="Quantity" />
+<button onclick="airdropNFT()">Airdrop NFT</button>
+
+<h2>Beta Tester List</h2>
+<button onclick="downloadTesters()">Download Beta Tester CSV</button>
+
 <h2>Log</h2>
-<div class="log" id="log">Waiting...</div>
+<div class="log" id="log">Waiting for connection...</div>
+
+<p><a href="index.html">← Back to Index Page</a></p>
 
 <script>
-  const contractAddress = "0x30a05d1a59a21A6E32fcb60FbD05b6b5A4A759D2"; // Verified working contract
-  const toAddress = "0xB7Acf7F61e360baB855A86742be5273baB69B153";    // Your wallet
-
+  const contractAddress = "0x30A05D1A59A21A6E32fCb60FbD05b6b5A4A759D2"; // Live Polygon mainnet
   const abi = [
     {
       "inputs": [
@@ -71,10 +88,10 @@
 
   let provider, signer, contract;
 
-  function log(msg) {
+  function log(message) {
     const logBox = document.getElementById("log");
-    logBox.textContent += "\\n" + msg;
-    console.log(msg);
+    logBox.textContent += "\n" + message;
+    console.log(message);
   }
 
   async function connectWallet() {
@@ -84,27 +101,52 @@
       signer = provider.getSigner();
       contract = new ethers.Contract(contractAddress, abi, signer);
       document.getElementById("status").textContent = "Wallet Connected: " + accounts[0];
-      log("Wallet connected: " + accounts[0]);
-      log("Contract ready: " + contractAddress);
+      log("Connected to wallet: " + accounts[0]);
     } catch (err) {
       alert("Connection failed: " + err.message);
-      log("Error: " + err.message);
+      log("Connection error: " + err.message);
     }
   }
 
   async function mintNFT() {
-    const id = parseInt(document.getElementById("nftId").value);
-    const qty = parseInt(document.getElementById("quantity").value);
-
     try {
-      log("Minting to: " + toAddress + " | ID: " + id + ", Qty: " + qty);
-      const tx = await contract.mint(toAddress, id, qty);
-      alert("Minted! Tx: " + tx.hash);
-      log("Mint success! Tx: " + tx.hash);
+      const id = parseInt(document.getElementById("nftId").value);
+      const qty = parseInt(document.getElementById("quantity").value);
+      const to = await signer.getAddress();
+      log(`Minting ID ${id}, qty ${qty} to ${to}`);
+      const tx = await contract.mint(to, id, qty);
+      log("Mint TX: " + tx.hash);
+      alert("Mint successful! TX: " + tx.hash);
     } catch (err) {
       alert("Mint failed: " + err.message);
       log("Mint error: " + err.message);
     }
+  }
+
+  async function airdropNFT() {
+    try {
+      const to = document.getElementById("airdropAddress").value;
+      const id = parseInt(document.getElementById("airdropId").value);
+      const qty = parseInt(document.getElementById("airdropAmount").value);
+      log(`Airdropping ID ${id}, qty ${qty} to ${to}`);
+      const tx = await contract.mint(to, id, qty);
+      log("Airdrop TX: " + tx.hash);
+      alert("Airdrop successful! TX: " + tx.hash);
+    } catch (err) {
+      alert("Airdrop failed: " + err.message);
+      log("Airdrop error: " + err.message);
+    }
+  }
+
+  function downloadTesters() {
+    const csv = "Name,Email,Wallet\nTester One,test1@example.com,0x123\nTester Two,test2@example.com,0x456";
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "beta_testers.csv";
+    a.click();
+    URL.revokeObjectURL(url);
   }
 </script>
 
