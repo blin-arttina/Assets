@@ -1,133 +1,19 @@
 <!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Assets Alert Admin</title>
-  <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     body {
-      background-color: #121212;
+      background-color: #111;
       color: white;
-      font-size: 18px;
-      font-family: Arial, sans-serif;
-      padding: 20px;
+      font-size: large;
+      font-family: sans-serif;
     }
-    h1 {
-      color: #ff4c4c;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-    input, select, button {
-      margin-top: 5px;
-      margin-bottom: 10px;
-      padding: 8px;
-      border-radius: 5px;
-      border: none;
-      outline: none;
-      font-size: 16px;
-    }
-    button {
-      background-color: #cc0000;
+    button, select, input {
+      background-color: #900;
       color: white;
-      cursor: pointer;
-      border: 1px solid gray;
-    }
-    .section {
-      margin-bottom: 30px;
-    }
-    .log-box {
-      border: 1px solid gray;
+      border: 2px solid gray;
       padding: 10px;
-      white-space: pre-wrap;
-      background-color: #1e1e1e;
-      margin-top: 10px;
-    }
-  </style>
-</head>
-<body>
-  <h1>Assets Alert Admin Dashboard</h1>
-  <div class="section">
-    <div>Wallet Connected: <span id="walletAddress">Not connected</span></div>
-    <button onclick="connectWallet()">Connect Wallet</button>
-  </div>  <div class="section">
-    <h2>Mint NFT</h2>
-    <select id="nftSelector">
-      <option value="1">Skater Mouse NFT</option>
-      <option value="2">Beta Tester NFT</option>
-    </select>
-    <input type="number" id="mintQty" placeholder="Quantity" />
-    <button onclick="mintNFT()">Mint NFT</button>
-  </div>  <div class="section">
-    <h2>Airdrop NFT</h2>
-    <input type="text" id="airdropTo" placeholder="Recipient Address" />
-    <select id="airdropSelector">
-      <option value="1">Skater Mouse NFT</option>
-      <option value="2">Beta Tester NFT</option>
-    </select>
-    <input type="number" id="airdropQty" placeholder="Quantity" />
-    <button onclick="airdropNFT()">Airdrop NFT</button>
-  </div>  <div class="section">
-    <h2>Beta Tester List</h2>
-    <a href="/beta_testers.csv" download>
-      <button>Download Beta Tester CSV</button>
-    </a>
-  </div>  <div class="section">
-    <h2>Log</h2>
-    <div id="log" class="log-box">Waiting for connection...</div>
-  </div>  <script>
-    let provider, signer, contract;
-    const contractAddress = "0x30A05D1A59A21A6E32fCb60FbD05b6b5A4A759D2";
-    const abi = [
-      "function mint(address to, uint256 id, uint256 amount, bytes data) external",
-      "function airdrop(address to, uint256 id, uint256 amount) external"
-    ];
-
-    async function connectWallet() {
-      if (window.ethereum) {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        const address = await signer.getAddress();
-        document.getElementById('walletAddress').innerText = address;
-        contract = new ethers.Contract(contractAddress, abi, signer);
-        log(`Wallet connected: ${address}`);
-      } else {
-        log("No Ethereum provider detected.");
-      }
-    }
-
-    async function mintNFT() {
-      try {
-        const to = await signer.getAddress();
-        const id = parseInt(document.getElementById("nftSelector").value);
-        const qty = parseInt(document.getElementById("mintQty").value);
-        log(`Minting ${qty} of ID ${id} to ${to}`);
-        const tx = await contract.mint(to, id, qty, "0x");
-        await tx.wait();
-        log("Mint successful.");
-      } catch (err) {
-        log(`Mint failed: ${err.message}`);
-      }
-    }
-
-    async function airdropNFT() {
-      try {
-        const to = document.getElementById("airdropTo").value;
-        const id = parseInt(document.getElementById("airdropSelector").value);
-        const qty = parseInt(document.getElementById("airdropQty").value);
-        log(`Airdropping ${qty} of ID ${id} to ${to}`);
-        const tx = await contract.mint(to, id, qty, "0x");
-        await tx.wait();
-        log("Airdrop successful.");
-      } catch (err) {
-        log(`Airdrop failed: ${err.message}`);
-      }
-    }
-
-    function log(msg) {
-      document.getElementById("log").innerText += `\n${msg}`;
-    }
-  </script></body>
-</html>
+      font-size: large;
+      margin: 5px
