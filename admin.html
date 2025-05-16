@@ -2,100 +2,131 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assets Alert Admin</title>
+  <title>Assets Alert Admin – Final Mint Build</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
-    body { background-color: #121212; color: white; font-size: 20px; font-family: Arial, sans-serif; }
-    button, select, input { background-color: #1e1e1e; color: white; border: 2px solid gray; border-radius: 5px; padding: 8px; margin: 5px 0; }
-    button { background-color: red; cursor: pointer; }
-    h1 { color: red; }
-    .section { margin-bottom: 30px; }
-    .log-box { background-color: #1e1e1e; padding: 10px; border: 1px solid gray; white-space: pre-wrap; }
+    body {
+      background-color: #111;
+      color: white;
+      font-size: 20px;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      color: red;
+    }
+    button, select, input {
+      background-color: black;
+      color: white;
+      border: 2px solid gray;
+      padding: 10px;
+      font-size: 18px;
+      margin: 5px 0;
+      width: 100%;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+    #log {
+      white-space: pre-wrap;
+      background-color: #222;
+      border: 1px solid gray;
+      padding: 10px;
+      margin-top: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
   <h1>Assets Alert Admin</h1>
-  <div class="section">
-    <p><strong>Wallet Connected:</strong> <span id="walletAddress">Not connected</span></p>
-    <button onclick="connectWallet()">Connect Wallet</button>
-  </div>  <div class="section">
-    <h2 style="color:red">Mint NFT</h2>
-    <select id="nftSelector">
+  <p>Wallet Connected: <span id="walletAddress">Not connected</span></p>
+  <button onclick="connectWallet()">Connect Wallet</button>  <div class="section">
+    <h2 style="color: red;">Mint NFT</h2>
+    <select id="mintType">
       <option value="1">Skater Mouse NFT</option>
-      <option value="2">Beta Tester NFT</option>
+      <option value="0">Beta Tester NFT</option>
     </select>
-    <input type="number" id="mintQty" value="1" min="1" />
+    <input type="number" id="mintAmount" placeholder="Enter quantity" value="1" />
     <button onclick="mintNFT()">Mint NFT</button>
   </div>  <div class="section">
-    <h2 style="color:red">Airdrop NFT</h2>
-    <input type="text" id="airdropAddress" placeholder="Recipient Address" />
-    <select id="airdropNFT">
+    <h2 style="color: red;">Airdrop NFT</h2>
+    <input type="text" id="airdropWallet" placeholder="Recipient Wallet Address" />
+    <select id="airdropType">
       <option value="1">Skater Mouse NFT</option>
-      <option value="2">Beta Tester NFT</option>
+      <option value="0">Beta Tester NFT</option>
     </select>
-    <input type="number" id="airdropQty" value="1" min="1" />
-    <button onclick="airdropNFT()">Airdrop</button>
+    <input type="number" id="airdropAmount" placeholder="Enter quantity" value="1" />
+    <button onclick="airdropNFT()">Airdrop NFT</button>
   </div>  <div class="section">
-    <h2 style="color:red">Beta Tester List</h2>
-    <button onclick="downloadCSV()">Download Beta Tester CSV</button>
+    <h2 style="color: red;">Beta Tester List</h2>
+    <a href="beta_testers.csv" download>
+      <button>Download Beta Tester CSV</button>
+    </a>
   </div>  <div class="section">
-    <h2 style="color:red">Log</h2>
-    <div id="log" class="log-box">Waiting...</div>
-  </div>  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>  <script>
-    const CONTRACT_ADDRESS = "0x30a05D1A59A21A6E32fCb60FbD05b6b5A4A759D2";
-    const ABI = [
-      "function mint(address to, uint256 id, uint256 amount, bytes memory data) public",
-      "function balanceOf(address, uint256) view returns (uint256)"
+    <h2 style="color: red;">Log</h2>
+    <div id="log">Waiting for connection...</div>
+  </div>  <script>
+    const contractAddress = "0x30A05D1A59A21A6E32fCb60FbD05b6b5A4A759D2";
+    const contractABI = [
+      "function mint(address to, uint256 id, uint256 amount) public",
+      "function airdrop(address recipient, uint256 id, uint256 amount) public"
     ];
 
-    let provider, signer, contract, walletAddress;
+    let provider;
+    let signer;
+    let contract;
 
     async function connectWallet() {
-      if (window.ethereum) {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        walletAddress = await signer.getAddress();
-        document.getElementById("walletAddress").textContent = walletAddress;
-        contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-        log(`Wallet connected: ${walletAddress}\nContract ready: ${CONTRACT_ADDRESS}`);
-      } else {
-        alert("MetaMask not found");
+      try {
+        if (window.ethereum) {
+          provider = new ethers.providers.Web3Provider(window.ethereum);
+          await provider.send("eth_requestAccounts", []);
+          signer = provider.getSigner();
+          const address = await signer.getAddress();
+          document.getElementById("walletAddress").innerText = address;
+          contract = new ethers.Contract(contractAddress, contractABI, signer);
+          log("Wallet connected: " + address);
+        } else {
+          alert("Please install a Web3 wallet like MetaMask or Brave Wallet");
+        }
+      } catch (err) {
+        log("Connection error: " + err.message);
       }
     }
 
     async function mintNFT() {
-      const id = parseInt(document.getElementById("nftSelector").value);
-      const qty = parseInt(document.getElementById("mintQty").value);
       try {
-        const tx = await contract.mint(walletAddress, id, qty, "0x");
+        const id = parseInt(document.getElementById("mintType").value);
+        const amount = parseInt(document.getElementById("mintAmount").value);
+        const address = await signer.getAddress();
+        log(`Minting to: ${address} | ID: ${id}, Qty: ${amount}`);
+        const tx = await contract.mint(address, id, amount);
         await tx.wait();
-        log(`Minted NFT ID ${id}, Qty ${qty} to ${walletAddress}`);
+        log("Mint successful!");
       } catch (err) {
-        log("Mint error: " + err.message);
+        log("Mint failed: " + err.message);
         alert("Mint failed: " + err.message);
       }
     }
 
     async function airdropNFT() {
-      const recipient = document.getElementById("airdropAddress").value;
-      const id = parseInt(document.getElementById("airdropNFT").value);
-      const qty = parseInt(document.getElementById("airdropQty").value);
       try {
-        const tx = await contract.mint(recipient, id, qty, "0x");
+        const to = document.getElementById("airdropWallet").value.trim();
+        const id = parseInt(document.getElementById("airdropType").value);
+        const amount = parseInt(document.getElementById("airdropAmount").value);
+        log(`Airdropping to: ${to} | ID: ${id}, Qty: ${amount}`);
+        const tx = await contract.airdrop(to, id, amount);
         await tx.wait();
-        log(`Airdropped NFT ID ${id}, Qty ${qty} to ${recipient}`);
+        log("Airdrop successful!");
       } catch (err) {
-        log("Airdrop error: " + err.message);
+        log("Airdrop failed: " + err.message);
         alert("Airdrop failed: " + err.message);
       }
     }
 
-    function downloadCSV() {
-      window.open("/beta_testers.csv", "_blank");
-    }
-
-    function log(message) {
-      document.getElementById("log").textContent += `\n${message}`;
+    function log(msg) {
+      const box = document.getElementById("log");
+      box.innerText += `\n${msg}`;
     }
   </script></body>
 </html>
