@@ -1,55 +1,41 @@
-<!DOCTYPE html><html lang="en">
+
+  <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assets Alert Admin Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <title>Assets Alert Admin</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@walletconnect/web3modal@2.0.0-alpha.1/dist/style.css" />
   <style>
     body {
       background-color: #111;
       color: white;
       font-family: Arial, sans-serif;
-      padding: 20px;
+      padding: 1rem;
     }
-    h1 {
-      color: #ff4444;
-      font-size: 2em;
+    h1, h2 {
+      color: #ff3333;
+      font-size: 1.8rem;
     }
-    button, select, input {
-      background-color: #c00;
-      border: 1px solid gray;
+    label, select, input, button {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+    }
+    button {
+      background-color: #cc0000;
       color: white;
-      font-size: 1.2em;
-      padding: 10px;
-      margin-top: 10px;
-      display: block;
+      padding: 0.6rem 1rem;
+      border: none;
+      margin-top: 1rem;
+    }
+    select, input {
+      padding: 0.5rem;
       width: 100%;
+      max-width: 400px;
     }
-    input, select {
-      background-color: #fff;
-      color: black;
-    }
-    #log {
-      background: #222;
-      padding: 10px;
-      margin-top: 20px;
-      border: 1px solid gray;
-      white-space: pre-wrap;
+    .section {
+      margin-top: 2rem;
     }
   </style>
 </head>
 <body>
   <h1>Assets Alert Admin Dashboard</h1>
-  <p>Wallet Connected: <span id="wallet-status">Not connected</span></p>
-  <button onclick="connectWallet()">Connect Wallet</button>  <h2>Mint NFT</h2>
-  <select id="nftType">
-    <option value="1">Skater Mouse NFT</option>
-    <option value="2">Beta Tester NFT</option>
-    <option value="3">Paid NFT</option>
-    <option value="4">Premium NFT</option>
-    <option value="5">Mystery NFT #1</option>
-    <option value="6">Mystery NFT #2</option>
-  </select>
-  <input type="number" id="mintQty" placeholder="Quantity">
-  <button onclick="mintNFT()">Mint NFT</button>  <h2>Airdrop NFT</h2>
-  <input type="text" id="
