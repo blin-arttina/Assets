@@ -2,161 +2,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Assets Alert Admin Dashboard</title>
-  <style>
-    body {
-      background-color: #111;
-      color: white;
-      font-family: Arial, sans-serif;
-      font-size: 18px;
-      margin: 20px;
-    }
-    h1, h2, h3 {
-      color: #e53935;
-    }
-    select, input, button {
-      font-size: 18px;
-      margin: 8px 0;
-      padding: 10px;
-      border: 1px solid #888;
-      background-color: #222;
-      color: white;
-      border-radius: 5px;
-    }
-    button {
-      background-color: #b71c1c;
-      border: 2px solid gray;
-      cursor: pointer;
-    }
-    #log {
-      background-color: #222;
-      border: 1px solid gray;
-      padding: 10px;
-      white-space: pre-wrap;
-      margin-top: 20px;
-    }
-    .section {
-      margin-bottom: 40px;
-    }
-    .nav-buttons {
-      margin-top: 30px;
-    }
-    .nav-buttons button {
-      margin-right: 20px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Assets Alert Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #ff3b3b;
+        }
+        select, input, button {
+            background-color: #1e1e1e;
+            color: white;
+            border: 1px solid gray;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+        button {
+            background-color: red;
+            cursor: pointer;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+    </style>
 </head>
 <body>
-  <h1>Assets Alert Admin Dashboard</h1>
-
-  <div class="section">
-    <div>Wallet Connected: <span id="wallet-address">Not connected</span></div>
+    <h1>Assets Alert Admin Dashboard</h1>
+    <div id="walletStatus">Wallet Connected: Not connected</div>
     <button onclick="connectWallet()">Connect Wallet</button>
-  </div>
 
-  <div class="section">
-    <h2>Mint NFT</h2>
-    <select id="nftType">
-      <option value="0">Skater Mouse NFT</option>
-      <option value="1">Beta Tester NFT</option>
-      <option value="2">Paid NFT</option>
-      <option value="3">Premium NFT</option>
-      <option value="4">Mystery NFT 1</option>
-      <option value="5">Mystery NFT 2</option>
-    </select><br/>
-    <input type="number" id="mintQuantity" placeholder="Quantity" /><br/>
-    <button onclick="mintNFT()">Mint NFT</button>
-  </div>
+    <div class="section">
+        <h2>Mint NFT</h2>
+        <select id="mintNftSelect">
+            <option>Skater Mouse NFT</option>
+            <option>Beta Tester NFT</option>
+            <option>Paid NFT</option>
+            <option>Premium NFT</option>
+            <option>Mystery NFT 1</option>
+            <option>Mystery NFT 2</option>
+        </select><br>
+        <input type="text" id="mintQuantity" placeholder="Quantity"><br>
+        <button onclick="mintNFT()">Mint NFT</button>
+    </div>
 
-  <div class="section">
-    <h2>Airdrop NFT</h2>
-    <input type="text" id="airdropAddress" placeholder="Recipient Address" /><br/>
-    <select id="airdropType">
-      <option value="0">Skater Mouse NFT</option>
-      <option value="1">Beta Tester NFT</option>
-      <option value="2">Paid NFT</option>
-      <option value="3">Premium NFT</option>
-      <option value="4">Mystery NFT 1</option>
-      <option value="5">Mystery NFT 2</option>
-    </select><br/>
-    <input type="number" id="airdropQuantity" placeholder="Quantity" /><br/>
-    <button onclick="airdropNFT()">Airdrop NFT</button>
-  </div>
+    <div class="section">
+        <h2>Airdrop NFT</h2>
+        <input type="text" id="airdropAddress" placeholder="Recipient Address"><br>
+        <select id="airdropNftSelect">
+            <option>Skater Mouse NFT</option>
+            <option>Beta Tester NFT</option>
+            <option>Paid NFT</option>
+            <option>Premium NFT</option>
+            <option>Mystery NFT 1</option>
+            <option>Mystery NFT 2</option>
+        </select><br>
+        <input type="text" id="airdropQuantity" placeholder="Quantity"><br>
+        <button onclick="airdropNFT()">Airdrop NFT</button>
+    </div>
 
-  <div class="section">
-    <h2>Beta Tester List</h2>
-    <button onclick="downloadCSV()">Download Beta Tester CSV</button>
-  </div>
+    <div class="section">
+        <h2>Beta Tester List</h2>
+        <button onclick="window.location.href='beta_testers.csv'">Download Beta Tester CSV</button>
+    </div>
 
-  <div id="log"></div>
+    <script>
+        let provider;
+        let signer;
 
-  <div class="nav-buttons">
-    <button onclick="location.href='index.html'">Back to Index</button>
-    <button onclick="location.href='nft.html'">Go to NFT Showcase</button>
-  </div>
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send("eth_requestAccounts", []);
+                    signer = provider.getSigner();
+                    const address = await signer.getAddress();
+                    document.getElementById("walletStatus").innerText = "Wallet Connected: " + address;
+                } catch (error) {
+                    console.error("User rejected connection", error);
+                }
+            } else {
+                alert("No Ethereum provider found. Use Brave, MetaMask or similar.");
+            }
+        }
 
-  <script>
-    const nftURIs = [
-      "ipfs://bafybeibdtewalywrlmtd3dls433u73wbj5jwpmxbw22bnc7xpyfcfhjhry/skater_mouse.json",
-      "beta_tester_nft_metadata.json",
-      "paid_nft_metadata.json",
-      "premium_nft_metadata.json",
-      "mystery_nft_1.json",
-      "mystery_nft_2.json"
-    ];
+        function mintNFT() {
+            alert("Minting logic would be implemented here.");
+        }
 
-    let walletAddress = "";
-
-    async function connectWallet() {
-      if (window.ethereum) {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        walletAddress = accounts[0];
-        document.getElementById("wallet-address").textContent = walletAddress;
-        log("Wallet connected: " + walletAddress);
-      } else {
-        log("MetaMask or compatible wallet not detected.");
-      }
-    }
-
-    async function mintNFT() {
-      const nftId = document.getElementById("nftType").value;
-      const quantity = document.getElementById("mintQuantity").value;
-
-      if (!walletAddress) return log("Connect wallet first.");
-      log(`Minting ${quantity} of NFT ID ${nftId} to ${walletAddress}`);
-
-      // simulate successful mint
-      log("Mint successful (simulated)");
-    }
-
-    async function airdropNFT() {
-      const recipient = document.getElementById("airdropAddress").value;
-      const nftId = document.getElementById("airdropType").value;
-      const quantity = document.getElementById("airdropQuantity").value;
-
-      if (!walletAddress) return log("Connect wallet first.");
-      log(`Airdropping ${quantity} of NFT ID ${nftId} to ${recipient}`);
-
-      // simulate successful airdrop
-      log("Airdrop successful (simulated)");
-    }
-
-    function downloadCSV() {
-      const csv = "Name,Email,Wallet Address
-Alice,alice@email.com,0x1234...
-Bob,bob@email.com,0x5678...";
-      const blob = new Blob([csv], { type: "text/csv" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "beta_testers.csv";
-      link.click();
-    }
-
-    function log(message) {
-      document.getElementById("log").textContent += message + "\n";
-    }
-  </script>
+        function airdropNFT() {
+            alert("Airdrop logic would be implemented here.");
+        }
+    </script>
 </body>
 </html>
