@@ -1,0 +1,28 @@
+{
+    "name": "Skater Mouse NFT",
+    "description": "An animated NFT featuring Skater Mouse performing tricks with integrated sound.",
+    "image": "ipfs://bafybeibdtewalywrlmtd3dls433u73wbj5jwpmxbw22bnc7xpyfcfhjhry/skater_mouse_preview.png",
+    "animation_url": "ipfs://bafybeibdtewalywrlmtd3dls433u73wbj5jwpmxbw22bnc7xpyfcfhjhry/skater_mouse.mp4",
+    "attributes": [
+        {
+            "trait_type": "Style",
+            "value": "Urban"
+        },
+        {
+            "trait_type": "Accessory",
+            "value": "Sunglasses"
+        },
+        {
+            "trait_type": "Outfit",
+            "value": "Hoodie and Jeans"
+        },
+        {
+            "trait_type": "Action",
+            "value": "Skateboarding"
+        },
+        {
+            "trait_type": "Audio",
+            "value": "Yes"
+        }
+    ]
+}
