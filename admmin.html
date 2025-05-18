@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assets Alert Admin Dashboard</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #ff3333;
+        }
+        select, input, button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #1e1e1e;
+            color: white;
+            border: 1px solid gray;
+        }
+        button {
+            background-color: #b30000;
+            color: white;
+            border: 1px solid gray;
+            cursor: pointer;
+        }
+        #log {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #888;
+            background: #1e1e1e;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Assets Alert Admin Dashboard</h1>
+    <div>
+        <h2>Wallet Connection</h2>
+        <p id="walletAddress">Wallet Connected: Not connected</p>
+        <button onclick="connectWallet()">Connect Wallet</button>
+    </div>
+
+    <div>
+        <h2>Mint NFT</h2>
+        <select id="nftTypeMint">
+            <option>Skater Mouse NFT</option>
+            <option>Beta Tester NFT</option>
+            <option>Paid NFT</option>
+            <option>Premium NFT</option>
+            <option>Mystery NFT 1</option>
+            <option>Mystery NFT 2</option>
+        </select>
+        <input type="number" id="mintQty" placeholder="Quantity">
+        <button onclick="mintNFT()">Mint NFT</button>
+    </div>
+
+    <div>
+        <h2>Airdrop NFT</h2>
+        <input type="text" id="recipient" placeholder="Recipient Address">
+        <select id="nftTypeAirdrop">
+            <option>Skater Mouse NFT</option>
+            <option>Beta Tester NFT</option>
+            <option>Paid NFT</option>
+            <option>Premium NFT</option>
+            <option>Mystery NFT 1</option>
+            <option>Mystery NFT 2</option>
+        </select>
+        <input type="number" id="airdropQty" placeholder="Quantity">
+        <button onclick="airdropNFT()">Airdrop NFT</button>
+    </div>
+
+    <div>
+        <h2>Beta Tester List</h2>
+        <button onclick="downloadCSV()">Download Beta Tester CSV</button>
+    </div>
+
+    <div id="log">Log output will appear here...</div>
+
+    <script>
+        let currentAccount = null;
+
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    currentAccount = accounts[0];
+                    document.getElementById("walletAddress").textContent = "Wallet Connected: " + currentAccount;
+                    log("Wallet connected: " + currentAccount);
+                } catch (err) {
+                    log("Connection error: " + err.message);
+                }
+            } else {
+                log("No Ethereum provider found. Use Brave or MetaMask.");
+            }
+        }
+
+        function mintNFT() {
+            const nft = document.getElementById("nftTypeMint").value;
+            const qty = document.getElementById("mintQty").value;
+            log(`Mint requested: ${nft} | Quantity: ${qty}`);
+        }
+
+        function airdropNFT() {
+            const recipient = document.getElementById("recipient").value;
+            const nft = document.getElementById("nftTypeAirdrop").value;
+            const qty = document.getElementById("airdropQty").value;
+            log(`Airdrop requested: ${nft} | To: ${recipient} | Quantity: ${qty}`);
+        }
+
+        function downloadCSV() {
+            const csvContent = "data:text/csv;charset=utf-8,Name,Email,Wallet\n";
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "beta_testers.csv");
+            document.body.appendChild(link);
+            link.click();
+        }
+
+        function log(message) {
+            document.getElementById("log").textContent = message;
+        }
+    </script>
+</body>
+</html>
