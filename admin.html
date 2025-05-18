@@ -1,41 +1,128 @@
-
-  <!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assets Alert Admin</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@walletconnect/web3modal@2.0.0-alpha.1/dist/style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assets Alert Admin Dashboard</title>
   <style>
     body {
       background-color: #111;
       color: white;
       font-family: Arial, sans-serif;
-      padding: 1rem;
+      padding: 20px;
     }
-    h1, h2 {
-      color: #ff3333;
-      font-size: 1.8rem;
+    h1 {
+      font-size: 28px;
+      color: #ff4444;
     }
     label, select, input, button {
-      font-size: 1.2rem;
-      margin-top: 1rem;
+      font-size: 18px;
+      margin-top: 10px;
+      display: block;
+      width: 100%;
+      max-width: 400px;
+    }
+    input, select {
+      padding: 8px;
+      margin-bottom: 10px;
     }
     button {
       background-color: #cc0000;
       color: white;
-      padding: 0.6rem 1rem;
+      padding: 10px;
       border: none;
-      margin-top: 1rem;
+      cursor: pointer;
+      font-size: 18px;
+      border-radius: 5px;
     }
-    select, input {
-      padding: 0.5rem;
-      width: 100%;
-      max-width: 400px;
+    button:hover {
+      background-color: #ff4444;
     }
     .section {
-      margin-top: 2rem;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
+
   <h1>Assets Alert Admin Dashboard</h1>
+
+  <div>
+    <p><strong>Wallet Connected:</strong> <span id="wallet-status">Not connected</span></p>
+    <button onclick="connectWallet()">Connect Wallet</button>
+  </div>
+
+  <div class="section">
+    <h2 style="color:#ff4444;">Mint NFT</h2>
+    <label for="mint-nft">Select NFT:</label>
+    <select id="mint-nft">
+      <option>Skater Mouse NFT</option>
+      <option>Beta Tester NFT</option>
+      <option>Paid NFT</option>
+      <option>Premium NFT</option>
+      <option>Mystery NFT 1</option>
+      <option>Mystery NFT 2</option>
+    </select>
+    <label for="mint-quantity">Quantity:</label>
+    <input id="mint-quantity" type="number" placeholder="Quantity">
+    <button onclick="mintNFT()">Mint NFT</button>
+  </div>
+
+  <div class="section">
+    <h2 style="color:#ff4444;">Airdrop NFT</h2>
+    <label for="airdrop-address">Recipient Address:</label>
+    <input id="airdrop-address" type="text" placeholder="0x...">
+    <label for="airdrop-nft">Select NFT:</label>
+    <select id="airdrop-nft">
+      <option>Skater Mouse NFT</option>
+      <option>Beta Tester NFT</option>
+      <option>Paid NFT</option>
+      <option>Premium NFT</option>
+      <option>Mystery NFT 1</option>
+      <option>Mystery NFT 2</option>
+    </select>
+    <label for="airdrop-quantity">Quantity:</label>
+    <input id="airdrop-quantity" type="number" placeholder="Quantity">
+    <button onclick="airdropNFT()">Airdrop NFT</button>
+  </div>
+
+  <div class="section">
+    <h2 style="color:#ff4444;">Beta Tester List</h2>
+    <button onclick="downloadCSV()">Download Beta Tester CSV</button>
+  </div>
+
+  <script>
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          document.getElementById('wallet-status').innerText = accounts[0];
+        } catch (err) {
+          alert('Wallet connection failed.');
+        }
+      } else {
+        alert('Please install a Web3 wallet like MetaMask or use Brave wallet.');
+      }
+    }
+
+    function mintNFT() {
+      alert("Minting logic would be implemented here.");
+    }
+
+    function airdropNFT() {
+      alert("Airdrop logic would be implemented here.");
+    }
+
+    function downloadCSV() {
+      const blob = new Blob(["Name,Email,Wallet Address\nTest User,test@example.com,0x123..."], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'beta_testers.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+
+</body>
+</html>
