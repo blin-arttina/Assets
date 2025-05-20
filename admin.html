@@ -1,153 +1,123 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Assets Alert Admin Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <title>Assets Alert Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+  <script src="https://unpkg.com/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
   <style>
     body {
-      background-color: #111;
+      background-color: #121212;
       color: white;
       font-family: Arial, sans-serif;
-      font-size: 18px;
-      padding: 20px;
+      font-size: 1.2em;
     }
-    h1, h2 {
-      color: #ff3333;
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+      border: 1px solid #444;
     }
-    button, select, input {
-      background-color: #b30000;
-      color: white;
-      border: 2px solid gray;
-      font-size: 18px;
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 6px;
-    }
-    input, select {
+    input, button, select {
+      font-size: 1em;
+      margin-top: 0.75rem;
+      padding: 0.5rem;
       width: 100%;
-      max-width: 400px;
+      background-color: #222;
+      color: white;
+      border: 1px solid gray;
     }
-    .section {
-      margin-bottom: 30px;
+    button {
+      background-color: #d32f2f;
+      cursor: pointer;
     }
-    #log {
-      background: #222;
-      padding: 10px;
-      border-radius: 6px;
-      white-space: pre-wrap;
-      max-width: 500px;
+    h1 {
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <h1>Assets Alert Admin Dashboard</h1>
-
-  <div class="section">
-    <div id="wallet">Wallet Connected: Not connected</div>
+  <div class="container">
+    <h1>Assets Alert Admin</h1>
+    <p><strong>Connected Wallet:</strong> <span id="walletAddress">Not Connected</span></p>
     <button onclick="connectWallet()">Connect Wallet</button>
-  </div>
 
-  <div class="section">
-    <h2>Mint NFT</h2>
-    <select id="nftToMint">
-      <option value="0">Skater Mouse NFT</option>
-      <option value="1">Beta Tester NFT</option>
-      <option value="2">Paid NFT</option>
-      <option value="3">Premium NFT</option>
-      <option value="4">Mystery NFT 1</option>
-      <option value="5">Mystery NFT 2</option>
-    </select><br/>
-    <input id="mintQty" type="number" placeholder="Quantity" /><br/>
-    <button onclick="mintNFT()">Mint NFT</button>
-  </div>
+    <div id="adminPanel" style="display:none;">
+      <h2>Mint NFT</h2>
+      <select id="nftId">
+        <option value="1">Skater Mouse</option>
+        <option value="2">Beta Tester</option>
+        <option value="3">Paid NFT</option>
+        <option value="4">Premium NFT</option>
+        <option value="5">Mystery NFT 1</option>
+        <option value="6">Mystery NFT 2</option>
+      </select>
+      <input type="number" id="quantity" placeholder="Quantity"/>
+      <button onclick="mintNFT()">Mint</button>
 
-  <div class="section">
-    <h2>Airdrop NFT</h2>
-    <input id="airdropAddress" placeholder="Recipient Address" /><br/>
-    <select id="airdropNFT">
-      <option value="0">Skater Mouse NFT</option>
-      <option value="1">Beta Tester NFT</option>
-      <option value="2">Paid NFT</option>
-      <option value="3">Premium NFT</option>
-      <option value="4">Mystery NFT 1</option>
-      <option value="5">Mystery NFT 2</option>
-    </select><br/>
-    <input id="airdropQty" type="number" placeholder="Quantity" /><br/>
-    <button onclick="airdropNFT()">Airdrop NFT</button>
-  </div>
+      <h2>Airdrop NFT</h2>
+      <input type="text" id="airdropAddress" placeholder="Recipient Address"/>
+      <select id="airdropId">
+        <option value="1">Skater Mouse</option>
+        <option value="2">Beta Tester</option>
+        <option value="3">Paid NFT</option>
+        <option value="4">Premium NFT</option>
+        <option value="5">Mystery NFT 1</option>
+        <option value="6">Mystery NFT 2</option>
+      </select>
+      <button onclick="airdropNFT()">Airdrop</button>
 
-  <div class="section">
-    <h2>Beta Tester List</h2>
-    <a href="beta_testers.csv" download>
-      <button>Download Beta Tester CSV</button>
-    </a>
-  </div>
-
-  <div class="section">
-    <h2>Log</h2>
-    <div id="log">Waiting for connection...</div>
+      <h2>Download Beta Tester List</h2>
+      <button onclick="downloadTesters()">Download CSV</button>
+    </div>
   </div>
 
 <script>
-let provider;
-let signer;
-let contract;
-
-const contractAddress = "0x30A05D1A59A21A6E32fCb60FbD05b6b5A4A759D2";
-const contractABI = [
-  "function mint(address to, uint256 id, uint256 amount, bytes memory data) public",
-  "function airdrop(address to, uint256 id, uint256 qty) public"
-];
-
-function log(msg) {
-  const logEl = document.getElementById("log");
-  logEl.textContent += "\n" + msg;
-}
+let web3;
+let accounts;
+const adminAddress = "0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E".toLowerCase();
 
 async function connectWallet() {
-  if (!window.ethereum) return alert("No wallet found.");
-  provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-  await provider.send("eth_requestAccounts", []);
-  signer = provider.getSigner();
-  const address = await signer.getAddress();
-  document.getElementById("wallet").innerText = "Wallet Connected: " + address;
-  contract = new ethers.Contract(contractAddress, contractABI, signer);
-  log("Connected wallet: " + address);
-}
+  const provider = new WalletConnectProvider.default({
+    rpc: {
+      137: "https://polygon-rpc.com"
+    },
+    chainId: 137
+  });
+  await provider.enable();
+  web3 = new Web3(provider);
+  accounts = await web3.eth.getAccounts();
+  const user = accounts[0];
+  document.getElementById("walletAddress").innerText = user;
 
-async function mintNFT() {
-  if (!contract) return alert("Connect wallet first.");
-  const id = document.getElementById("nftToMint").value;
-  const qty = document.getElementById("mintQty").value;
-  const to = await signer.getAddress();
-  try {
-    const tx = await contract.mint(to, id, qty, "0x");
-    log("Minting NFT... TX Hash: " + tx.hash);
-    await tx.wait();
-    log("Minted NFT ID " + id + " Qty " + qty);
-  } catch (e) {
-    log("Error: " + e.message);
+  if (user.toLowerCase() === adminAddress) {
+    document.getElementById("adminPanel").style.display = "block";
+  } else {
+    alert("Unauthorized wallet address.");
   }
 }
 
-async function airdropNFT() {
-  if (!contract) return alert("Connect wallet first.");
-  const to = document.getElementById("airdropAddress").value;
-  const id = document.getElementById("airdropNFT").value;
-  const qty = document.getElementById("airdropQty").value;
-  try {
-    const tx = await contract.mint(to, id, qty, "0x");
-    log("Airdropping NFT... TX Hash: " + tx.hash);
-    await tx.wait();
-    log("Airdropped NFT ID " + id + " to " + to);
-  } catch (e) {
-    log("Error: " + e.message);
-  }
+function mintNFT() {
+  const id = document.getElementById("nftId").value;
+  const qty = document.getElementById("quantity").value;
+  alert(`Minting ${qty} of NFT ID ${id}`);
+}
+
+function airdropNFT() {
+  const address = document.getElementById("airdropAddress").value;
+  const id = document.getElementById("airdropId").value;
+  alert(`Airdropping NFT ID ${id} to ${address}`);
+}
+
+function downloadTesters() {
+  const csv = "Name,Email,Wallet\nTester1,test1@example.com,0x123...\nTester2,test2@example.com,0x456...";
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'testers.csv';
+  a.click();
 }
 </script>
-
 </body>
 </html>
