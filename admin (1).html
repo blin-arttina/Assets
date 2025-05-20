@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Assets Alert Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      font-size: 18px;
+    }
+    button, select, input {
+      font-size: 16px;
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      background-color: #222;
+      color: white;
+      border: 1px solid gray;
+    }
+    button {
+      background-color: #cc0000;
+    }
+    .admin-section {
+      max-width: 600px;
+      margin: auto;
+    }
+    #qrcode {
+      margin: 20px auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-section">
+    <h1>Assets Alert Admin</h1>
+    <div id="walletInfo">Connecting Wallet...</div>
+    <canvas id="qrcode"></canvas>
+    <div id="adminPanel" style="display: none;">
+      <h2>Mint NFT</h2>
+      <select id="nftId">
+        <option value="1">Skater Mouse</option>
+        <option value="2">Beta Tester</option>
+        <option value="3">Paid NFT</option>
+        <option value="4">Premium NFT</option>
+        <option value="5">Mystery NFT 1</option>
+        <option value="6">Mystery NFT 2</option>
+      </select>
+      <input type="number" id="quantity" placeholder="Quantity">
+      <button onclick="mintNFT()">Mint</button>
+      <h2>Airdrop NFT</h2>
+      <input type="text" id="airdropAddress" placeholder="Recipient Wallet Address">
+      <select id="airdropId">
+        <option value="1">Skater Mouse</option>
+        <option value="2">Beta Tester</option>
+        <option value="3">Paid NFT</option>
+        <option value="4">Premium NFT</option>
+        <option value="5">Mystery NFT 1</option>
+        <option value="6">Mystery NFT 2</option>
+      </select>
+      <input type="number" id="airdropQty" placeholder="Quantity">
+      <button onclick="airdropNFT()">Airdrop</button>
+      <h2>Download Beta Tester CSV</h2>
+      <button onclick="downloadCSV()">Download List</button>
+    </div>
+  </div>
+  <script>
+    const adminAddress = "0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E".toLowerCase();
+    async function initWallet() {
+      const provider = new WalletConnectProvider.default({
+        rpc: {
+          137: "https://polygon-rpc.com"
+        },
+        chainId: 137,
+        qrcode: false
+      });
+
+      provider.connector.on("display_uri", (err, payload) => {
+        const uri = payload.params[0];
+        QRCode.toCanvas(document.getElementById("qrcode"), uri, function (error) {
+          if (error) console.error(error);
+        });
+      });
+
+      await provider.enable();
+      const web3 = new Web3(provider);
+      const accounts = await web3.eth.getAccounts();
+      const user = accounts[0];
+      document.getElementById("walletInfo").innerText = "Connected: " + user;
+
+      if (user.toLowerCase() === adminAddress) {
+        document.getElementById("adminPanel").style.display = "block";
+      } else {
+        alert("Unauthorized wallet address.");
+      }
+    }
+
+    function mintNFT() {
+      const id = document.getElementById("nftId").value;
+      const qty = document.getElementById("quantity").value;
+      alert("Minting " + qty + " of NFT ID " + id);
+    }
+
+    function airdropNFT() {
+      const address = document.getElementById("airdropAddress").value;
+      const id = document.getElementById("airdropId").value;
+      const qty = document.getElementById("airdropQty").value;
+      alert("Airdropping NFT ID " + id + " to " + address + " x" + qty);
+    }
+
+    function downloadCSV() {
+      const csv = "Name,Email,Wallet\nTester One,test1@example.com,0x123...\nTester Two,test2@example.com,0x456...";
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "beta_testers.csv";
+      a.click();
+    }
+
+    window.onload = initWallet;
+  </script>
+</body>
+</html>
