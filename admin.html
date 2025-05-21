@@ -1,9 +1,9 @@
 <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Assets Alert Admin</title>
-  <script src="https://unpkg.com/web3@1.8.2/dist/web3.min.js"></script>
-  <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
   <style>
     body {
       background-color: #111;
@@ -38,46 +38,35 @@
   <h1>Assets Alert Admin</h1>
   <div id="status">Connected Wallet: <span id="walletAddress">Not Connected</span></div>
   <button id="connectButton">Connect Wallet</button>  <script>
-    let web3;
-    let provider;
     const adminAddress = "0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E";
+    let web3;
 
     async function connectWallet() {
-      provider = new WalletConnectProvider.default({
-        rpc: {
-          137: "https://polygon-rpc.com"
-        },
-        chainId: 137
-      });
+      if (typeof window.ethereum !== 'undefined') {
+        try {
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          web3 = new Web3(window.ethereum);
+          const accounts = await web3.eth.getAccounts();
+          const address = accounts[0];
+          document.getElementById("walletAddress").innerText = address;
 
-      provider.connector.on("display_uri", (err, payload) => {
-        const uri = payload.params[0];
-        const encoded = encodeURIComponent(uri);
-        const deepLink = `https://link.trustwallet.com/wc?uri=${encoded}`;
+          if (address.toLowerCase() !== adminAddress.toLowerCase()) {
+            alert("This wallet is not authorized as an admin.");
+          }
 
-        if (/android|iphone|ipad|ipod/i.test(navigator.userAgent)) {
-          window.location.href = deepLink;
-        } else {
-          alert("Scan this QR with Trust Wallet:\n" + uri);
+        } catch (err) {
+          alert("Wallet connection failed: " + err.message);
         }
-      });
-
-      try {
-        await provider.enable();
-        web3 = new Web3(provider);
-
-        const accounts = await web3.eth.getAccounts();
-        const address = accounts[0];
-        document.getElementById("walletAddress").innerText = address;
-      } catch (err) {
-        alert("Connection failed: " + err.message);
+      } else {
+        alert("Ethereum wallet not detected. Please use Coinbase Wallet or MetaMask.");
       }
     }
 
     document.getElementById("connectButton").addEventListener("click", connectWallet);
 
+    // Automatically connect on page load
     window.onload = () => {
-      setTimeout(() => document.getElementById("connectButton").click(), 500);
+      document.getElementById("connectButton").click();
     };
   </script></body>
 </html>
