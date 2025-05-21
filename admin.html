@@ -1,72 +1,91 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Assets Alert Admin</title>
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      background-color: #111;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 40px;
-    }
-    h1 {
-      font-size: 32px;
-      margin-bottom: 20px;
-    }
-    #status {
-      margin: 20px 0;
-      font-size: 18px;
-    }
-    button {
-      background-color: #d22;
-      color: #fff;
+    body { background: #111; color: white; font-family: Arial, sans-serif; padding: 20px; }
+    h1 { color: #f33; font-size: 2em; }
+    button, select, input {
+      padding: 10px;
+      margin: 10px 0;
+      background: #f33;
       border: none;
-      padding: 12px 24px;
-      font-size: 18px;
-      cursor: pointer;
-      border-radius: 6px;
+      color: white;
+      font-size: 1em;
+      border-radius: 5px;
     }
-    button:hover {
-      background-color: #a11;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #222;
     }
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: left;
+    }
+    #walletStatus { margin-bottom: 20px; }
   </style>
 </head>
 <body>
   <h1>Assets Alert Admin</h1>
-  <div id="status">Connected Wallet: <span id="walletAddress">Not Connected</span></div>
-  <button id="connectButton">Connect Wallet</button>  <script>
-    const adminAddress = "0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E";
-    let web3;
+  <div id="walletStatus">Connected Wallet: <span id="walletAddress">Not Connected</span></div>
+  <button onclick="connectWallet()">Connect Wallet</button>
 
+  <h2>Mint NFT</h2>
+  <select id="mintNftSelect">
+    <option>Skater Mouse NFT</option>
+    <option>Paid NFT</option>
+    <option>Premium NFT</option>
+    <option>Beta Tester NFT</option>
+    <option>Mystery NFT 1</option>
+    <option>Mystery NFT 2</option>
+  </select>
+  <input type="number" id="mintQuantity" placeholder="Quantity" />
+  <button onclick="alert('Mint logic goes here')">Mint NFT</button>
+
+  <h2>Airdrop NFT</h2>
+  <input type="text" id="airdropAddress" placeholder="Recipient Address" />
+  <select id="airdropNftSelect">
+    <option>Skater Mouse NFT</option>
+    <option>Paid NFT</option>
+    <option>Premium NFT</option>
+    <option>Beta Tester NFT</option>
+    <option>Mystery NFT 1</option>
+    <option>Mystery NFT 2</option>
+  </select>
+  <input type="number" id="airdropQuantity" placeholder="Quantity" />
+  <button onclick="alert('Airdrop logic goes here')">Airdrop NFT</button>
+
+  <h2>Beta Tester List</h2>
+  <table>
+    <thead><tr><th>Name</th><th>Email</th><th>Wallet</th></tr></thead>
+    <tbody id="betaList">
+      <tr><td>Sample User</td><td>test@example.com</td><td>0xABC123...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    const adminWallet = "0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E";
     async function connectWallet() {
       if (typeof window.ethereum !== 'undefined') {
         try {
-          await window.ethereum.request({ method: 'eth_requestAccounts' });
-          web3 = new Web3(window.ethereum);
-          const accounts = await web3.eth.getAccounts();
-          const address = accounts[0];
-          document.getElementById("walletAddress").innerText = address;
-
-          if (address.toLowerCase() !== adminAddress.toLowerCase()) {
-            alert("This wallet is not authorized as an admin.");
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const wallet = accounts[0];
+          document.getElementById("walletAddress").innerText = wallet;
+          if (wallet.toLowerCase() !== adminWallet.toLowerCase()) {
+            alert("Access denied: not admin wallet");
           }
-
-        } catch (err) {
-          alert("Wallet connection failed: " + err.message);
+        } catch (error) {
+          console.error("Wallet connection error:", error);
         }
       } else {
-        alert("Ethereum wallet not detected. Please use Coinbase Wallet or MetaMask.");
+        alert("No Web3 wallet detected");
       }
     }
-
-    document.getElementById("connectButton").addEventListener("click", connectWallet);
-
-    // Automatically connect on page load
-    window.onload = () => {
-      document.getElementById("connectButton").click();
-    };
-  </script></body>
+  </script>
+</body>
 </html>
