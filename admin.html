@@ -1,87 +1,50 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Assets Alert Admin</title>
-    <script src="https://unpkg.com/web3@1.8.2/dist/web3.min.js"></script>
-    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
-    <style>
-        body {
-            background-color: #111;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
-        .btn {
-            background-color: #c62828;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 18px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        .btn:hover {
-            background-color: #e53935;
-        }
-        .wallet-status {
-            margin-top: 20px;
-            font-size: 20px;
-        }
-        .container {
-            border: 1px solid gray;
-            padding: 30px;
-            max-width: 400px;
-            margin: auto;
-            margin-top: 100px;
-            background-color: #222;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assets Alert Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+  <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+  <style>
+    body { background-color: #111; color: #fff; font-family: Arial, sans-serif; text-align: center; padding: 40px; }
+    h1 { font-size: 32px; margin-bottom: 20px; }
+    #status { margin: 20px 0; font-size: 18px; }
+    button { background-color: #d22; color: #fff; border: none; padding: 12px 24px; font-size: 18px; cursor: pointer; border-radius: 6px; }
+    button:hover { background-color: #a11; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Assets Alert Admin</h1>
-        <p class="wallet-status" id="walletStatus">Connected Wallet: <strong>Not Connected</strong></p>
-        <button class="btn" id="connectWallet">Connect Wallet</button>
-    </div>
+  <h1>Assets Alert Admin</h1>
+  <div id="status">Connected Wallet: <span id="walletAddress">Not Connected</span></div>
+  <button id="connectButton">Connect Wallet</button>  <script>
+    let web3;
+    let provider;
 
-    <script>
-        let web3;
-        const adminAddress = "0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E";
+    async function connectWallet() {
+      provider = new WalletConnectProvider.default({
+        rpc: {
+          137: "https://polygon-rpc.com"
+        },
+        chainId: 137
+      });
 
-        async function connectWallet() {
-            const provider = new WalletConnectProvider.default({
-                rpc: {
-                    137: "https://polygon-rpc.com"
-                },
-                chainId: 137
-            });
+      try {
+        await provider.enable();
+        web3 = new Web3(provider);
 
-            try {
-                await provider.enable();
-                web3 = new Web3(provider);
-                const accounts = await web3.eth.getAccounts();
-                const connectedWallet = accounts[0];
+        const accounts = await web3.eth.getAccounts();
+        const address = accounts[0];
+        document.getElementById("walletAddress").innerText = address;
+      } catch (err) {
+        alert("Connection failed: " + err.message);
+      }
+    }
 
-                if (connectedWallet.toLowerCase() === adminAddress.toLowerCase()) {
-                    document.getElementById("walletStatus").innerHTML = 
-                        "Connected Wallet: <strong style='color:lightgreen'>" + connectedWallet + "</strong>";
-                } else {
-                    document.getElementById("walletStatus").innerHTML = 
-                        "Connected Wallet: <strong style='color:orange'>" + connectedWallet + "</strong> (Not Admin)";
-                }
+    document.getElementById("connectButton").addEventListener("click", connectWallet);
 
-            } catch (e) {
-                console.error("WalletConnect error:", e);
-            }
-        }
-
-        document.getElementById("connectWallet").onclick = connectWallet;
-        window.onload = () => {
-            connectWallet(); // auto-launch QR code for Trust Wallet on load
-        };
-    </script>
-</body>
+    // Auto connect on load
+    window.onload = () => {
+      setTimeout(() => document.getElementById("connectButton").click(), 500);
+    };
+  </script></body>
 </html>
