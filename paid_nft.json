@@ -1,1 +1,11 @@
-This is a placeholder for paid_nft.json.
+{
+  "name": "Assets Alert Paid NFT",
+  "description": "Official paid NFT granting enhanced features on Assets Alert.",
+  "image": "ipfs://QmPaidNFTImageCID",
+  "attributes": [
+    {
+      "trait_type": "Access",
+      "value": "Paid"
+    }
+  ]
+}

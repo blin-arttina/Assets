@@ -1,1 +1,11 @@
-This is a placeholder for beta_tester_nft.json.
+{
+  "name": "Assets Alert Beta Tester",
+  "description": "Exclusive NFT for early beta testers of the Assets Alert platform.",
+  "image": "ipfs://QmBetaTesterImageCID",
+  "attributes": [
+    {
+      "trait_type": "Access",
+      "value": "Beta"
+    }
+  ]
+}

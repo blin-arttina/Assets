@@ -1,0 +1,19 @@
+{
+  "name": "Mystery NFT #2 - Miner Mouse",
+  "description": "Ultra-rare NFT showcasing the miner mouse in a hard hat with a headlight.",
+  "image": "https://blin-arttina.github.io/Assets/images/mystery2_miner_mouse.png",
+  "attributes": [
+    {
+      "trait_type": "Character",
+      "value": "Miner Mouse"
+    },
+    {
+      "trait_type": "Gear",
+      "value": "Hard Hat with Headlamp"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Ultra Rare"
+    }
+  ]
+}

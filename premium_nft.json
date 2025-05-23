@@ -1,1 +1,11 @@
-This is a placeholder for premium_nft.json.
+{
+  "name": "Assets Alert Premium NFT",
+  "description": "Premium NFT for top-tier supporters of the Assets Alert platform.",
+  "image": "ipfs://QmPremiumNFTImageCID",
+  "attributes": [
+    {
+      "trait_type": "Tier",
+      "value": "Premium"
+    }
+  ]
+}
