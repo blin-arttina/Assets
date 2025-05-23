@@ -1,90 +1,114 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Assets Alert Admin</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { background: #111; color: white; font-family: Arial, sans-serif; padding: 20px; }
-    h1 { color: #f33; font-size: 2em; }
-    button, select, input {
-      padding: 10px;
-      margin: 10px 0;
-      background: #f33;
-      border: none;
+    body {
+      background-color: #121212;
       color: white;
-      font-size: 1em;
-      border-radius: 5px;
+      font-family: Arial, sans-serif;
+      padding: 20px;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background-color: #222;
-    }
-    th, td {
+    .card {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
       border: 1px solid #444;
-      padding: 10px;
-      text-align: left;
     }
-    #walletStatus { margin-bottom: 20px; }
+    h1 {
+      color: white;
+    }
+    select, input, button {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #666;
+      margin-top: 10px;
+      background-color: #333;
+      color: white;
+      width: 100%;
+    }
+    button {
+      background-color: #d32f2f;
+      color: white;
+      font-weight: bold;
+    }
+    .wallet-status {
+      margin-bottom: 20px;
+    }
+    .mint-section, .airdrop-section, .download-section {
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
   <h1>Assets Alert Admin</h1>
-  <div id="walletStatus">Connected Wallet: <span id="walletAddress">Not Connected</span></div>
-  <button onclick="connectWallet()">Connect Wallet</button>
+  <div class="wallet-status card">
+    <p><strong>Connected Wallet:</strong> <span id="walletAddress">Not Connected</span></p>
+    <button onclick="connectWallet()">Connect Wallet</button>
+  </div>
 
-  <h2>Mint NFT</h2>
-  <select id="mintNftSelect">
-    <option>Skater Mouse NFT</option>
-    <option>Paid NFT</option>
-    <option>Premium NFT</option>
-    <option>Beta Tester NFT</option>
-    <option>Mystery NFT 1</option>
-    <option>Mystery NFT 2</option>
-  </select>
-  <input type="number" id="mintQuantity" placeholder="Quantity" />
-  <button onclick="alert('Mint logic goes here')">Mint NFT</button>
+  <div class="mint-section card">
+    <h2>Mint NFT</h2>
+    <select id="mintType">
+      <option value="skater_mouse">Skater Mouse NFT</option>
+      <option value="beta">Beta Tester NFT</option>
+      <option value="paid">Paid NFT</option>
+      <option value="premium">Premium NFT</option>
+      <option value="mystery1">Mystery NFT #1</option>
+      <option value="mystery2">Mystery NFT #2</option>
+    </select>
+    <input type="text" id="mintTo" placeholder="Wallet Address to Mint To">
+    <button onclick="mintNFT()">Mint</button>
+  </div>
 
-  <h2>Airdrop NFT</h2>
-  <input type="text" id="airdropAddress" placeholder="Recipient Address" />
-  <select id="airdropNftSelect">
-    <option>Skater Mouse NFT</option>
-    <option>Paid NFT</option>
-    <option>Premium NFT</option>
-    <option>Beta Tester NFT</option>
-    <option>Mystery NFT 1</option>
-    <option>Mystery NFT 2</option>
-  </select>
-  <input type="number" id="airdropQuantity" placeholder="Quantity" />
-  <button onclick="alert('Airdrop logic goes here')">Airdrop NFT</button>
+  <div class="airdrop-section card">
+    <h2>Airdrop NFT</h2>
+    <input type="text" id="airdropList" placeholder="Comma-separated wallet addresses">
+    <button onclick="airdropNFT()">Airdrop</button>
+  </div>
 
-  <h2>Beta Tester List</h2>
-  <table>
-    <thead><tr><th>Name</th><th>Email</th><th>Wallet</th></tr></thead>
-    <tbody id="betaList">
-      <tr><td>Sample User</td><td>test@example.com</td><td>0xABC123...</td></tr>
-    </tbody>
-  </table>
+  <div class="download-section card">
+    <h2>Beta Tester Submissions</h2>
+    <button onclick="downloadSubmissions()">Download CSV</button>
+  </div>
 
   <script>
-    const adminWallet = "0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E";
     async function connectWallet() {
-      if (typeof window.ethereum !== 'undefined') {
+      if (window.ethereum) {
         try {
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const wallet = accounts[0];
-          document.getElementById("walletAddress").innerText = wallet;
-          if (wallet.toLowerCase() !== adminWallet.toLowerCase()) {
-            alert("Access denied: not admin wallet");
-          }
+          document.getElementById('walletAddress').innerText = accounts[0];
         } catch (error) {
-          console.error("Wallet connection error:", error);
+          console.error('User denied account access');
         }
       } else {
-        alert("No Web3 wallet detected");
+        alert('MetaMask or Web3 provider not found.');
       }
+    }
+
+    function mintNFT() {
+      const type = document.getElementById('mintType').value;
+      const to = document.getElementById('mintTo').value;
+      console.log(`Minting ${type} NFT to ${to}`);
+    }
+
+    function airdropNFT() {
+      const list = document.getElementById('airdropList').value;
+      const recipients = list.split(',').map(addr => addr.trim());
+      console.log('Airdropping to:', recipients);
+    }
+
+    function downloadSubmissions() {
+      const csv = "Name,Email,Wallet Address\nJohn Doe,john@example.com,0x123...\n";
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'beta_testers.csv';
+      link.click();
     }
   </script>
 </body>
