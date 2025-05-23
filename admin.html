@@ -54,12 +54,12 @@
   <div class="mint-section card">
     <h2>Mint NFT</h2>
     <select id="mintType">
-      <option value="skater_mouse">Skater Mouse NFT</option>
-      <option value="beta">Beta Tester NFT</option>
-      <option value="paid">Paid NFT</option>
-      <option value="premium">Premium NFT</option>
-      <option value="mystery1">Mystery NFT #1</option>
-      <option value="mystery2">Mystery NFT #2</option>
+      <option value="1">Skater Mouse NFT</option>
+      <option value="2">Beta Tester NFT</option>
+      <option value="3">Paid NFT</option>
+      <option value="4">Premium NFT</option>
+      <option value="5">Mystery NFT #1</option>
+      <option value="6">Mystery NFT #2</option>
     </select>
     <input type="text" id="mintTo" placeholder="Wallet Address to Mint To">
     <button onclick="mintNFT()">Mint</button>
@@ -76,38 +76,64 @@
     <button onclick="downloadSubmissions()">Download CSV</button>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
   <script>
+    const CONTRACT_ADDRESS = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
+    const ABI = [
+      {
+        "inputs": [
+          {"internalType": "address", "name": "to", "type": "address"},
+          {"internalType": "uint256", "name": "id", "type": "uint256"},
+          {"internalType": "uint256", "name": "amount", "type": "uint256"},
+          {"internalType": "bytes", "name": "data", "type": "bytes"}
+        ],
+        "name": "mint",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
+
+    let web3;
+    let contract;
+    let selectedAccount;
+
     async function connectWallet() {
       if (window.ethereum) {
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          document.getElementById('walletAddress').innerText = accounts[0];
-        } catch (error) {
-          console.error('User denied account access');
-        }
+        web3 = new Web3(window.ethereum);
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const accounts = await web3.eth.getAccounts();
+        selectedAccount = accounts[0];
+        document.getElementById("walletAddress").innerText = selectedAccount;
+        contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
       } else {
-        alert('MetaMask or Web3 provider not found.');
+        alert("No Web3 wallet found.");
       }
     }
 
-    function mintNFT() {
-      const type = document.getElementById('mintType').value;
-      const to = document.getElementById('mintTo').value;
-      console.log(`Minting ${type} NFT to ${to}`);
+    async function mintNFT() {
+      const id = parseInt(document.getElementById("mintType").value);
+      const to = document.getElementById("mintTo").value;
+      if (!contract || !selectedAccount) return alert("Please connect wallet first.");
+      try {
+        await contract.methods.mint(to, id, 1, "0x0").send({ from: selectedAccount });
+        alert("Mint successful!");
+      } catch (e) {
+        alert("Mint failed: " + e.message);
+      }
     }
 
     function airdropNFT() {
-      const list = document.getElementById('airdropList').value;
-      const recipients = list.split(',').map(addr => addr.trim());
-      console.log('Airdropping to:', recipients);
+      const list = document.getElementById("airdropList").value;
+      alert("Airdrop function not yet wired.");
     }
 
     function downloadSubmissions() {
       const csv = "Name,Email,Wallet Address\nJohn Doe,john@example.com,0x123...\n";
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const link = document.createElement('a');
+      const blob = new Blob([csv], { type: "text/csv" });
+      const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = 'beta_testers.csv';
+      link.download = "beta_testers.csv";
       link.click();
     }
   </script>
