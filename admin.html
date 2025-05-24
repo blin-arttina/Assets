@@ -2,70 +2,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Assets Alert Admin</title>
-    <style>
-        body { background-color: #121212; color: white; font-family: Arial; }
-        .container { padding: 20px; max-width: 800px; margin: auto; }
-        select, input, button { margin: 10px 0; padding: 10px; width: 100%; }
-        button { background-color: red; color: white; border: none; cursor: pointer; }
-        .section { margin-bottom: 40px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assets Alert Admin</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    select, input, button {
+      font-size: 16px;
+      padding: 8px;
+      margin: 10px 0;
+      width: 100%;
+      border: 1px solid gray;
+      border-radius: 4px;
+    }
+    button {
+      background-color: red;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .section {
+      background-color: #222;
+      border: 1px solid #555;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Assets Alert Admin</h1>
-        <div class="section">
-            <h2>Mint NFT</h2>
-            <select id="nftType">
-                <option value="1">Skater Mouse NFT</option>
-                <option value="2">Beta Tester NFT</option>
-                <option value="3">Paid NFT</option>
-                <option value="4">Premium NFT</option>
-                <option value="5">Mystery NFT #1</option>
-                <option value="6">Mystery NFT #2</option>
-            </select>
-            <button onclick="mintNFT()">Mint</button>
-        </div>
-        <div class="section">
-            <h2>Airdrop</h2>
-            <input type="text" id="airdropAddresses" placeholder="Comma-separated wallet addresses">
-            <button onclick="airdropNFT()">Airdrop</button>
-        </div>
-        <div class="section">
-            <h2>Beta Tester Submissions</h2>
-            <button onclick="downloadCSV()">Download CSV</button>
-            <pre id="betaTesterList">Loading...</pre>
-        </div>
-    </div>
-    <script>
-        const userWallet = "CONNECT_WALLET_HERE";
+  <h1>Assets Alert Admin</h1>
 
-        function mintNFT() {
-            const nftType = document.getElementById('nftType').value;
-            const recipient = userWallet; // Automatically use connected wallet
-            const amount = 1;
-            const data = "0x00";
-            console.log("Minting NFT:", { recipient, nftType, amount, data });
-            // Contract call would go here
-            alert("Mint initiated (simulated).");
+  <div class="section">
+    <h2>Connected Wallet:</h2>
+    <div id="wallet-address">Not Connected</div>
+    <button onclick="connectWallet()">Connect Wallet</button>
+  </div>
+
+  <div class="section">
+    <h2>Mint NFT</h2>
+    <select id="nftSelect">
+      <option>Skater Mouse NFT</option>
+      <option>Beta Tester NFT</option>
+      <option>Paid NFT</option>
+      <option>Premium NFT</option>
+      <option>Mystery NFT</option>
+      <option>Mystery NFT 2</option>
+    </select>
+    <button onclick="mintNFT()">Mint</button>
+  </div>
+
+  <div class="section">
+    <h2>Airdrop</h2>
+    <input id="airdropAddresses" placeholder="Comma-separated wallet addresses" />
+    <button onclick="airdrop()">Airdrop</button>
+  </div>
+
+  <div class="section">
+    <h2>Beta Tester Submissions</h2>
+    <button onclick="downloadCSV()">Download CSV</button>
+    <pre id="betaList">Loading...</pre>
+  </div>
+
+  <script>
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          document.getElementById('wallet-address').textContent = accounts[0];
+        } catch (e) {
+          alert('Wallet connection failed.');
         }
+      } else {
+        alert('No Web3 wallet detected.');
+      }
+    }
 
-        function airdropNFT() {
-            const addresses = document.getElementById('airdropAddresses').value.split(',');
-            console.log("Airdropping to:", addresses);
-            alert("Airdrop initiated (simulated).");
-        }
+    function mintNFT() {
+      const wallet = document.getElementById('wallet-address').textContent;
+      const nft = document.getElementById('nftSelect').value;
+      if (!wallet || wallet === 'Not Connected') {
+        alert('Connect wallet first.');
+        return;
+      }
+      alert(`Mint simulated: ${nft} to ${wallet}`);
+    }
 
-        function downloadCSV() {
-            window.location.href = 'beta_testers.csv';
-        }
+    function airdrop() {
+      const addresses = document.getElementById('airdropAddresses').value;
+      if (!addresses.trim()) {
+        alert('Enter wallet addresses to airdrop.');
+        return;
+      }
+      alert(`Airdrop simulated to: ${addresses}`);
+    }
 
-        // Simulate fetching CSV content and displaying it
-        fetch('beta_testers.csv')
-            .then(response => response.text())
-            .then(data => document.getElementById('betaTesterList').textContent = data)
-            .catch(() => document.getElementById('betaTesterList').textContent = "Could not load beta tester data.");
-    </script>
+    function downloadCSV() {
+      const csv = "Name,Email,Wallet\nTester One,test1@example.com,0x123...\nTester Two,test2@example.com,0x456...";
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "beta_testers.csv";
+      link.click();
+    }
+
+    window.onload = () => {
+      document.getElementById("betaList").textContent =
+        "Name,Email,Wallet\nTester One,test1@example.com,0x123...\nTester Two,test2@example.com,0x456...";
+    };
+  </script>
 </body>
 </html>
