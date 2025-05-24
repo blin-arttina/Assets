@@ -2,102 +2,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Assets Alert Admin</title>
-  <style>
-    body {
-      background-color: #111;
-      color: white;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    h1 {
-      font-size: 2em;
-    }
-    .container {
-      background-color: #222;
-      border: 1px solid gray;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 600px;
-      margin: auto;
-    }
-    button {
-      background-color: #c00;
-      border: none;
-      color: white;
-      padding: 10px 20px;
-      margin-top: 10px;
-      border-radius: 5px;
-      font-size: 1em;
-      cursor: pointer;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid gray;
-      background-color: #333;
-      color: white;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Assets Alert Admin</title>
+    <style>
+        body { background-color: #121212; color: white; font-family: Arial; }
+        .container { padding: 20px; max-width: 800px; margin: auto; }
+        select, input, button { margin: 10px 0; padding: 10px; width: 100%; }
+        button { background-color: red; color: white; border: none; cursor: pointer; }
+        .section { margin-bottom: 40px; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Assets Alert Admin</h1>
-    <p><strong>Connected Wallet:</strong> <span id="walletAddress">Not Connected</span></p>
-    <button onclick="connectWallet()">Connect Wallet</button>
+    <div class="container">
+        <h1>Assets Alert Admin</h1>
+        <div class="section">
+            <h2>Mint NFT</h2>
+            <select id="nftType">
+                <option value="1">Skater Mouse NFT</option>
+                <option value="2">Beta Tester NFT</option>
+                <option value="3">Paid NFT</option>
+                <option value="4">Premium NFT</option>
+                <option value="5">Mystery NFT #1</option>
+                <option value="6">Mystery NFT #2</option>
+            </select>
+            <button onclick="mintNFT()">Mint</button>
+        </div>
+        <div class="section">
+            <h2>Airdrop</h2>
+            <input type="text" id="airdropAddresses" placeholder="Comma-separated wallet addresses">
+            <button onclick="airdropNFT()">Airdrop</button>
+        </div>
+        <div class="section">
+            <h2>Beta Tester Submissions</h2>
+            <button onclick="downloadCSV()">Download CSV</button>
+            <pre id="betaTesterList">Loading...</pre>
+        </div>
+    </div>
+    <script>
+        const userWallet = "CONNECT_WALLET_HERE";
 
-    <h2>Mint NFT</h2>
-    <form id="mintForm" onsubmit="mintNFT(event)">
-      <label for="nftType">Select NFT Type</label>
-      <select id="nftType">
-        <option value="1">Beta Tester NFT</option>
-        <option value="2">Paid NFT</option>
-        <option value="3">Premium NFT</option>
-        <option value="4">Mystery NFT #1</option>
-        <option value="5">Mystery NFT #2</option>
-        <option value="6">Skater Mouse NFT</option>
-      </select>
-      <input type="text" id="recipient" placeholder="Recipient Wallet Address (optional)" />
-      <button type="submit">Mint</button>
-    </form>
-  </div>
-
-  <script>
-    let userWalletAddress = "";
-
-    async function connectWallet() {
-      if (window.ethereum) {
-        try {
-          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-          userWalletAddress = accounts[0];
-          document.getElementById("walletAddress").innerText = userWalletAddress;
-        } catch (error) {
-          console.error("User rejected wallet connection");
+        function mintNFT() {
+            const nftType = document.getElementById('nftType').value;
+            const recipient = userWallet; // Automatically use connected wallet
+            const amount = 1;
+            const data = "0x00";
+            console.log("Minting NFT:", { recipient, nftType, amount, data });
+            // Contract call would go here
+            alert("Mint initiated (simulated).");
         }
-      } else {
-        alert("MetaMask not found. Please install it to use this site.");
-      }
-    }
 
-    async function mintNFT(event) {
-      event.preventDefault();
-      const type = parseInt(document.getElementById("nftType").value);
-      let recipient = document.getElementById("recipient").value.trim();
+        function airdropNFT() {
+            const addresses = document.getElementById('airdropAddresses').value.split(',');
+            console.log("Airdropping to:", addresses);
+            alert("Airdrop initiated (simulated).");
+        }
 
-      if (!recipient) recipient = userWalletAddress;
+        function downloadCSV() {
+            window.location.href = 'beta_testers.csv';
+        }
 
-      if (!recipient) {
-        alert("No recipient wallet found. Please connect your wallet or provide a recipient address.");
-        return;
-      }
-
-      // Mint function call placeholder
-      alert(`Minting NFT type ${type} to ${recipient}`);
-    }
-  </script>
+        // Simulate fetching CSV content and displaying it
+        fetch('beta_testers.csv')
+            .then(response => response.text())
+            .then(data => document.getElementById('betaTesterList').textContent = data)
+            .catch(() => document.getElementById('betaTesterList').textContent = "Could not load beta tester data.");
+    </script>
 </body>
 </html>
