@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -110,7 +109,7 @@
     }
 
     function downloadCSV() {
-      const data = "Name,Email,Wallet\nTester One,test1@example.com,0x123...\nTester Two,test2@example.com,0x456...";
+      const data = "Name,Email,Wallet\\nTester One,test1@example.com,0x123...\\nTester Two,test2@example.com,0x456...";
       const blob = new Blob([data], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -119,7 +118,7 @@
       a.click();
     }
 
-    document.getElementById("csv-data").innerText = "Tester One,test1@example.com,0x123...\nTester Two,test2@example.com,0x456...";
+    document.getElementById("csv-data").innerText = "Tester One,test1@example.com,0x123...\\nTester Two,test2@example.com,0x456...";
   </script>
 </body>
 </html>
