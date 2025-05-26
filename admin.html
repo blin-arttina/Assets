@@ -11,14 +11,14 @@
     button { background-color: red; color: white; border: none; border-radius: 5px; }
     .section { border: 1px solid gray; padding: 15px; margin-top: 20px; border-radius: 10px; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
 <body>
-
   <h1>Assets Alert Admin Dashboard</h1>
 
   <div class="section">
     <div id="wallet-status">Not connected</div>
-    <button onclick="connectWallet()">Connect Wallet</button>
+    <button onclick="connectWallet()">Connect Brave Wallet</button>
   </div>
 
   <div class="section">
@@ -31,12 +31,20 @@
       <option value="5">Mystery NFT 1</option>
       <option value="6">Mystery NFT 2</option>
     </select>
+    <label for="mint-quantity">Quantity:</label>
+    <input type="number" id="mint-quantity" min="1" value="1" />
     <button onclick="mintNFT()">Mint</button>
   </div>
 
   <div class="section">
+    <h2>Set Contract Metadata URI</h2>
+    <input type="text" id="uri-value" placeholder="https://yourdomain.com/{id}.json" />
+    <button onclick="setURI()">Set URI</button>
+  </div>
+
+  <div class="section">
     <h2>Airdrop</h2>
-    <input type="text" id="airdrop-addresses" placeholder="Comma-separated wallet addresses"/>
+    <input type="text" id="airdrop-addresses" placeholder="Comma-separated wallet addresses" />
     <button onclick="airdropNFT()">Airdrop</button>
   </div>
 
@@ -47,42 +55,80 @@
   </div>
 
   <script>
-    let selectedAccount;
+    let selectedAccount = null;
     const contractAddress = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
 
     async function connectWallet() {
-      if (window.ethereum) {
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          selectedAccount = accounts[0];
-          document.getElementById("wallet-status").innerText = "Connected Wallet: " + selectedAccount;
-        } catch (error) {
-          alert("Wallet connection failed");
-        }
+      if (typeof window.ethereum !== 'undefined') {
+        const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        selectedAccount = await signer.getAddress();
+        document.getElementById("wallet-status").innerText = "Connected Wallet: " + selectedAccount;
       } else {
-        alert("Please install MetaMask or Trust Wallet in your browser");
+        alert("Ethereum provider not found.");
       }
     }
 
     async function mintNFT() {
       const tokenId = document.getElementById("nft-select").value;
-      if (!selectedAccount) {
-        alert("Please connect your wallet first.");
+      const quantity = parseInt(document.getElementById("mint-quantity").value);
+      if (!selectedAccount || !quantity || quantity < 1) {
+        alert("Connect your wallet and enter a valid quantity.");
         return;
       }
 
-      const contractAbi = [{ "inputs": [{ "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "bytes", "name": "data", "type": "bytes" }], "name": "mint", "outputs": [], "stateMutability": "nonpayable", "type": "function" }];
+      const abi = [{
+        "inputs": [
+          { "internalType": "address", "name": "to", "type": "address" },
+          { "internalType": "uint256", "name": "id", "type": "uint256" },
+          { "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "internalType": "bytes", "name": "data", "type": "bytes" }
+        ],
+        "name": "mint",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }];
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+      const contract = new ethers.Contract(contractAddress, abi, signer);
 
       try {
-        const tx = await contract.mint(selectedAccount, tokenId, 1, "0x");
+        const tx = await contract.mint(selectedAccount, tokenId, quantity, "0x");
         await tx.wait();
-        alert("Minted NFT ID " + tokenId + " to " + selectedAccount);
+        alert("NFT(s) minted to " + selectedAccount);
       } catch (err) {
         console.error(err);
         alert("Minting failed: " + err.message);
+      }
+    }
+
+    async function setURI() {
+      const newUri = document.getElementById("uri-value").value;
+      if (!newUri || !selectedAccount) {
+        alert("Enter URI and connect wallet.");
+        return;
+      }
+
+      const abi = [{
+        "inputs": [{ "internalType": "string", "name": "newuri", "type": "string" }],
+        "name": "setURI",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }];
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, abi, signer);
+
+      try {
+        const tx = await contract.setURI(newUri);
+        await tx.wait();
+        alert("URI updated successfully.");
+      } catch (err) {
+        console.error(err);
+        alert("Failed to set URI: " + err.message);
       }
     }
 
@@ -92,7 +138,6 @@
     }
 
     function downloadCSV() {
-      // For now, simulate CSV data
       const data = "Name,Email,Wallet\nTester One,test1@example.com,0x123...\nTester Two,test2@example.com,0x456...";
       const blob = new Blob([data], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
@@ -102,9 +147,10 @@
       a.click();
     }
 
-    document.getElementById("csv-data").innerText = "Tester One,test1@example.com,0x123...\nTester Two,test2@example.com,0x456...";
+    window.onload = () => {
+      document.getElementById("csv-data").innerText =
+        "Tester One,test1@example.com,0x123...\nTester Two,test2@example.com,0x456...";
+    };
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
 </body>
 </html>
