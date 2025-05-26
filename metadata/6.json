@@ -1,0 +1,23 @@
+{
+  "name": "Mystery NFT #2",
+  "description": "An exclusive NFT from the Assets Alert collection featuring a mouse with a miner's helmet and headlamp.",
+  "image": "https://blin-arttina.github.io/Assets/mystery2_mouse.png",
+  "attributes": [
+    {
+      "trait_type": "Theme",
+      "value": "Underground"
+    },
+    {
+      "trait_type": "Gear",
+      "value": "Miner Helmet"
+    },
+    {
+      "trait_type": "Lighting",
+      "value": "Headlamp"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Secret Rare"
+    }
+  ]
+}

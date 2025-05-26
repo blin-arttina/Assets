@@ -1,0 +1,15 @@
+{
+  "name": "Premium NFT",
+  "description": "Premium NFT featuring advanced benefits.",
+  "image": "premium_nft.png",
+  "attributes": [
+    {
+      "trait_type": "Tier",
+      "value": "Premium"
+    },
+    {
+      "trait_type": "Cost",
+      "value": "0.05 ETH"
+    }
+  ]
+}
