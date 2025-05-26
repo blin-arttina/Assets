@@ -1,0 +1,19 @@
+{
+  "name": "Mystery NFT #1 - 3D Mouse",
+  "description": "A mysterious NFT featuring a mouse with 3D glasses. Limited edition.",
+  "image": "https://blin-arttina.github.io/Assets/images/mystery1_3d_mouse.png",
+  "attributes": [
+    {
+      "trait_type": "Character",
+      "value": "3D Glasses Mouse"
+    },
+    {
+      "trait_type": "Style",
+      "value": "Mysterious"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Rare"
+    }
+  ]
+}
