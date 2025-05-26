@@ -1,1 +1,11 @@
-
+{
+  "name": "Skater Mouse NFT",
+  "description": "A limited-edition animated NFT featuring a skateboarding mouse in a hoodie and sunglasses.",
+  "image": "https://blin-arttina.github.io/Assets/skater_mouse.png",
+  "animation_url": "https://blin-arttina.github.io/Assets/skater_mouse.mp4",
+  "attributes": [
+    { "trait_type": "Style", "value": "Dark Anime" },
+    { "trait_type": "Outfit", "value": "Hoodie & Sunglasses" },
+    { "trait_type": "Rarity", "value": "Ultra Rare" }
+  ]
+}
