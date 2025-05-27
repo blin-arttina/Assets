@@ -1,39 +1,46 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract AssetsAlertNFT is ERC1155, Ownable {
-    string public name = "Assets Alert NFT Collection";
-    string public symbol = "ALERTNFT";
+contract AssetsAlertNFT is ERC1155URIStorage, Ownable {
+    string private _baseTokenURI;
 
-    mapping(uint256 => string) private uris;
-
-    constructor() ERC1155("") Ownable(msg.sender) {
-        // Mint 5 NFTs to the contract owner (adjust as needed)
-        mint(msg.sender, 1, 100, "");
-        mint(msg.sender, 2, 100, "");
-        mint(msg.sender, 3, 100, "");
-        mint(msg.sender, 4, 100, "");
-        mint(msg.sender, 5, 100, "");
+    constructor() ERC1155("") {
+        _baseTokenURI = "https://blin-arttina.github.io/Assets/metadata/";
+        transferOwnership(0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E);
     }
 
-    function setURI(uint256 tokenId, string memory newuri) public onlyOwner {
-        uris[tokenId] = newuri;
+    function setBaseURI(string memory newuri) public onlyOwner {
+        _baseTokenURI = newuri;
     }
 
     function uri(uint256 tokenId) public view override returns (string memory) {
-        return uris[tokenId];
+        return string(abi.encodePacked(_baseTokenURI, _toString(tokenId), ".json"));
     }
 
     function mint(address to, uint256 id, uint256 amount, bytes memory data) public onlyOwner {
         _mint(to, id, amount, data);
     }
 
-    function airdrop(address[] calldata recipients, uint256 id, uint256 amount, bytes calldata data) public onlyOwner {
-        for (uint256 i = 0; i < recipients.length; i++) {
-            _mint(recipients[i], id, amount, data);
+    function _toString(uint256 value) internal pure returns (string memory) {
+        if (value == 0) {
+            return "0";
         }
+        uint256 temp = value;
+        uint256 digits;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+        bytes memory buffer = new bytes(digits);
+        while (value != 0) {
+            digits -= 1;
+            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+            value /= 10;
+        }
+        return string(buffer);
     }
 }
