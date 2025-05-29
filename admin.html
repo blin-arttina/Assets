@@ -2,107 +2,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Assets Alert Admin</title>
-    <style>
-        body {
-            background-color: #111;
-            color: white;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        h1, h2 {
-            color: red;
-        }
-        input, select, button {
-            background-color: #222;
-            color: white;
-            border: 1px solid gray;
-            padding: 8px;
-            margin: 5px 0;
-            width: 100%;
-        }
-        button {
-            background-color: red;
-            cursor: pointer;
-        }
-        section {
-            border: 1px solid gray;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Assets Alert Admin</title>
+  <style>
+    body { background-color: #121212; color: white; font-family: Arial, sans-serif; }
+    input, button { margin: 8px 0; padding: 10px; width: 100%; }
+    button { background-color: red; color: white; border: none; }
+    .section { border: 1px solid gray; padding: 16px; margin: 16px; }
+  </style>
 </head>
 <body>
-    <h1>Assets Alert Admin Dashboard</h1>
-
-    <section>
-        <h2>Mint NFT</h2>
-        <label for="mintId">NFT ID:</label>
-        <input type="number" id="mintId" placeholder="e.g., 1">
-        <label for="mintAmount">Quantity:</label>
-        <input type="number" id="mintAmount" placeholder="e.g., 1">
-        <button onclick="mintNFT()">Mint NFT</button>
-    </section>
-
-    <section>
-        <h2>Airdrop NFT</h2>
-        <label for="recipient">Recipient Address:</label>
-        <input type="text" id="recipient" placeholder="0x...">
-        <label for="airdropId">NFT ID:</label>
-        <input type="number" id="airdropId" placeholder="e.g., 1">
-        <label for="airdropAmount">Quantity:</label>
-        <input type="number" id="airdropAmount" placeholder="e.g., 1">
-        <button onclick="airdropNFT()">Airdrop NFT</button>
-    </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
-    <script>
-        const contractAddress = "0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E"; // Admin wallet as sender
-        const nftContractAddress = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
-        const nftABI = []; // Replace with ABI if needed
-
-        let web3;
-        let nftContract;
-        let accounts;
-
-        async function initWeb3() {
-            if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                accounts = await web3.eth.getAccounts();
-                nftContract = new web3.eth.Contract(nftABI, nftContractAddress);
-            } else {
-                alert("Please install MetaMask or Brave Wallet to use this feature.");
-            }
-        }
-
-        async function mintNFT() {
-            const id = document.getElementById("mintId").value;
-            const amount = document.getElementById("mintAmount").value;
-            try {
-                await nftContract.methods.mint(accounts[0], id, amount, "0x").send({ from: accounts[0] });
-                alert("NFT Minted!");
-            } catch (err) {
-                alert("Minting failed: " + err.message);
-            }
-        }
-
-        async function airdropNFT() {
-            const to = document.getElementById("recipient").value;
-            const id = document.getElementById("airdropId").value;
-            const amount = document.getElementById("airdropAmount").value;
-            try {
-                await nftContract.methods.safeTransferFrom(accounts[0], to, id, amount, "0x").send({ from: accounts[0] });
-                alert("NFT Airdropped!");
-            } catch (err) {
-                alert("Airdrop failed: " + err.message);
-            }
-        }
-
-        window.onload = initWeb3;
-    </script>
+  <h1>Assets Alert Admin Dashboard</h1>
+  <div class="section">
+    <h2>Mint NFT</h2>
+    <label>NFT ID:</label><input type="text" id="nftId" />
+    <label>Quantity:</label><input type="text" id="nftQty" />
+    <button onclick="mintNFT()">Mint NFT</button>
+  </div>
+  <div class="section">
+    <h2>Airdrop NFT</h2>
+    <label>Recipient:</label><input type="text" id="airdropTo" />
+    <label>NFT ID:</label><input type="text" id="airdropId" />
+    <label>Quantity:</label><input type="text" id="airdropQty" />
+    <button onclick="airdropNFT()">Airdrop NFT</button>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <script src="admin.js"></script>
 </body>
 </html>
