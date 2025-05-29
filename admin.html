@@ -5,11 +5,10 @@
   <meta charset="UTF-8" />
   <title>Assets Alert Admin Dashboard</title>
   <style>
-    body { background-color: #121212; color: white; font-family: Arial, sans-serif; font-size: 18px; }
+    body { background-color: #121212; color: white; font-family: Arial, sans-serif; font-size: 20px; padding: 20px; }
     input, button, select { margin: 10px 0; padding: 12px; width: 100%; font-size: 18px; }
     button { background-color: red; color: white; border: none; cursor: pointer; }
-    .section { border: 1px solid gray; padding: 20px; margin: 20px; border-radius: 6px; }
-    h1, h2 { color: white; }
+    .section { border: 1px solid gray; padding: 20px; margin-top: 20px; border-radius: 6px; }
   </style>
 </head>
 <body>
@@ -26,7 +25,8 @@
       <option value="5">Mystery NFT #1 (ID: 5)</option>
       <option value="6">Mystery NFT #2 (ID: 6)</option>
     </select>
-    <label>Quantity:</label><input type="text" id="nftQty" />
+    <label>Quantity:</label>
+    <input type="number" id="nftQty" />
     <button onclick="mintNFT()">Mint NFT</button>
   </div>
 
@@ -34,7 +34,7 @@
     <h2>Airdrop NFT</h2>
     <label>Recipient:</label><input type="text" id="airdropTo" />
     <label>NFT ID:</label><input type="text" id="airdropId" />
-    <label>Quantity:</label><input type="text" id="airdropQty" />
+    <label>Quantity:</label><input type="number" id="airdropQty" />
     <button onclick="airdropNFT()">Airdrop NFT</button>
   </div>
 
@@ -50,6 +50,19 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-  <script src="admin.js"></script>
+  <script>
+    async function mintNFT() {
+      const id = document.getElementById("nftSelect").value;
+      const qty = document.getElementById("nftQty").value;
+      alert(`Minting NFT ID ${id} with quantity ${qty}`);
+    }
+
+    async function airdropNFT() {
+      const to = document.getElementById("airdropTo").value;
+      const id = document.getElementById("airdropId").value;
+      const qty = document.getElementById("airdropQty").value;
+      alert(`Airdropping NFT ID ${id} x${qty} to ${to}`);
+    }
+  </script>
 </body>
 </html>
