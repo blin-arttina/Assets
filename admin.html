@@ -5,20 +5,30 @@
   <meta charset="UTF-8" />
   <title>Assets Alert Admin</title>
   <style>
-    body { background-color: #121212; color: white; font-family: Arial, sans-serif; }
-    input, button { margin: 8px 0; padding: 10px; width: 100%; }
+    body { background-color: #121212; color: white; font-family: Arial, sans-serif; font-size: 20px; }
+    input, select, button { margin: 10px 0; padding: 12px; width: 100%; font-size: 18px; }
     button { background-color: red; color: white; border: none; }
-    .section { border: 1px solid gray; padding: 16px; margin: 16px; }
+    .section { border: 1px solid gray; padding: 20px; margin: 20px; }
   </style>
 </head>
 <body>
   <h1>Assets Alert Admin Dashboard</h1>
+
   <div class="section">
     <h2>Mint NFT</h2>
-    <label>NFT ID:</label><input type="text" id="nftId" />
+    <label>Select NFT:</label>
+    <select id="nftDropdown">
+      <option value="1">Skater Mouse (ID: 1)</option>
+      <option value="2">Beta Tester (ID: 2)</option>
+      <option value="3">Paid NFT (ID: 3)</option>
+      <option value="4">Premium NFT (ID: 4)</option>
+      <option value="5">Mystery NFT 1 (ID: 5)</option>
+      <option value="6">Mystery NFT 2 (ID: 6)</option>
+    </select>
     <label>Quantity:</label><input type="text" id="nftQty" />
     <button onclick="mintNFT()">Mint NFT</button>
   </div>
+
   <div class="section">
     <h2>Airdrop NFT</h2>
     <label>Recipient:</label><input type="text" id="airdropTo" />
@@ -26,6 +36,21 @@
     <label>Quantity:</label><input type="text" id="airdropQty" />
     <button onclick="airdropNFT()">Airdrop NFT</button>
   </div>
+
+  <div class="section">
+    <h2>Beta Tester Sign-Ups</h2>
+    <div id="betaTesterList">Loading sign-ups...</div>
+  </div>
+
+  <div class="section">
+    <h2>Purchase Notifications</h2>
+    <div id="purchaseLog">
+      <strong>Tracking NFT Sales:</strong><br/>
+      - Paid NFT (ID: 3): <span id="paidSales">0</span><br/>
+      - Premium NFT (ID: 4): <span id="premiumSales">0</span>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
   <script src="admin.js"></script>
 </body>
