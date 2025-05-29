@@ -4,27 +4,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Assets Alert Admin</title>
+  <title>Assets Alert Admin Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
   <style>
     body {
       background-color: #111;
       color: white;
       font-family: sans-serif;
-      padding: 20px;
       font-size: 1.2em;
+      padding: 20px;
     }
     input, select, button {
       margin: 10px 0;
       padding: 10px;
       font-size: 1em;
+      background: #222;
       color: white;
-      background-color: #222;
       border: 1px solid gray;
       border-radius: 5px;
     }
     button {
       background-color: red;
+      border: 1px solid gray;
       cursor: pointer;
     }
     .section {
@@ -33,13 +34,20 @@
       margin-bottom: 20px;
       border-radius: 10px;
     }
+    .log-entry {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #222;
+      border: 1px solid gray;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
   <h1>Assets Alert Admin Dashboard</h1>
+
   <div class="section">
-    <p><strong>Wallet:</strong> <span id="walletAddress">Not connected</span></p>
-    <button onclick="connectWallet()">Connect Wallet</button>
+    <p><strong>Wallet:</strong> <span id="walletAddress">Connecting...</span></p>
   </div>
 
   <div class="section">
@@ -49,8 +57,8 @@
       <option value="2">Beta Tester</option>
       <option value="3">Paid NFT</option>
       <option value="4">Premium NFT</option>
-      <option value="5">Mystery #1</option>
-      <option value="6">Mystery #2</option>
+      <option value="5">Mystery NFT #1</option>
+      <option value="6">Mystery NFT #2</option>
     </select>
     <input id="mintQty" type="number" value="1" min="1" />
     <button onclick="mint()">Mint</button>
@@ -58,14 +66,14 @@
 
   <div class="section">
     <h2>Airdrop NFT</h2>
-    <input id="airdropAddr" placeholder="Wallet address" />
+    <input id="airdropAddr" type="text" placeholder="Recipient Wallet Address" />
     <select id="airdropToken">
       <option value="1">Skater Mouse</option>
       <option value="2">Beta Tester</option>
       <option value="3">Paid NFT</option>
       <option value="4">Premium NFT</option>
-      <option value="5">Mystery #1</option>
-      <option value="6">Mystery #2</option>
+      <option value="5">Mystery NFT #1</option>
+      <option value="6">Mystery NFT #2</option>
     </select>
     <input id="airdropQty" type="number" value="1" min="1" />
     <button onclick="airdrop()">Send Airdrop</button>
@@ -76,13 +84,36 @@
     <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSAMPLEURL/pubhtml?widget=true&amp;headers=false" width="100%" height="300"></iframe>
   </div>
 
+  <div class="section">
+    <h2>Sales Log (Paid & Premium NFTs)</h2>
+    <div id="salesLog">Loading transactions...</div>
+  </div>
+
   <script>
     const contractAddress = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
     const adminWallet = "0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E".toLowerCase();
 
-    const abi = [{{"inputs":[{{"internalType":"string","name":"_baseTokenURI","type":"string"}}],"stateMutability":"nonpayable","type":"constructor"},
-    {{"anonymous":false,"inputs":[{{"indexed":true,"internalType":"address","name":"operator","type":"address"}},{{"indexed":true,"internalType":"address","name":"from","type":"address"}},{{"indexed":true,"internalType":"address","name":"to","type":"address"}},{{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"}},{{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}}],"name":"TransferSingle","type":"event"},
-    {{"inputs":[{{"internalType":"address","name":"to","type":"address"}},{{"internalType":"uint256","name":"id","type":"uint256"}},{{"internalType":"uint256","name":"amount","type":"uint256"}},{{"internalType":"bytes","name":"data","type":"bytes"}}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"}}];
+    const abi = [
+      {
+        "inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],
+        "name":"mint",
+        "outputs":[],
+        "stateMutability":"nonpayable",
+        "type":"function"
+      },
+      {
+        "anonymous":false,
+        "inputs":[
+          {"indexed":true,"internalType":"address","name":"operator","type":"address"},
+          {"indexed":true,"internalType":"address","name":"from","type":"address"},
+          {"indexed":true,"internalType":"address","name":"to","type":"address"},
+          {"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},
+          {"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}
+        ],
+        "name":"TransferSingle",
+        "type":"event"
+      }
+    ];
 
     let web3, contract, selectedAccount;
 
@@ -92,7 +123,7 @@
         await window.ethereum.request({ method: "eth_requestAccounts" });
         const accounts = await web3.eth.getAccounts();
         selectedAccount = accounts[0];
-        document.getElementById("walletAddress").innerText = selectedAccount;
+        document.getElementById("walletAddress").textContent = "Connected: " + selectedAccount;
 
         if (selectedAccount.toLowerCase() !== adminWallet) {
           alert("Unauthorized wallet! Access denied.");
@@ -100,16 +131,15 @@
         }
 
         contract = new web3.eth.Contract(abi, contractAddress);
-        alert("Connected successfully!");
+        loadSalesLog();
       } else {
-        alert("Please install MetaMask or use Brave Wallet.");
+        document.getElementById("walletAddress").textContent = "Wallet not found.";
       }
     }
 
     async function mint() {
       const tokenId = document.getElementById("mintToken").value;
       const quantity = document.getElementById("mintQty").value;
-
       await contract.methods.mint(selectedAccount, tokenId, quantity, "0x").send({ from: selectedAccount });
       alert(`Minted ${quantity} of token ID ${tokenId}`);
     }
@@ -118,10 +148,37 @@
       const addr = document.getElementById("airdropAddr").value;
       const tokenId = document.getElementById("airdropToken").value;
       const quantity = document.getElementById("airdropQty").value;
-
       await contract.methods.mint(addr, tokenId, quantity, "0x").send({ from: selectedAccount });
       alert(`Airdropped ${quantity} of token ID ${tokenId} to ${addr}`);
     }
+
+    async function loadSalesLog() {
+      const logDiv = document.getElementById("salesLog");
+      logDiv.innerHTML = "Checking recent transactions...";
+      const events = await contract.getPastEvents("TransferSingle", {
+        fromBlock: "latest",
+        toBlock: "latest"
+      });
+
+      const sales = events.filter(e => e.returnValues.id === "3" || e.returnValues.id === "4");
+      if (sales.length === 0) {
+        logDiv.innerHTML = "No Paid or Premium NFT sales found yet.";
+        return;
+      }
+
+      logDiv.innerHTML = "";
+      sales.forEach(e => {
+        const { to, id, value } = e.returnValues;
+        const hash = e.transactionHash;
+        const type = id === "3" ? "Paid NFT" : "Premium NFT";
+        const entry = document.createElement("div");
+        entry.className = "log-entry";
+        entry.innerHTML = `<strong>${type}</strong><br>Buyer: ${to}<br>Qty: ${value}<br><a href='https://polygonscan.com/tx/${hash}' target='_blank'>View on Polygonscan</a>`;
+        logDiv.appendChild(entry);
+      });
+    }
+
+    window.onload = connectWallet;
   </script>
 </body>
 </html>
