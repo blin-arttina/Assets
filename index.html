@@ -1,119 +1,57 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Assets Alert</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <script src="https://unpkg.com/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
   <style>
-    body {
-      background-color: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
-      font-size: 24px;
-      padding: 24px;
-    }
-    h1, h2 {
-      color: #ff2e2e;
-      font-size: 34px;
-    }
-    input, button, .button {
-      width: 100%;
-      padding: 18px;
-      margin: 16px 0;
-      font-size: 24px;
-      background-color: #1e1e1e;
-      color: white;
-      border: 1px solid gray;
-      text-align: center;
-    }
-    .button {
-      background-color: #ff2e2e;
-      text-decoration: none;
-      cursor: pointer;
-      display: inline-block;
-    }
-    .screenshot-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 24px;
-      margin: 24px 0;
-    }
-    .screenshot-grid img {
-      width: 48%;
-      border: 1px solid gray;
-    }
-    footer {
-      text-align: center;
-      margin-top: 60px;
-    }
+    body { background-color: #121212; color: white; font-family: Arial, sans-serif; font-size: 20px; text-align: center; }
+    img { width: 80%%; max-width: 600px; margin: 20px auto; display: block; border: 2px solid gray; border-radius: 10px; }
+    .section { margin: 40px auto; width: 90%%; }
+    .description { margin-top: -10px; margin-bottom: 30px; color: #ccc; }
+    button { background-color: red; color: white; font-size: 24px; padding: 10px 20px; border: 2px solid gray; border-radius: 8px; margin: 20px; cursor: pointer; }
   </style>
 </head>
 <body>
 
   <!-- Logo -->
-  <img src="logo.png" alt="Assets Alert Logo" style="max-width: 300px; display: block; margin: 0 auto 20px;" />
-
-  <!-- App Description -->
-  <h1>Welcome to the Assets Alert Project</h1>
-  <p>This app provides real-time price alerts for Bitcoin, cryptocurrencies, and stocks. Customize alerts, upload your own sounds, and explore premium skins.</p>
-
-  <!-- Screenshots -->
-  <h2>App Previews</h2>
-  <div class="screenshot-grid">
-    <img src="app_preview1.png" alt="Preview 1" />
-    <img src="app_preview2.png" alt="Preview 2" />
-    <img src="app_preview3.png" alt="Preview 3" />
-    <img src="app_preview4.png" alt="Preview 4" />
+  <div class="section">
+    <img src="logo.png" alt="Assets Alert Logo">
   </div>
 
-  <!-- Beta Tester Sign-Up -->
-  <h2>Sign Up to Be a Beta Tester</h2>
-  <button class="button" onclick="connectWallet()">Connect Wallet</button>
-  <p id="walletStatus">Wallet not connected</p>
+  <!-- Splash screen -->
+  <div class="section">
+    <img src="assets_alert_ui_splash.png" alt="Welcome Splash Screen">
+  </div>
 
-  <form action="https://docs.google.com/forms/d/e/1FAIpQLScxX8Y2RBgCkXnRW8vYWh4zm2DpzBk1CE8Z7dR3kzqjlT7egw/formResponse" method="POST" target="_blank">
-    <input name="entry.1234567890" type="text" placeholder="Full Name" required />
-    <input name="entry.0987654321" type="email" placeholder="Email Address" required />
-    <input id="walletField" name="entry.1122334455" type="text" placeholder="Wallet Address (Connect above)" required readonly />
-    <button class="button" type="submit">Submit</button>
-  </form>
+  <!-- Screenshots with descriptions -->
+  <div class="section">
+    <img src="assets_alert_ui_mock_v2.png" alt="Main Input Screen">
+    <p class="description">Main input screen to monitor assets and set alert preferences.</p>
 
-  <!-- APK Download (Coming Soon) -->
-  <h2>Download the Android App</h2>
-  <div class="button" style="pointer-events: none; opacity: 0.6;">Coming Soon</div>
+    <img src="assets_alert_ui_alert_triggered.png" alt="Alert Triggered">
+    <p class="description">Alert triggered when target price is reached.</p>
 
-  <!-- Donation Section -->
-  <h2>Support the Project</h2>
-  <p>Support development by sending donations to our wallet:</p>
-  <input type="text" readonly value="0xYourDonationWalletAddressHere" />
+    <img src="assets_alert_ui_settings.png" alt="Settings Screen">
+    <p class="description">Settings screen to customize your alert experience.</p>
 
-  <!-- Navigation Buttons -->
-  <a class="button" href="nft.html">NFT Showcase</a>
-  <a class="button" href="admin.html">Admin Dashboard</a>
+    <img src="assets_alert_ui_monitoring.png" alt="Live Price List">
+    <p class="description">Live feed of tracked asset prices.</p>
 
-  <!-- Footer Branding -->
-  <footer>
-    <img src="blind_art_logo.png" alt="Blind Art Logo" style="max-width: 200px;" />
-  </footer>
+    <img src="assets_alert_ui_horizontal_tracker.png" alt="Horizontal Tracker View">
+    <p class="description">Horizontal list of tracked assets with sound alert toggle.</p>
+  </div>
 
-  <script>
-    async function connectWallet() {
-      const walletConnectProvider = new window.WalletConnectProvider.default({
-        rpc: { 80001: "https://rpc-mumbai.maticvigil.com" },
-        chainId: 80001
+  <!-- Beta tester sign-up -->
+  <div class="section">
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSd9GoPxqAnf2Y-vR7MlfSvE6kYzTkbsImqNP-4J5IxFKCCIdg/viewform?embedded=true" width="640" height="800" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+  </div>
 
-        Join me on Chime and get $100. Terms apply. https://chime.com/r/tinanorton29?c=s
-      });
-
-      await walletConnectProvider.enable();
-      const provider = new ethers.providers.Web3Provider(walletConnectProvider);
-      const signer = provider.getSigner();
-      const address = await signer.getAddress();
-      document.getElementById("walletField").value = address;
-      document.getElementById("walletStatus").innerText = "Wallet Connected: " + address;
-    }
-  </script>
+  <!-- Buttons to other pages -->
+  <div class="section">
+    <button onclick="location.href='nft.html'">Go to NFT Showcase</button>
+    <button onclick="location.href='admin.html'">Go to Admin Page</button>
+  </div>
 
 </body>
 </html>
