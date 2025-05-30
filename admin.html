@@ -6,28 +6,52 @@
   <title>Admin Dashboard - Assets Alert</title>
   <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
   <style>
-    body { background-color: #121212; color: white; font-family: Arial, sans-serif; font-size: 20px; }
-    h1 { color: red; text-align: center; }
-    table { width: 95%%; margin: 20px auto; border-collapse: collapse; font-size: 18px; }
-    th, td { border: 1px solid gray; padding: 10px; text-align: center; }
+    body { background-color: #121212; color: white; font-family: Arial, sans-serif; font-size: 24px; }
+    h1 { color: red; text-align: center; font-size: 32px; }
+    table { width: 95%%; margin: 20px auto; border-collapse: collapse; font-size: 22px; }
+    th, td { border: 1px solid gray; padding: 12px; text-align: center; }
     th { background-color: #333; color: red; }
     td { background-color: #1e1e1e; }
-    .note { text-align: center; color: #ff4; font-size: 18px; margin-top: 20px; }
-    button { background-color: red; color: white; padding: 8px 14px; border: 2px solid gray; font-size: 18px; border-radius: 6px; cursor: pointer; }
+    .note { text-align: center; color: #ff4; font-size: 22px; margin-top: 20px; }
+    button { background-color: red; color: white; padding: 10px 20px; border: 2px solid gray; font-size: 22px; border-radius: 8px; cursor: pointer; margin: 10px; }
     .back-btn { margin: 30px auto; display: block; }
+    .section { margin: 40px auto; width: 95%%; }
   </style>
 </head>
 <body>
 
   <h1>Assets Alert Admin Dashboard</h1>
-  <div class="note">Beta Tester Sign-Up Info + Mint NFT</div>
 
+  <div class="note">Beta Tester Sign-Up Info + Mint Beta NFT</div>
   <table id="testerTable">
     <thead>
       <tr><th>Name</th><th>Email</th><th>Wallet Address</th><th>Action</th></tr>
     </thead>
     <tbody></tbody>
   </table>
+
+  <div class="section">
+    <div class="note">Mint or Airdrop Any NFT</div>
+    <form id="mintForm">
+      <input type="text" id="mintWallet" placeholder="Wallet Address" style="width: 90%%; font-size: 22px;"><br>
+      <input type="number" id="mintId" placeholder="Token ID (e.g., 2)" style="width: 90%%; font-size: 22px;"><br>
+      <input type="number" id="mintAmount" placeholder="Amount (e.g., 1)" style="width: 90%%; font-size: 22px;"><br>
+      <button type="button" onclick="mintCustomNFT()">Mint / Airdrop NFT</button>
+    </form>
+  </div>
+
+  <div class="section">
+    <div class="note">Track Paid NFT (ID 3) and Premium NFT (ID 4) Purchases</div>
+    <table>
+      <thead>
+        <tr><th>NFT Type</th><th>Wallet Address</th><th>Status</th></tr>
+      </thead>
+      <tbody id="purchaseTable">
+        <tr><td>Paid NFT (ID 3)</td><td>--</td><td>Awaiting Tracking</td></tr>
+        <tr><td>Premium NFT (ID 4)</td><td>--</td><td>Awaiting Tracking</td></tr>
+      </tbody>
+    </table>
+  </div>
 
   <button class="back-btn" onclick="location.href='index.html'">← Back to Index</button>
 
@@ -71,12 +95,26 @@
         .on("error", err => alert("Minting failed: " + err.message));
     }
 
+    async function mintCustomNFT() {
+      const accounts = await connectWeb3();
+      const admin = accounts[0];
+      const contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+      const wallet = document.getElementById("mintWallet").value;
+      const id = parseInt(document.getElementById("mintId").value);
+      const amount = parseInt(document.getElementById("mintAmount").value);
+
+      contract.methods.mint(wallet, id, amount, "0x").send({ from: admin })
+        .on("transactionHash", hash => alert("Minting NFT " + id + " in progress"))
+        .on("receipt", receipt => alert("Mint successful!"))
+        .on("error", err => alert("Minting failed: " + err.message));
+    }
+
     fetch('https://docs.google.com/spreadsheets/d/17uA2u4QMb7JRpbblyLQM11QX_s3De_NwD7iH18vr9QQ/export?format=csv')
       .then(response => response.text())
       .then(data => {
-        const rows = data.split("\n").slice(1); // skip header
+        const rows = data.split("\n").slice(1);
         const tbody = document.querySelector("#testerTable tbody");
-        rows.forEach((row, index) => {
+        rows.forEach(row => {
           const cells = row.split(",");
           if (cells.length >= 3) {
             const tr = document.createElement("tr");
