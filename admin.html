@@ -1,35 +1,85 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Assets Alert Admin</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    section {
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #111;
+    }
+    th, td {
+      border: 1px solid #555;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #222;
+    }
+  </style>
 </head>
-<body style="background-color:#121212;color:white;font-size:24px;text-align:center;">
-  <h1>Admin Dashboard</h1>
+<body>
+  <h1>Assets Alert Admin Dashboard</h1>
 
-  <h2>Beta Tester Sign-Ups</h2>
-  <div id="betaTesterList">Loading...</div>
+  <section>
+    <h2>Beta Tester Sign-Ups</h2>
+    <div id="betaTesterList">Loading...</div>
+  </section>
 
   <script>
-    fetch("https://secure-signup-server.onrender.com/signups")
-      .then(response => response.json())
-      .then(data => {
-        const container = document.getElementById("betaTesterList");
-        if (data.length === 0) {
-          container.innerText = "No signups yet.";
-        } else {
-          const list = data.map(entry => 
-            `<p>${entry.name} | ${entry.email} | ${entry.wallet}</p>`
-          ).join("");
-          container.innerHTML = list;
+    async function loadBetaTesters() {
+      try {
+        const response = await fetch('https://secure-signup-server.onrender.com/getBetaTesters');
+        if (!response.ok) {
+          throw new Error('Request failed');
         }
-      })
-      .catch(error => {
-        document.getElementById("betaTesterList").innerText = "Error loading data.";
-        console.error(error);
-      });
-  </script>
+        const testers = await response.json();
+        const container = document.getElementById('betaTesterList');
 
+        if (testers.length === 0) {
+          container.innerHTML = "<p>No beta testers have signed up yet.</p>";
+          return;
+        }
+
+        const table = document.createElement("table");
+        const header = table.insertRow();
+        ["Name", "Email", "Wallet"].forEach((text) => {
+          const th = document.createElement("th");
+          th.innerText = text;
+          header.appendChild(th);
+        });
+
+        testers.forEach(tester => {
+          const row = table.insertRow();
+          row.insertCell().innerText = tester.name;
+          row.insertCell().innerText = tester.email;
+          row.insertCell().innerText = tester.wallet;
+        });
+
+        container.innerHTML = "";
+        container.appendChild(table);
+      } catch (err) {
+        document.getElementById("betaTesterList").innerText = "Error loading beta testers.";
+      }
+    }
+
+    window.onload = loadBetaTesters;
+  </script>
 </body>
 </html>

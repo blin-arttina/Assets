@@ -1,35 +1,87 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Assets Alert - Beta Sign Up</title>
+  <title>Assets Alert</title>
+  <style>
+    body {
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .logo {
+      width: 200px;
+      margin: 0 auto 20px;
+    }
+    form {
+      background-color: #111;
+      padding: 20px;
+      border: 1px solid #555;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    button {
+      background-color: red;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+    }
+    .note, .footer {
+      margin-top: 20px;
+      font-size: 18px;
+      color: yellow;
+    }
+    .buttons {
+      margin: 30px;
+    }
+    .buttons a {
+      display: inline-block;
+      background-color: red;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      margin: 10px;
+    }
+    .apk {
+      margin-top: 30px;
+    }
+  </style>
 </head>
-<body style="background-color:#121212;color:white;font-size:24px;text-align:center;">
-  <img src="assets_alert_logo.png" alt="Assets Alert Logo" style="max-width:200px;margin-top:20px;">
-  <h1>Welcome to the Assets Alert Project</h1>
-  <p>Real-time monitoring and alerts for Bitcoin, crypto, and stocks. Set custom price alerts and choose alert sounds, including your own uploads.</p>
+<body>
+  <img src="logo.png" alt="Assets Alert Logo" class="logo"/>
+  <h1>Welcome to Assets Alert</h1>
+  <p>Real-time monitoring and alerts for Bitcoin, crypto, and stock prices.</p>
 
-  <h2>Beta Tester Sign-Up</h2>
-  <form action="https://secure-signup-server.onrender.com/signup" method="POST" style="margin-bottom:20px;">
-    <label for="name">Name:</label><br>
-    <input type="text" id="name" name="name" required><br><br>
-    <label for="email">Email:</label><br>
-    <input type="email" id="email" name="email" required><br><br>
-    <label for="wallet">Wallet Address:</label><br>
-    <input type="text" id="wallet" name="wallet" required><br><br>
+  <form id="beta-form">
+    <h2>Beta Tester Sign-Up</h2>
+    <input type="text" name="name" placeholder="Name" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="text" name="wallet" placeholder="Wallet Address" required />
     <button type="submit">Submit</button>
+    <p class="note">*1 free NFT for beta testers!</p>
   </form>
-  <p>*1 free NFT for beta testers!*</p>
 
-  <h2>Assets Alert APK</h2>
-  <button disabled>Coming Soon</button>
+  <div class="apk">
+    <h3>Assets Alert APK</h3>
+    <button disabled>Coming Soon</button>
+  </div>
 
-  <br><br>
-  <a href="nft.html"><button>NFT Showcase</button></a>
-  <a href="admin.html"><button>Admin Dashboard</button></a>
-
-  <br><br>
-  <img src="blind_art_logo.png" alt="Blind Art Logo" style="max-width:100px;">
+  <div class="buttons">
+    <a href="nft.html">Go to NFT Showcase</a>
+    <a href="admin.html">Go to Admin Page</a>
+  </div>
 </body>
 </html>
