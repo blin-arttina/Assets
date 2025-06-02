@@ -1,73 +1,96 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assets Alert App</title>
+  <meta charset="UTF-8">
+  <title>Assets Alert</title>
   <style>
     body {
       background-color: #000;
-      color: #fff;
+      color: white;
       font-family: Arial, sans-serif;
-      padding: 2rem;
+      font-size: 24px;
     }
-    .button {
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .section {
+      padding: 20px;
+      text-align: center;
+    }
+    .screenshot {
+      width: 90%;
+      max-width: 600px;
+      margin: 20px auto;
+      display: block;
+      border: 2px solid gray;
+    }
+    .form-container {
+      border: 2px solid gray;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 18px;
+    }
+    .submit-button {
       background-color: red;
       color: white;
-      padding: 0.75rem;
-      font-size: 18px;
-      border: none;
+      padding: 10px 20px;
+      font-size: 24px;
+      margin-top: 20px;
       cursor: pointer;
-      margin-top: 1rem;
     }
-    .form-section {
-      margin-top: 2rem;
-      padding: 1rem;
-      border: 1px solid gray;
-      border-radius: 10px;
-    }
-    .form-section input {
-      background-color: black;
-      color: white;
-      border: 1px solid gray;
-      padding: 0.5rem;
-      width: 100%;
-      margin-bottom: 1rem;
-    }
-    .form-section label {
-      color: white;
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    .form-section p {
+    .note {
       color: yellow;
       font-size: 20px;
-      margin-top: 1rem;
+      margin-top: 15px;
+    }
+    .nav-buttons {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .nav-buttons a {
+      background-color: red;
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      margin: 0 10px;
+      font-size: 20px;
     }
   </style>
 </head>
 <body>
-
   <h1>Welcome to Assets Alert</h1>
-  <p>Live screenshots and price alert features displayed above...</p>
 
-  <section class="form-section">
+  <div class="section">
+    <p>Live screenshots and price alert features displayed above...</p>
+    <img src="splash_screen.png" class="screenshot" alt="Splash Screen">
+    <img src="settings_screen.png" class="screenshot" alt="Settings Screen">
+    <img src="live_price_feed.png" class="screenshot" alt="Live Price Feed">
+  </div>
+
+  <div class="form-container">
     <h2>Beta Tester Sign-Up</h2>
-    <form id="signup-form" action="https://secure-signup-server.onrender.com/signup" method="POST">
-      <label>Name:
-        <input type="text" name="name" required>
-      </label>
-      <label>Email:
-        <input type="email" name="email" required>
-      </label>
-      <label>Wallet Address:
-        <input type="text" name="wallet" required>
-      </label>
-      <button type="submit" class="button">Submit</button>
+    <form action="https://secure-signup-server.onrender.com/signup" method="POST">
+      <label>Name:</label><br>
+      <input type="text" name="name" required><br>
+      <label>Email:</label><br>
+      <input type="email" name="email" required><br>
+      <label>Wallet Address:</label><br>
+      <input type="text" name="wallet" required><br>
+      <input type="submit" value="Submit" class="submit-button">
     </form>
-    <p>*1 free NFT for beta testers!</p>
-  </section>
+    <div class="note">*1 free NFT for beta testers!</div>
+  </div>
 
+  <div class="nav-buttons">
+    <a href="nft.html">Go to NFT Showcase</a>
+    <a href="admin.html">Go to Admin Page</a>
+  </div>
 </body>
 </html>
