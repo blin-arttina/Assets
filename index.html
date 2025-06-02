@@ -2,74 +2,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Assets Alert</title>
-    <style>
-        body {
-            background-color: #121212;
-            color: white;
-            font-family: Arial, sans-serif;
-            font-size: 24px;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        img {
-            max-width: 200px;
-            margin: 20px auto;
-        }
-        .button {
-            background-color: red;
-            color: white;
-            border: 2px solid gray;
-            padding: 10px 20px;
-            margin: 10px;
-            text-decoration: none;
-            font-size: 24px;
-            display: inline-block;
-        }
-        form {
-            background-color: #1e1e1e;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 600px;
-            border: 1px solid gray;
-            border-radius: 8px;
-        }
-        input {
-            padding: 10px;
-            margin: 10px;
-            font-size: 18px;
-            width: 80%;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assets Alert</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      padding: 20px;
+    }
+    .center { text-align: center; }
+    .logo { max-width: 200px; margin-bottom: 20px; }
+    button {
+      background-color: red;
+      color: white;
+      padding: 10px 20px;
+      font-size: 24px;
+      border: 2px solid gray;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .form-section, .apk-section, .buttons-section {
+      border: 2px solid gray;
+      padding: 20px;
+      margin: 30px 0;
+    }
+    input {
+      font-size: 20px;
+      padding: 10px;
+      margin: 10px;
+      width: 90%;
+    }
+    .bottom-logo {
+      margin-top: 40px;
+    }
+  </style>
 </head>
 <body>
 
-    <img src="logo.png" alt="Assets Alert Logo">
+  <div class="center">
+    <img src="assets_alert_logo.png" alt="Assets Alert Logo" class="logo" />
+    <h1>Welcome to Assets Alert</h1>
+    <p>This app provides real-time monitoring and audible alerts for Bitcoin, crypto, and stock prices. Customize alert thresholds, set your own sounds, and stay ahead of market changes.</p>
+  </div>
 
-    <h1>Welcome to the Assets Alert App</h1>
-    <p>This app provides real-time monitoring and alerts for Bitcoin, crypto, and stocks when they hit your specified price targets.</p>
-
-    <form>
-        <h2>Beta Tester Sign-Up</h2>
-        <input type="text" name="name" placeholder="Name"><br>
-        <input type="email" name="email" placeholder="Email"><br>
-        <input type="text" name="wallet" placeholder="Wallet Address"><br>
-        <p>*1 free NFT for beta testers!*</p>
+  <div class="form-section">
+    <h2>Beta Tester Sign-Up</h2>
+    <form id="betaTesterForm">
+      <input type="text" name="name" placeholder="Full Name" required /><br/>
+      <input type="email" name="email" placeholder="Email Address" required /><br/>
+      <input type="text" name="wallet" placeholder="Wallet Address" required /><br/>
+      <button type="submit">Submit</button>
     </form>
+    <p>*1 free NFT for beta testers!</p>
+  </div>
 
-    <div>
-        <h2>Assets Alert APK</h2>
-        <a class="button" href="#">Coming Soon</a>
-    </div>
+  <div class="apk-section center">
+    <h2>Assets Alert APK</h2>
+    <button disabled>Coming Soon</button>
+  </div>
 
-    <img src="blindart_logo.png" alt="Blind Art Logo">
+  <div class="buttons-section center">
+    <button onclick="window.location.href='nft.html'">Go to NFT Showcase</button><br/>
+    <button onclick="window.location.href='admin.html'">Go to Admin Page</button>
+  </div>
 
-    <div>
-        <a class="button" href="nft.html">NFT Showcase</a>
-        <a class="button" href="admin.html">Admin Page</a>
-    </div>
+  <div class="center bottom-logo">
+    <img src="blind_art_logo.PNG" alt="Blind Art Logo" class="logo"/>
+  </div>
+
+  <script>
+    document.getElementById("betaTesterForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const data = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        wallet: formData.get("wallet")
+      };
+      fetch("https://assets-alert-server.onrender.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(result => {
+        alert("Submission received! Thank you.");
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("There was a problem submitting the form.");
+      });
+    });
+  </script>
 
 </body>
 </html>
