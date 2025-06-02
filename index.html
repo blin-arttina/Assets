@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,93 +10,82 @@
       color: white;
       font-family: Arial, sans-serif;
       font-size: 24px;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
       padding: 20px;
     }
-    .center { text-align: center; }
-    .logo { max-width: 200px; margin-bottom: 20px; }
+    img.logo {
+      width: 300px;
+      display: block;
+      margin: 0 auto 20px auto;
+    }
+    h1, h2 {
+      text-align: center;
+      color: red;
+    }
+    input, button {
+      font-size: 18px;
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
     button {
       background-color: red;
       color: white;
-      padding: 10px 20px;
-      font-size: 24px;
-      border: 2px solid gray;
-      border-radius: 5px;
+      border: none;
       cursor: pointer;
-      margin-top: 10px;
+      border-radius: 5px;
     }
-    .form-section, .apk-section, .buttons-section {
-      border: 2px solid gray;
-      padding: 20px;
-      margin: 30px 0;
-    }
-    input {
-      font-size: 20px;
-      padding: 10px;
-      margin: 10px;
-      width: 90%;
-    }
-    .bottom-logo {
+    .form-section, .apk-section, .nav-buttons {
       margin-top: 40px;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-around;
+    }
+    a.button-link {
+      text-decoration: none;
+      display: inline-block;
     }
   </style>
 </head>
 <body>
-
-  <div class="center">
-    <img src="assets_alert_logo.png" alt="Assets Alert Logo" class="logo" />
-    <h1>Welcome to Assets Alert</h1>
-    <p>This app provides real-time monitoring and audible alerts for Bitcoin, crypto, and stock prices. Customize alert thresholds, set your own sounds, and stay ahead of market changes.</p>
-  </div>
-
-  <div class="form-section">
-    <h2>Beta Tester Sign-Up</h2>
-    <form id="betaTesterForm">
-      <input type="text" name="name" placeholder="Full Name" required /><br/>
-      <input type="email" name="email" placeholder="Email Address" required /><br/>
-      <input type="text" name="wallet" placeholder="Wallet Address" required /><br/>
-      <button type="submit">Submit</button>
-    </form>
-    <p>*1 free NFT for beta testers!</p>
-  </div>
-
-  <div class="apk-section center">
-    <h2>Assets Alert APK</h2>
-    <button disabled>Coming Soon</button>
-  </div>
-
-  <div class="buttons-section center">
-    <button onclick="window.location.href='nft.html'">Go to NFT Showcase</button><br/>
-    <button onclick="window.location.href='admin.html'">Go to Admin Page</button>
-  </div>
-
-  <div class="center bottom-logo">
+  <div class="container">
+    <img src="logo.png" alt="Assets Alert Logo" class="logo" />
     
+    <h1>Welcome to the Assets Alert App</h1>
+
+    <p>
+      Real-time monitoring and alerts for Bitcoin, crypto, and stock prices. 
+      Customize which assets to watch and get notified instantly when your target price is reached.
+      Includes built-in sounds and supports uploading your own.
+    </p>
+
+    <div class="form-section">
+      <h2>Beta Tester Sign-Up</h2>
+      <form name="betaTesterForm" method="POST" netlify>
+        <input type="text" name="name" placeholder="Your Full Name" required />
+        <input type="email" name="email" placeholder="Your Email Address" required />
+        <input type="text" name="wallet" placeholder="Your Wallet Address" required />
+        <button type="submit">Submit</button>
+      </form>
+      <p style="color: red; text-align: center;">*1 free NFT for beta testers!*</p>
+    </div>
+
+    <div class="apk-section">
+      <h2>Download the Assets Alert App</h2>
+      <button disabled>Coming Soon</button>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="nft.html" class="button-link"><button>NFT Showcase</button></a>
+      <a href="admin.html" class="button-link"><button>Admin Page</button></a>
+    </div>
   </div>
-
-  <script>
-    document.getElementById("betaTesterForm").addEventListener("submit", function(event) {
-      event.preventDefault();
-      const formData = new FormData(event.target);
-      const data = {
-        name: formData.get("name"),
-        email: formData.get("email"),
-        wallet: formData.get("wallet")
-      };
-      fetch("https://assets-alert-server.onrender.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(result => {
-        alert("Submission received! Thank you.");
-      })
-      .catch(error => {
-        console.error("Error:", error);
-        alert("There was a problem submitting the form.");
-      });
-    });
-  </script>
-
 </body>
 </html>
