@@ -1,104 +1,75 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Assets Alert</title>
-  <style>
-    body {
-      background-color: #000;
-      color: white;
-      font-family: Arial, sans-serif;
-      font-size: 24px;
-    }
-    h1 {
-      text-align: center;
-      margin-top: 20px;
-    }
-    .section {
-      padding: 20px;
-      text-align: center;
-    }
-    .screenshot {
-      width: 90%;
-      max-width: 600px;
-      margin: 20px auto;
-      display: block;
-      border: 2px solid gray;
-    }
-    .form-container {
-      border: 2px solid gray;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      font-size: 18px;
-    }
-    .submit-button {
-      background-color: red;
-      color: white;
-      padding: 10px 20px;
-      font-size: 24px;
-      margin-top: 20px;
-      cursor: pointer;
-    }
-    .note {
-      color: yellow;
-      font-size: 20px;
-      margin-top: 15px;
-    }
-    .nav-buttons {
-      text-align: center;
-      margin-top: 30px;
-    }
-    .nav-buttons a {
-      background-color: red;
-      color: white;
-      padding: 10px 15px;
-      text-decoration: none;
-      margin: 0 10px;
-      font-size: 20px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Assets Alert</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        img {
+            max-width: 200px;
+            margin: 20px auto;
+        }
+        .button {
+            background-color: red;
+            color: white;
+            border: 2px solid gray;
+            padding: 10px 20px;
+            margin: 10px;
+            text-decoration: none;
+            font-size: 24px;
+            display: inline-block;
+        }
+        form {
+            background-color: #1e1e1e;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            border: 1px solid gray;
+            border-radius: 8px;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            font-size: 18px;
+            width: 80%;
+        }
+    </style>
 </head>
 <body>
-  <h1>Welcome to Assets Alert</h1>
 
-  <div class="section">
-    <p>Real-time monitoring and alerts for Bitcoin, cryptocurrency, and stock prices.</p>
-    <img src="splash_screen.png" class="screenshot" alt="Splash Screen">
-    <img src="settings_screen.png" class="screenshot" alt="Settings Screen">
-    <img src="live_price_feed.png" class="screenshot" alt="Live Price Feed">
-  </div>
+    <img src="logo.png" alt="Assets Alert Logo">
 
-  <div class="form-container">
-    <h2>Beta Tester Sign-Up</h2>
-    <form action="https://secure-signup-server.onrender.com/signup" method="POST">
-      <label>Name:</label><br>
-      <input type="text" name="name" required><br>
-      <label>Email:</label><br>
-      <input type="email" name="email" required><br>
-      <label>Wallet Address:</label><br>
-      <input type="text" name="wallet" required><br>
-      <input type="submit" value="Submit" class="submit-button">
+    <h1>Welcome to the Assets Alert App</h1>
+    <p>This app provides real-time monitoring and alerts for Bitcoin, crypto, and stocks when they hit your specified price targets.</p>
+
+    <form>
+        <h2>Beta Tester Sign-Up</h2>
+        <input type="text" name="name" placeholder="Name"><br>
+        <input type="email" name="email" placeholder="Email"><br>
+        <input type="text" name="wallet" placeholder="Wallet Address"><br>
+        <p>*1 free NFT for beta testers!*</p>
     </form>
-    <div class="note">*1 free NFT for beta testers!</div>
-  </div>
 
-  <div class="nav-buttons">
-    <a href="nft.html">Go to NFT Showcase</a>
-    <a href="admin.html">Go to Admin Page</a>
-  </div>
+    <div>
+        <h2>Assets Alert APK</h2>
+        <a class="button" href="#">Coming Soon</a>
+    </div>
 
-<!-- Assets Alert APK Section -->
-<section style="margin-top: 40px; text-align: center;">
-    <h2 style="font-size: 24px; color: white;">Assets Alert APK</h2>
-    <p style="font-size: 18px; color: white;">Download the Assets Alert app for Android. Monitor real-time crypto and stock prices with custom alerts.</p>
-    <button style="font-size: 18px; background-color: red; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: not-allowed;">Coming Soon</button>
-</section>
+    <img src="blindart_logo.png" alt="Blind Art Logo">
+
+    <div>
+        <a class="button" href="nft.html">NFT Showcase</a>
+        <a class="button" href="admin.html">Admin Page</a>
+    </div>
 
 </body>
 </html>
