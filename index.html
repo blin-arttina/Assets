@@ -2,53 +2,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Assets Alert - Beta Tester Sign-Up</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assets Alert App</title>
   <style>
-    body { background-color: #121212; color: white; font-family: Arial, sans-serif; font-size: 22px; }
-    h1, h2 { color: red; text-align: center; }
-    form { width: 80%%; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
-    input { padding: 10px; font-size: 20px; border: 1px solid gray; border-radius: 6px; }
-    button { background-color: red; color: white; padding: 12px; border: 2px solid gray; font-size: 22px; border-radius: 6px; cursor: pointer; }
-    .note { text-align: center; margin-top: 20px; font-size: 18px; color: yellow; }
-    .nav-buttons { display: flex; justify-content: center; gap: 30px; margin-top: 40px; }
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+    }
+    .button {
+      background-color: red;
+      color: white;
+      padding: 0.75rem;
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    .form-section {
+      margin-top: 2rem;
+      padding: 1rem;
+      border: 1px solid gray;
+      border-radius: 10px;
+    }
+    .form-section input {
+      background-color: black;
+      color: white;
+      border: 1px solid gray;
+      padding: 0.5rem;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    .form-section label {
+      color: white;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .form-section p {
+      color: yellow;
+      font-size: 20px;
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Welcome to Assets Alert!</h1>
-  <h2>Beta Tester Sign-Up</h2>
+  <h1>Welcome to Assets Alert</h1>
+  <p>Live screenshots and price alert features displayed above...</p>
 
-  <form id="betaForm">
-    <input type="text" id="name" placeholder="Your Name" required>
-    <input type="email" id="email" placeholder="Your Email" required>
-    <input type="text" id="wallet" placeholder="Wallet Address" required>
-    <button type="submit">Submit</button>
-  </form>
-
-  <div class="note">* 1 free NFT for beta testers! *</div>
-
-  <div class="nav-buttons">
-    <button onclick="location.href='nft.html'">View NFT Showcase</button>
-    <button onclick="location.href='admin.html'">Go to Admin</button>
-  </div>
-
-  <script>
-    document.getElementById("betaForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const wallet = document.getElementById("wallet").value;
-      const entry = { name, email, wallet };
-
-      const existing = JSON.parse(localStorage.getItem("betaTesters") || "[]");
-      existing.push(entry);
-      localStorage.setItem("betaTesters", JSON.stringify(existing));
-
-      alert("Thank you for signing up!");
-      document.getElementById("betaForm").reset();
-    });
-  </script>
+  <section class="form-section">
+    <h2>Beta Tester Sign-Up</h2>
+    <form id="signup-form" action="https://secure-signup-server.onrender.com/signup" method="POST">
+      <label>Name:
+        <input type="text" name="name" required>
+      </label>
+      <label>Email:
+        <input type="email" name="email" required>
+      </label>
+      <label>Wallet Address:
+        <input type="text" name="wallet" required>
+      </label>
+      <button type="submit" class="button">Submit</button>
+    </form>
+    <p>*1 free NFT for beta testers!</p>
+  </section>
 
 </body>
 </html>
