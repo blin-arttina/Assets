@@ -6,56 +6,97 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Assets Alert Admin Dashboard</title>
   <style>
-    body {
-      background-color: black;
-      color: white;
-      font-family: Arial, sans-serif;
-      padding: 2em;
-    }
-    h1 {
-      font-size: 2em;
-    }
-    h2 {
-      margin-top: 1.5em;
-    }
-    .beta-tester {
-      margin-top: 1em;
-      padding: 1em;
-      border: 1px solid white;
-      border-radius: 5px;
-    }
+    body { background-color: #000; color: #fff; font-family: Arial, sans-serif; padding: 20px; }
+    h1, h2 { color: #fff; }
+    section { margin-bottom: 30px; }
+    label, input, select, button { display: block; margin: 5px 0; }
+    input, select { width: 100%; padding: 8px; }
+    button { padding: 10px; background-color: red; color: #fff; border: none; cursor: pointer; }
+    .card { border: 1px solid gray; padding: 15px; border-radius: 10px; background-color: #111; }
   </style>
 </head>
 <body>
+
   <h1>Assets Alert Admin Dashboard</h1>
-  <h2>Beta Tester Sign-Ups</h2>
-  <div id="beta-tester-list">Loading...</div>
+
+  <section class="card">
+    <h2>Mint NFT</h2>
+    <label for="mint-nft-id">NFT ID:</label>
+    <input type="number" id="mint-nft-id"/>
+    <label for="mint-quantity">Quantity:</label>
+    <input type="number" id="mint-quantity"/>
+    <button onclick="mintNFT()">Mint NFT</button>
+  </section>
+
+  <section class="card">
+    <h2>Airdrop NFT</h2>
+    <label for="airdrop-address">Wallet Address:</label>
+    <input type="text" id="airdrop-address"/>
+    <label for="airdrop-nft-id">NFT ID:</label>
+    <input type="number" id="airdrop-nft-id"/>
+    <label for="airdrop-quantity">Quantity:</label>
+    <input type="number" id="airdrop-quantity"/>
+    <button onclick="airdropNFT()">Airdrop NFT</button>
+  </section>
+
+  <section class="card">
+    <h2>Beta Tester Sign-Ups</h2>
+    <ul id="beta-tester-list">Loading...</ul>
+  </section>
+
+  <section class="card">
+    <h2>Purchase Tracker</h2>
+    <ul id="purchase-tracker">Loading...</ul>
+  </section>
 
   <script>
     async function fetchBetaTesters() {
       try {
-        const response = await fetch("https://secure-signup-server.onrender.com/getBetaTesters");
-        if (!response.ok) throw new Error("Network response was not ok");
+        const response = await fetch('https://secure-signup-server.onrender.com/getBetaTesters');
         const testers = await response.json();
-        const container = document.getElementById("beta-tester-list");
-
-        if (testers.length === 0) {
-          container.textContent = "No beta testers yet.";
-        } else {
-          container.innerHTML = testers.map(t =>
-            `<div class="beta-tester">
-              <strong>Name:</strong> ${t.name}<br/>
-              <strong>Email:</strong> ${t.email}<br/>
-              <strong>Wallet:</strong> ${t.wallet}
-            </div>`).join('');
-        }
+        const list = document.getElementById('beta-tester-list');
+        list.innerHTML = '';
+        testers.forEach(tester => {
+          const li = document.createElement('li');
+          li.textContent = `${tester.name} - ${tester.email} - ${tester.wallet}`;
+          list.appendChild(li);
+        });
       } catch (error) {
-        document.getElementById("beta-tester-list").textContent = "Error loading beta testers.";
-        console.error("Fetch error:", error);
+        document.getElementById('beta-tester-list').innerText = 'Error loading beta testers.';
       }
     }
 
+    async function fetchPurchaseData() {
+      try {
+        const response = await fetch('https://secure-signup-server.onrender.com/purchases');
+        const purchases = await response.json();
+        const list = document.getElementById('purchase-tracker');
+        list.innerHTML = '';
+        purchases.forEach(entry => {
+          const li = document.createElement('li');
+          li.textContent = `Buyer: ${entry.buyer}, NFT ID: ${entry.nftId}, Qty: ${entry.quantity}`;
+          list.appendChild(li);
+        });
+      } catch (error) {
+        document.getElementById('purchase-tracker').innerText = 'Error loading purchases.';
+      }
+    }
+
+    function mintNFT() {
+      const id = document.getElementById('mint-nft-id').value;
+      const qty = document.getElementById('mint-quantity').value;
+      alert(`Minting NFT ID ${id} with quantity ${qty}`);
+    }
+
+    function airdropNFT() {
+      const addr = document.getElementById('airdrop-address').value;
+      const id = document.getElementById('airdrop-nft-id').value;
+      const qty = document.getElementById('airdrop-quantity').value;
+      alert(`Airdropping NFT ID ${id} qty ${qty} to ${addr}`);
+    }
+
     fetchBetaTesters();
+    fetchPurchaseData();
   </script>
 </body>
 </html>
