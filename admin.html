@@ -1,102 +1,149 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Assets Alert Admin Dashboard</title>
+  <title>Assets Alert Admin Panel</title>
   <style>
-    body { background-color: #000; color: #fff; font-family: Arial, sans-serif; padding: 20px; }
-    h1, h2 { color: #fff; }
-    section { margin-bottom: 30px; }
-    label, input, select, button { display: block; margin: 5px 0; }
-    input, select { width: 100%; padding: 8px; }
-    button { padding: 10px; background-color: red; color: #fff; border: none; cursor: pointer; }
-    .card { border: 1px solid gray; padding: 15px; border-radius: 10px; background-color: #111; }
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      padding: 20px;
+    }
+    h1 {
+      color: red;
+    }
+    section {
+      margin-bottom: 40px;
+    }
+    button, select, input {
+      font-size: 24px;
+      margin: 5px 0;
+      padding: 10px;
+      background-color: #222;
+      color: #fff;
+      border: 2px solid gray;
+      border-radius: 5px;
+    }
+    .box {
+      border: 2px solid gray;
+      padding: 15px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-
   <h1>Assets Alert Admin Dashboard</h1>
 
-  <section class="card">
+  <section id="walletStatus">
+    <strong>Wallet Status:</strong>
+    <span id="walletAddress">Connecting...</span>
+  </section>
+
+  <section id="mintSection" class="box">
     <h2>Mint NFT</h2>
-    <label for="mint-nft-id">NFT ID:</label>
-    <input type="number" id="mint-nft-id"/>
-    <label for="mint-quantity">Quantity:</label>
-    <input type="number" id="mint-quantity"/>
-    <button onclick="mintNFT()">Mint NFT</button>
+    <label for="nftSelect">Select NFT:</label>
+    <select id="nftSelect">
+      <option value="1">Skater Mouse NFT</option>
+      <option value="2">Beta Tester NFT</option>
+      <option value="3">Paid NFT</option>
+      <option value="4">Premium NFT</option>
+      <option value="5">Mystery NFT 1</option>
+      <option value="6">Mystery NFT 2</option>
+    </select><br/>
+    <label for="mintQuantity">Quantity:</label>
+    <input type="number" id="mintQuantity" value="1" min="1"/><br/>
+    <button onclick="mintNFT()">Mint</button>
   </section>
 
-  <section class="card">
+  <section id="airdropSection" class="box">
     <h2>Airdrop NFT</h2>
-    <label for="airdrop-address">Wallet Address:</label>
-    <input type="text" id="airdrop-address"/>
-    <label for="airdrop-nft-id">NFT ID:</label>
-    <input type="number" id="airdrop-nft-id"/>
-    <label for="airdrop-quantity">Quantity:</label>
-    <input type="number" id="airdrop-quantity"/>
-    <button onclick="airdropNFT()">Airdrop NFT</button>
+    <label for="airdropAddress">Recipient Wallet Address:</label><br/>
+    <input type="text" id="airdropAddress" placeholder="0x..."/><br/>
+    <label for="airdropSelect">Select NFT:</label>
+    <select id="airdropSelect">
+      <option value="1">Skater Mouse NFT</option>
+      <option value="2">Beta Tester NFT</option>
+      <option value="3">Paid NFT</option>
+      <option value="4">Premium NFT</option>
+      <option value="5">Mystery NFT 1</option>
+      <option value="6">Mystery NFT 2</option>
+    </select><br/>
+    <label for="airdropQuantity">Quantity:</label>
+    <input type="number" id="airdropQuantity" value="1" min="1"/><br/>
+    <button onclick="airdropNFT()">Airdrop</button>
   </section>
 
-  <section class="card">
+  <section id="betaTesters" class="box">
     <h2>Beta Tester Sign-Ups</h2>
-    <ul id="beta-tester-list">Loading...</ul>
+    <div id="betaTesterList">Loading...</div>
   </section>
 
-  <section class="card">
+  <section id="purchaseTracking" class="box">
     <h2>Purchase Tracker</h2>
-    <ul id="purchase-tracker">Loading...</ul>
+    <div id="purchaseLog">Loading...</div>
   </section>
 
   <script>
-    async function fetchBetaTesters() {
-      try {
-        const response = await fetch('https://secure-signup-server.onrender.com/getBetaTesters');
-        const testers = await response.json();
-        const list = document.getElementById('beta-tester-list');
-        list.innerHTML = '';
-        testers.forEach(tester => {
-          const li = document.createElement('li');
-          li.textContent = `${tester.name} - ${tester.email} - ${tester.wallet}`;
-          list.appendChild(li);
-        });
-      } catch (error) {
-        document.getElementById('beta-tester-list').innerText = 'Error loading beta testers.';
-      }
-    }
-
-    async function fetchPurchaseData() {
-      try {
-        const response = await fetch('https://secure-signup-server.onrender.com/purchases');
-        const purchases = await response.json();
-        const list = document.getElementById('purchase-tracker');
-        list.innerHTML = '';
-        purchases.forEach(entry => {
-          const li = document.createElement('li');
-          li.textContent = `Buyer: ${entry.buyer}, NFT ID: ${entry.nftId}, Qty: ${entry.quantity}`;
-          list.appendChild(li);
-        });
-      } catch (error) {
-        document.getElementById('purchase-tracker').innerText = 'Error loading purchases.';
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          document.getElementById('walletAddress').textContent = accounts[0];
+        } catch (error) {
+          document.getElementById('walletAddress').textContent = 'Connection failed';
+        }
+      } else {
+        document.getElementById('walletAddress').textContent = 'Wallet not available';
       }
     }
 
     function mintNFT() {
-      const id = document.getElementById('mint-nft-id').value;
-      const qty = document.getElementById('mint-quantity').value;
-      alert(`Minting NFT ID ${id} with quantity ${qty}`);
+      const id = document.getElementById('nftSelect').value;
+      const quantity = document.getElementById('mintQuantity').value;
+      alert(`Minting NFT ID ${id} (x${quantity})`);
+      // Your mint logic goes here
     }
 
     function airdropNFT() {
-      const addr = document.getElementById('airdrop-address').value;
-      const id = document.getElementById('airdrop-nft-id').value;
-      const qty = document.getElementById('airdrop-quantity').value;
-      alert(`Airdropping NFT ID ${id} qty ${qty} to ${addr}`);
+      const address = document.getElementById('airdropAddress').value;
+      const id = document.getElementById('airdropSelect').value;
+      const quantity = document.getElementById('airdropQuantity').value;
+      alert(`Airdropping NFT ID ${id} (x${quantity}) to ${address}`);
+      // Your airdrop logic goes here
     }
 
-    fetchBetaTesters();
-    fetchPurchaseData();
+    async function loadBetaTesters() {
+      try {
+        const res = await fetch('/submissions');
+        const data = await res.json();
+        const list = document.getElementById('betaTesterList');
+        list.innerHTML = data.length ? data.map(
+          d => `<div>${d.name} | ${d.email} | ${d.wallet}</div>`
+        ).join('') : 'No sign-ups yet.';
+      } catch (err) {
+        document.getElementById('betaTesterList').textContent = 'Error loading data';
+      }
+    }
+
+    async function loadPurchases() {
+      try {
+        const res = await fetch('/purchases');
+        const data = await res.json();
+        const log = document.getElementById('purchaseLog');
+        log.innerHTML = data.length ? data.map(
+          p => `<div>${p.buyer} bought NFT #${p.nftId}</div>`
+        ).join('') : 'No purchases yet.';
+      } catch (err) {
+        document.getElementById('purchaseLog').textContent = 'Error loading purchases';
+      }
+    }
+
+    connectWallet();
+    loadBetaTesters();
+    loadPurchases();
   </script>
 </body>
 </html>
