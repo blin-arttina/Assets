@@ -6,38 +6,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Assets Alert</title>
   <style>
-    body { background-color: #000; color: #fff; font-family: sans-serif; }
-    .container { padding: 20px; max-width: 600px; margin: auto; }
-    h1, h2 { color: #fff; }
-    label { display: block; margin-top: 10px; }
-    input { width: 100%; padding: 8px; margin: 5px 0; }
-    button { background-color: red; color: white; padding: 10px 15px; border: none; cursor: pointer; }
-    .btn-link { background-color: #222; padding: 10px 15px; margin-top: 10px; display: inline-block; text-decoration: none; color: white; border: 1px solid gray; }
+    body { background-color: #111; color: white; font-size: 24px; font-family: sans-serif; padding: 20px; }
+    input, button { font-size: 20px; margin: 10px 0; }
+    .btn { background-color: red; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+    .btn:hover { background-color: darkred; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="assets_alert_logo.png" alt="Assets Alert Logo" style="width: 100%; max-width: 200px;" />
-    <h1>Welcome to Assets Alert</h1>
-    <p>Real-time monitoring and alerts for Bitcoin, crypto, and stock.</p>
+  <h1>Assets Alert</h1>
+  <p>Real-time alerts for Bitcoin, crypto, and stocks with customizable sounds and thresholds.</p>
 
-    <h2>Beta Tester Sign-Up</h2>
-    <form action="https://secure-signup-server.onrender.com/submit" method="POST">
-      <label for="name">Name:</label>
-      <input type="text" name="name" required />
-      <label for="email">Email:</label>
-      <input type="email" name="email" required />
-      <label for="wallet">Wallet Address:</label>
-      <input type="text" name="wallet" required />
-      <button type="submit">Submit</button>
-    </form>
-
-    <h2>Download APK</h2>
-    <button disabled>Coming Soon</button>
-
-    <br/><br/>
-    <a class="btn-link" href="nft.html">NFT Showcase</a>
-    <a class="btn-link" href="admin.html">Admin Dashboard</a>
-  </div>
+  <h2>Beta Tester Sign-Up</h2>
+  <form action="https://assets-alert-server.onrender.com/api/signup" method="POST">
+    <label>Name:</label><br>
+    <input type="text" name="name" required><br>
+    <label>Email:</label><br>
+    <input type="email" name="email" required><br>
+    <label>Wallet Address:</label><br>
+    <input type="text" name="wallet" pattern="^0x[a-fA-F0-9]{40}$" title="Enter a valid Ethereum address" value="0xDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF" required><br>
+    <button class="btn" type="submit">Sign Up</button>
+  </form>
 </body>
 </html>
