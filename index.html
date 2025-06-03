@@ -3,82 +3,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Assets Alert - Beta Tester Sign-Up</title>
+  <title>Assets Alert</title>
   <style>
     body {
-      background-color: #121212;
-      color: white;
-      font-size: 24px;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0 20px;
-    }
-    h1, h2 {
-      color: #ff3333;
-    }
-    form {
-      background-color: #1e1e1e;
+      background-color: #000;
+      color: #fff;
+      font-family: sans-serif;
       padding: 20px;
-      border-radius: 10px;
-      border: 1px solid #444;
-      margin-bottom: 20px;
     }
-    input[type="text"], input[type="email"] {
-      font-size: 20px;
-      width: 100%;
+    input, button {
+      display: block;
+      margin-top: 10px;
       padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: none;
+      font-size: 16px;
     }
-    input[type="submit"] {
-      background-color: #ff3333;
+    .section {
+      background-color: #111;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+    .button {
+      background-color: red;
       color: white;
       border: none;
-      padding: 10px 20px;
-      font-size: 20px;
-      border-radius: 5px;
       cursor: pointer;
-    }
-    .footer-buttons {
-      margin-top: 40px;
-    }
-    .footer-buttons a {
-      display: inline-block;
-      background-color: #ff3333;
-      color: white;
-      padding: 10px 20px;
-      text-decoration: none;
-      margin-right: 10px;
-      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-
-  <h1>Assets Alert</h1>
-  <h2>Welcome to the Beta Tester Program</h2>
+  <h1>Welcome to Assets Alert</h1>
   <p>Real-time monitoring and alerts for Bitcoin, crypto, and stock prices.</p>
 
-  <form action="https://assets-alert-server.onrender.com/submit" method="POST">
-    <label for="name">Name:</label>
-    <input type="text" name="name" required>
+  <div class="section">
+    <h2>Beta Tester Sign-Up</h2>
+    <form action="https://assets-alert-server.onrender.com/api/signup" method="POST">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
 
-    <label for="email">Email:</label>
-    <input type="email" name="email" required>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
 
-    <label for="wallet">Wallet Address:</label>
-    <input type="text" name="wallet" required>
+      <label for="wallet">Wallet Address:</label>
+      <input 
+        type="text" 
+        id="wallet" 
+        name="wallet" 
+        placeholder="Enter your wallet address"
+        inputmode="text" 
+        autocomplete="off" 
+        autocorrect="off" 
+        spellcheck="false" 
+        required
+      >
 
-    <input type="submit" value="Sign Up">
-  </form>
-
-  <p>*1 free NFT for beta testers!</p>
-
-  <div class="footer-buttons">
-    <a href="nft.html">NFT Showcase</a>
-    <a href="admin.html">Admin Page</a>
+      <button type="submit" class="button">Sign Up</button>
+    </form>
   </div>
 
+  <p style="color: yellow;">*1 free NFT for beta testers!</p>
+
+  <button onclick="window.location.href='nft.html'" class="button">NFT Showcase</button>
+  <button onclick="window.location.href='admin.html'" class="button">Admin Page</button>
 </body>
 </html>
