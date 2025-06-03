@@ -1,69 +1,19 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Assets Alert</title>
-  <style>
-    body {
-      background-color: #000;
-      color: #fff;
-      font-family: sans-serif;
-      padding: 20px;
-    }
-    input, button {
-      display: block;
-      margin-top: 10px;
-      padding: 10px;
-      font-size: 16px;
-    }
-    .section {
-      background-color: #111;
-      padding: 20px;
-      margin-top: 20px;
-      border-radius: 8px;
-    }
-    .button {
-      background-color: red;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Assets Alert - Beta Tester Sign-Up</title>
 </head>
-<body>
-  <h1>Welcome to Assets Alert</h1>
-  <p>Real-time monitoring and alerts for Bitcoin, crypto, and stock prices.</p>
-
-  <div class="section">
-    <h2>Beta Tester Sign-Up</h2>
-    <form action="https://assets-alert-server.onrender.com/api/signup" method="POST">
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required>
-
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required>
-
-      <label for="wallet">Wallet Address:</label>
-      <input 
-        type="text" 
-        id="wallet" 
-        name="wallet" 
-        placeholder="Enter your wallet address"
-        inputmode="text" 
-        autocomplete="off" 
-        autocorrect="off" 
-        spellcheck="false" 
-        required
-      >
-
-      <button type="submit" class="button">Sign Up</button>
+<body style="background-color: black; color: white;">
+    <h1>Beta Tester Sign-Up</h1>
+    <form>
+        <label for="wallet">Wallet Address:</label><br>
+        
+<input type="text" id="wallet" name="wallet" placeholder="Enter your wallet address"
+       autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+       inputmode="text" required>
+<br><br>
+        <button type="submit">Sign Up</button>
     </form>
-  </div>
-
-  <p style="color: yellow;">*1 free NFT for beta testers!</p>
-
-  <button onclick="window.location.href='nft.html'" class="button">NFT Showcase</button>
-  <button onclick="window.location.href='admin.html'" class="button">Admin Page</button>
 </body>
 </html>
