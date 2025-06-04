@@ -4,39 +4,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Assets Alert Beta Sign-Up</title>
+  <title>Assets Alert - Beta Tester Sign-Up</title>
+  <style>
+    body { background-color: #000; color: #fff; font-family: Arial, sans-serif; padding: 2rem; }
+    input, button { font-size: 1.25rem; }
+    .container { max-width: 600px; margin: 0 auto; }
+    .form-section { margin-top: 2rem; }
+  </style>
 </head>
-<body style="background-color: #121212; color: white; font-size: 24px; font-family: sans-serif;">
-  <img src="logo.png" alt="Assets Alert Logo" style="max-width: 200px; display: block; margin: 0 auto;" />
-  <h1 style="text-align: center;">Welcome to Assets Alert</h1>
-  <p style="text-align: center; max-width: 600px; margin: 0 auto;">Real-time monitoring and alerts for Bitcoin, cryptocurrency, and stock price movements. Set alerts, upload custom sounds, and track changes in a sleek dark interface.</p>
-  
-  <hr>
-  
-  <h2>Beta Tester Sign-Up</h2>
-  <form action="https://assets-alert-server.onrender.com/api/signup" method="POST" style="max-width: 600px; margin: 0 auto;">
-    <label for="name">Name:</label><br>
-    <input type="text" id="name" name="name" required style="width: 100%; padding: 10px;"><br><br>
-    
-    <label for="email">Email:</label><br>
-    <input type="email" id="email" name="email" required style="width: 100%; padding: 10px;"><br><br>
-    
-    <label for="wallet">Wallet Address:</label><br>
-    <input type="text" id="wallet" name="wallet" required style="width: 100%; padding: 10px;"><br><br>
-    
-    <button type="submit" style="padding: 10px 20px; background-color: red; color: white; border: none;">Submit</button>
-  </form>
+<body>
+  <div class="container">
+    <img src="logo.png" alt="Assets Alert Logo" style="max-width: 200px;">
+    <h1>Welcome to Assets Alert</h1>
+    <p>Real-time monitoring and alerts for Bitcoin, crypto, and stock prices.</p>
 
-  <hr>
+    <div class="form-section">
+      <h2 class="text-2xl font-bold mb-2">Beta Tester Sign-Up</h2>
+      <form id="betaForm" class="mb-6">
+        <input type="text" id="name" placeholder="Name" required class="block w-full p-2 mb-2 border rounded bg-gray-900 text-white border-gray-600"><br>
+        <input type="email" id="email" placeholder="Email" required class="block w-full p-2 mb-2 border rounded bg-gray-900 text-white border-gray-600"><br>
+        <input type="text" id="wallet" placeholder="Wallet Address" required class="block w-full p-2 mb-4 border rounded bg-gray-900 text-white border-gray-600"><br>
+        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded">Submit</button>
+      </form>
+      <p id="formMessage" class="text-white"></p>
+    </div>
 
-  <h2>Download the APK</h2>
-  <button style="padding: 10px 20px; background-color: gray; color: white; border: none;">Coming Soon</button>
+    <div class="form-section">
+      <p><strong>Download APK:</strong> <button disabled>Coming Soon</button></p>
+    </div>
 
-  <hr>
-
-  <div style="text-align: center;">
-    <button onclick="window.location.href='nft.html'" style="padding: 10px 20px; background-color: red; color: white; margin-right: 10px;">NFT Showcase</button>
-    <button onclick="window.location.href='admin.html'" style="padding: 10px 20px; background-color: red; color: white;">Admin Page</button>
+    <div class="form-section">
+      <a href="nft.html"><button>NFT Showcase</button></a>
+      <a href="admin.html"><button>Admin Page</button></a>
+    </div>
   </div>
+
+  <script>
+    document.getElementById("betaForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const wallet = document.getElementById("wallet").value;
+
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, wallet })
+      });
+
+      const result = await response.json();
+      const message = document.getElementById("formMessage");
+      if (result.success) {
+        message.textContent = "Thanks for signing up!";
+        message.classList.add("text-green-400");
+        document.getElementById("betaForm").reset();
+      } else {
+        message.textContent = "Error submitting form. Please try again.";
+        message.classList.add("text-red-400");
+      }
+    });
+  </script>
 </body>
 </html>
