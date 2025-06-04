@@ -1,89 +1,26 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Assets Alert - Beta Sign-Up</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
-      font-size: 24px;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    header img {
-      max-width: 300px;
-      margin-top: 20px;
-    }
-    .description {
-      margin: 20px auto;
-      width: 90%;
-      max-width: 700px;
-    }
-    form {
-      background: #1e1e1e;
-      border: 2px solid #888;
-      padding: 20px;
-      margin: 20px auto;
-      width: 90%;
-      max-width: 600px;
-      border-radius: 10px;
-    }
-    input, button {
-      padding: 10px;
-      margin: 10px;
-      font-size: 20px;
-      width: 80%;
-      max-width: 400px;
-    }
-    button {
-      background-color: red;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    .nav-buttons {
-      margin-top: 30px;
-    }
-    .nav-buttons a {
-      display: inline-block;
-      margin: 10px;
-      padding: 10px 20px;
-      background-color: red;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-    }
-    .donation {
-      margin-top: 30px;
-    }
-  </style>
+  <title>Assets Alert - Beta Tester Signup</title>
 </head>
 <body>
-  <header>
-    <img src="logo.png" alt="Assets Alert Logo" />
-    <h1>Welcome to Assets Alert!</h1>
-  </header>
-  <div class="description">
-    <p>Real-time monitoring and alert system for crypto and stock prices. Receive customizable sound alerts when your target price is reached. Includes options to upload your own sound, choose alert durations, and more!</p>
-  </div>
-  <form action="https://assets-alert-server.onrender.com/api/beta-testers" method="POST">
-    <h2>Beta Tester Sign-Up</h2>
-    <input type="text" name="name" placeholder="Your Name" required /><br/>
-    <input type="email" name="email" placeholder="Your Email" required /><br/>
-    <input type="text" name="wallet" placeholder="Your Wallet Address" required /><br/>
+  <h1>Welcome to Assets Alert!</h1>
+  <p>This app provides real-time monitoring and alerts for Bitcoin, crypto, and stock prices.</p>
+
+  <h2>Beta Tester Signup</h2>
+  <form id="betaForm" action="https://assets-alert-server.onrender.com/submit-form" method="POST">
+    <label for="name">Name:</label><br />
+    <input type="text" id="name" name="name" required /><br />
+    <label for="email">Email:</label><br />
+    <input type="email" id="email" name="email" required /><br />
+    <label for="wallet">Wallet Address:</label><br />
+    <input type="text" id="wallet" name="wallet" required /><br /><br />
     <button type="submit">Submit</button>
   </form>
-  <div class="donation">
-    <h2>Support the Project</h2>
-    <p>Donate to: 0xYourDonationWalletHere</p>
-  </div>
-  <div class="nav-buttons">
-    <a href="nft.html">NFT Showcase</a>
-    <a href="admin.html">Admin Page</a>
-  </div>
+
+  <p>*1 free NFT for beta testers!</p>
 </body>
 </html>
