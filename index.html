@@ -2,67 +2,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Assets Alert - Beta Tester Sign-Up</title>
   <style>
-    body { background-color: #000; color: #fff; font-family: Arial, sans-serif; padding: 2rem; }
-    input, button { font-size: 1.25rem; }
-    .container { max-width: 600px; margin: 0 auto; }
-    .form-section { margin-top: 2rem; }
+    body {
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    img.logo {
+      max-width: 200px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-top: 1rem;
+    }
+    p.description {
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+    form {
+      max-width: 400px;
+      margin: 0 auto 2rem;
+      background-color: #111;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid gray;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid gray;
+      border-radius: 5px;
+      background: #222;
+      color: white;
+    }
+    button {
+      background-color: red;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      margin-top: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .disabled-button {
+      background-color: gray;
+      color: #ccc;
+    }
+    .nav-buttons {
+      margin-top: 2rem;
+    }
+    .nav-buttons a {
+      background-color: red;
+      color: white;
+      padding: 10px 20px;
+      margin: 10px;
+      text-decoration: none;
+      border-radius: 5px;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="logo.png" alt="Assets Alert Logo" style="max-width: 200px;">
-    <h1>Welcome to Assets Alert</h1>
-    <p>Real-time monitoring and alerts for Bitcoin, crypto, and stock prices.</p>
 
-    <div class="form-section">
-      <h2 class="text-2xl font-bold mb-2">Beta Tester Sign-Up</h2>
-      <form id="betaForm" class="mb-6">
-        <input type="text" id="name" placeholder="Name" required class="block w-full p-2 mb-2 border rounded bg-gray-900 text-white border-gray-600"><br>
-        <input type="email" id="email" placeholder="Email" required class="block w-full p-2 mb-2 border rounded bg-gray-900 text-white border-gray-600"><br>
-        <input type="text" id="wallet" placeholder="Wallet Address" required class="block w-full p-2 mb-4 border rounded bg-gray-900 text-white border-gray-600"><br>
-        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded">Submit</button>
-      </form>
-      <p id="formMessage" class="text-white"></p>
-    </div>
+  <img src="logo.png" alt="Assets Alert Logo" class="logo" />
+  <h1>Welcome to Assets Alert</h1>
+  <p class="description">Real-time monitoring and alerts for Bitcoin, crypto, and stock prices.</p>
 
-    <div class="form-section">
-      <p><strong>Download APK:</strong> <button disabled>Coming Soon</button></p>
-    </div>
+  <form id="signupForm">
+    <h2>Beta Tester Sign-Up</h2>
+    <input type="text" name="name" placeholder="Name" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="text" name="wallet" placeholder="Wallet Address" required />
+    <button type="submit">Submit</button>
+  </form>
 
-    <div class="form-section">
-      <a href="nft.html"><button>NFT Showcase</button></a>
-      <a href="admin.html"><button>Admin Page</button></a>
-    </div>
+  <p><strong>Download APK:</strong> <button class="disabled-button" disabled>Coming Soon</button></p>
+
+  <div class="nav-buttons">
+    <a href="nft.html">NFT Showcase</a>
+    <a href="admin.html">Admin Page</a>
   </div>
 
   <script>
-    document.getElementById("betaForm").addEventListener("submit", async function (e) {
+    const form = document.getElementById("signupForm");
+    form.addEventListener("submit", async function(e) {
       e.preventDefault();
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const wallet = document.getElementById("wallet").value;
-
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, wallet })
-      });
-
-      const result = await response.json();
-      const message = document.getElementById("formMessage");
-      if (result.success) {
-        message.textContent = "Thanks for signing up!";
-        message.classList.add("text-green-400");
-        document.getElementById("betaForm").reset();
-      } else {
-        message.textContent = "Error submitting form. Please try again.";
-        message.classList.add("text-red-400");
+      const data = {
+        name: form.name.value,
+        email: form.email.value,
+        wallet: form.wallet.value
+      };
+      try {
+        const response = await fetch("https://assets-alert-server.onrender.com/api/beta-testers", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+        if (response.ok) {
+          alert("Thank you for signing up!");
+          form.reset();
+        } else {
+          alert("Submission failed. Please try again later.");
+        }
+      } catch (err) {
+        alert("Error: " + err.message);
       }
     });
   </script>
+
 </body>
 </html>
