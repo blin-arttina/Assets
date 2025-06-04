@@ -3,87 +3,103 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Assets Alert - Beta Sign-Up</title>
+  <title>Assets Alert - Beta Tester Sign-Up</title>
   <style>
     body {
-      background-color: #121212;
-      color: white;
+      background-color: #000;
+      color: #fff;
       font-family: Arial, sans-serif;
       font-size: 24px;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    header img {
-      max-width: 300px;
-      margin-top: 20px;
-    }
-    .description {
-      margin: 20px auto;
-      width: 90%;
-      max-width: 700px;
-    }
-    form {
-      background: #1e1e1e;
-      border: 2px solid #888;
       padding: 20px;
-      margin: 20px auto;
-      width: 90%;
-      max-width: 600px;
-      border-radius: 10px;
     }
-    input, button {
-      padding: 10px;
-      margin: 10px;
+    .section {
+      margin-bottom: 30px;
+    }
+    label, input, button {
+      display: block;
+      margin: 10px 0;
+    }
+    input {
       font-size: 20px;
-      width: 80%;
-      max-width: 400px;
+      padding: 5px;
+      width: 100%;
     }
     button {
       background-color: red;
       color: white;
-      border: none;
-      cursor: pointer;
-    }
-    .nav-buttons {
-      margin-top: 30px;
-    }
-    .nav-buttons a {
-      display: inline-block;
-      margin: 10px;
+      border: 1px solid gray;
+      font-size: 20px;
       padding: 10px 20px;
-      background-color: red;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-    }
-    .donation {
-      margin-top: 30px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <header>
-    <img src="logo.png" alt="Assets Alert Logo" />
+  <div class="section">
+    <img src="logo.png" alt="Assets Alert Logo" style="max-width: 300px;" />
     <h1>Welcome to Assets Alert!</h1>
-  </header>
-  <div class="description">
-    <p>Real-time monitoring and alert system for crypto and stock prices. Receive customizable sound alerts when your target price is reached. Includes options to upload your own sound, choose alert durations, and more!</p>
+    <p>This app provides real-time price alerts and monitoring for Bitcoin, crypto, and stock assets.</p>
   </div>
-  <form action="https://assets-alert-server.onrender.com/api/beta-testers" method="POST">
+
+  <div class="section">
     <h2>Beta Tester Sign-Up</h2>
-    <input type="text" name="name" placeholder="Your Name" required /><br/>
-    <input type="email" name="email" placeholder="Your Email" required /><br/>
-    <input type="text" name="wallet" placeholder="Your Wallet Address" required /><br/>
-    <button type="submit">Submit</button>
-  </form>
-  <div class="donation">
-    <h2>Support the Project</h2>
-    <p>Donate to: 0xYourDonationWalletHere</p>
+    <form id="betaForm">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="wallet">Wallet Address</label>
+      <input type="text" id="wallet" name="wallet" required />
+
+      <button type="submit">Submit</button>
+    </form>
+    <p>*1 free NFT for beta testers!*</p>
   </div>
-  <div class="nav-buttons">
-    <a href="nft.html">NFT Showcase</a>
-    <a href="admin.html">Admin Page</a>
+
+  <div class="section">
+    <h2>Assets Alert APK</h2>
+    <button disabled>Coming Soon</button>
   </div>
+
+  <div class="section">
+    <button onclick="window.location.href='nft.html'">NFT Showcase</button>
+    <button onclick="window.location.href='admin.html'">Admin Page</button>
+  </div>
+
+  <script>
+    document.getElementById('betaForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const wallet = document.getElementById('wallet').value.trim();
+
+      if (!name || !email || !wallet) {
+        alert('Please fill out all fields.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/submit-form', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, email, wallet }),
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          alert(result.message);
+          document.getElementById('betaForm').reset();
+        } else {
+          alert(result.message || 'Something went wrong.');
+        }
+      } catch (err) {
+        alert('Error submitting form.');
+      }
+    });
+  </script>
 </body>
 </html>
