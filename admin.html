@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Assets Alert Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
   <style>
     body {
       background-color: #121212;
@@ -42,7 +43,8 @@
 
   <div class="section">
     <h2>Minting & Airdrop Tools</h2>
-    <p>Connect your wallet and use the admin tools here...</p>
+    <button class="button" onclick="connectBraveWallet()">🔌 Connect Brave Wallet</button>
+    <p id="wallet-address">No wallet connected</p>
   </div>
 
   <div class="section">
@@ -50,6 +52,22 @@
     <p>Live sign-up form is displayed below:</p>
     <iframe src="https://docs.google.com/forms/d/e/12yNu1n-Sx7sGD7V0ngAxrLebHaMRDAm7MLV-q0I-VXs/viewform?embedded=true" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
   </div>
+
+  <script>
+    async function connectBraveWallet() {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const userWallet = accounts[0];
+          document.getElementById("wallet-address").innerText = "Connected: " + userWallet;
+        } catch (error) {
+          console.error("User denied account access or error occurred");
+        }
+      } else {
+        alert("Please install Brave Wallet or MetaMask.");
+      }
+    }
+  </script>
 
 </body>
 </html>
