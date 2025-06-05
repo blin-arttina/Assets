@@ -3,143 +3,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Assets Alert Admin Panel</title>
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assets Alert Admin</title>
   <style>
-    body { background-color: #111; color: white; font-size: 22px; font-family: sans-serif; padding: 20px; }
-    .btn { background-color: red; color: white; padding: 10px 20px; margin: 10px 0; border: none; cursor: pointer; }
-    input, select { font-size: 20px; margin: 5px; padding: 5px; width: 100%%; max-width: 400px; }
-    .section { margin-bottom: 40px; }
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: #ff4c4c;
+    }
+    .button {
+      background-color: #ff4c4c;
+      color: white;
+      border: 1px solid gray;
+      padding: 10px 20px;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+    iframe {
+      width: 100%;
+      height: 800px;
+      border: none;
+      margin-top: 20px;
+    }
+    .section {
+      border: 1px solid gray;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
   </style>
 </head>
 <body>
-  
-  <h1>Assets Alert Admin Panel</h1>
+
+  <h1>Assets Alert Admin Dashboard</h1>
 
   <div class="section">
-    <button class="btn" onclick="connectWallet()">Connect Brave Wallet</button>
-    <p>Connected Wallet: <span id="walletAddress">Not connected</span></p>
-  </div><a href="https://docs.google.com/forms/d/e/12yNu1n-Sx7sGD7V0ngAxrLebHaMRDAm7MLV-q0I-VXs/viewform" 
-   target="_blank" 
-   style="display: inline-block; background-color: red; color: white; padding: 12px 24px; text-align: center; text-decoration: none; font-size: 16px; border-radius: 6px; margin-top: 20px;">
-   View Beta Sign-Ups
-</a>
-
-  <div class="section">
-    <h2>Mint NFT (On-chain)</h2>
-    <form id="mintForm">
-      <label>Recipient Wallet Address:</label><br>
-      <input type="text" id="mintWallet" required><br>
-      <label>NFT ID:</label><br>
-      <input type="number" id="mintNftId" required><br>
-      <label>Amount:</label><br>
-      <input type="number" id="mintAmount" value="1" required><br>
-      <button class="btn" type="submit">Mint NFT</button>
-    </form>
+    <h2>Minting & Airdrop Tools</h2>
+    <!-- Placeholder for minting controls -->
+    <p>Connect your wallet and use the admin tools here...</p>
   </div>
 
   <div class="section">
-    <h2>Airdrop NFT (Backend)</h2>
-    <form id="airdropForm">
-      <label>Recipient Wallet Address:</label><br>
-      <input type="text" id="airdropWallet" required><br>
-      <label>NFT ID:</label><br>
-      <input type="number" id="airdropNftId" required><br>
-      <button class="btn" type="submit">Send Airdrop</button>
-    </form>
+    <h2>Beta Tester Submissions</h2>
+    <p>Embedded Google Form for sign-ups is displayed below:</p>
+    <iframe src="https://docs.google.com/forms/d/12yNu1n-Sx7sGD7V0ngAxrLebHaMRDAm7MLV-q0I-VXs/viewform?embedded=true" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
   </div>
 
-  <div class="section">
-    <h2>Beta Tester Signups</h2>
-    <div id="beta-signups">Loading signups...</div>
-  </div>
-
-  <div class="section">
-    <h2>Purchase Tracker</h2>
-    <div id="purchase-tracker">Loading purchase data...</div>
-  </div>
-
-  <script>
-    let web3;
-    let contract;
-    const contractAddress = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
-    const contractABI = [
-      {
-        "inputs": [
-          { "internalType": "address", "name": "to", "type": "address" },
-          { "internalType": "uint256", "name": "id", "type": "uint256" },
-          { "internalType": "uint256", "name": "amount", "type": "uint256" },
-          { "internalType": "bytes", "name": "data", "type": "bytes" }
-        ],
-        "name": "mintTo",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ];
-
-    async function connectWallet() {
-      if (window.ethereum) {
-        web3 = new Web3(window.ethereum);
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const accounts = await web3.eth.getAccounts();
-        const wallet = accounts[0];
-        document.getElementById("walletAddress").innerText = wallet;
-        document.getElementById("mintWallet").value = wallet;
-        contract = new web3.eth.Contract(contractABI, contractAddress);
-      } else {
-        alert("Brave or MetaMask wallet not detected.");
-      }
-    }
-
-    document.getElementById("mintForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const to = document.getElementById("mintWallet").value;
-      const id = document.getElementById("mintNftId").value;
-      const amount = document.getElementById("mintAmount").value;
-      try {
-        const accounts = await web3.eth.getAccounts();
-        const from = accounts[0];
-        await contract.methods.mintTo(to, id, amount, "0x").send({ from });
-        alert("Minted successfully!");
-      } catch (err) {
-        alert("Minting failed: " + err.message);
-      }
-    });
-
-    document.getElementById("airdropForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const wallet = document.getElementById("airdropWallet").value;
-      const nftId = document.getElementById("airdropNftId").value;
-      try {
-        const res = await fetch("https://secure-signup-server.onrender.com/api/airdrop", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ wallet, nftId })
-        });
-        const data = await res.json();
-        alert("Airdrop: " + JSON.stringify(data));
-      } catch (err) {
-        alert("Airdrop failed: " + err.message);
-      
-d<a href="https://docs.google.com/forms/d/e/12yNu1n-Sx7sGD7V0ngAxrLebHaMRDAm7MLV-q0I-VXs/viewform" 
-   target="_blank" 
-   style="display: inline-block; background-color: red; color: white; padding: 12px 24px; text-align: center; text-decoration: none; font-size: 16px; border-radius: 6px; margin-top: 20px;">
-   View Beta Sign-Ups
-</a>
-    // Load Beta Tester Signups
-    fetch("https://secure-signup-server.onrender.com/api/beta-signups")
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("beta-signups").innerText = JSON.stringify(data, null, 2);
-      });
-
-    // Load Purchase Tracker
-    fetch("https://secure-signup-server.onrender.com/api/purchases")
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("purchase-tracker").innerText = JSON.stringify(data, null, 2);
-      });
-  </script>
 </body>
 </html>
