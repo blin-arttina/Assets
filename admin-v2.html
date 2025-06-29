@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assets Alert Admin V2</title>
+  <style>
+    body { background-color: #121212; color: white; font-family: sans-serif; padding: 20px; }
+    select, input, button { display: block; margin: 10px 0; padding: 10px; font-size: 1rem; width: 100%; }
+    button { background-color: red; color: white; border: none; border-radius: 5px; }
+    .section { border: 1px solid gray; padding: 15px; margin-top: 20px; border-radius: 10px; }
+  </style>
+  <!-- Load ethers.js BEFORE any scripts use it -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+</head>
+<body>
+
+  <h1>Assets Alert Admin Dashboard (v2)</h1>
+
+  <div class="section">
+    <div id="wallet-status">Not connected</div>
+    <button onclick="connectWallet()">Connect Brave Wallet</button>
+  </div>
+
+  <div class="section">
+    <label for="nft-select">Choose NFT to Mint:</label>
+    <select id="nft-select">
+      <option value="1">Skater Mouse NFT</option>
+      <option value="2">Beta Tester NFT</option>
+      <option value="3">Paid NFT</option>
+      <option value="4">Premium NFT</option>
+      <option value="5">Mystery NFT 1</option>
+      <option value="6">Mystery NFT 2</option>
+    </select>
+    <button onclick="mintNFT()">Mint</button>
+  </div>
+
+  <div class="section">
+    <h2>Airdrop</h2>
+    <input type="text" id="airdrop-addresses" placeholder="Comma-separated wallet addresses"/>
+    <button onclick="airdropNFT()">Airdrop</button>
+  </div>
+
+  <div class="section">
+    <h2>Beta Tester Submissions</h2>
+    <button onclick="downloadCSV()">Download CSV</button>
+    <pre id="csv-data">Loading...</pre>
+  </div>
+
+  <script>
+    let selectedAccount = null;
+    const contractAddress = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
+
+    async function connectWallet() {
+      if (typeof window.ethereum !== 'undefined') {
+        try {
+          const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+          await provider.send("eth_requestAccounts", []);
+          const signer = provider.getSigner();
+          selectedAccount = await signer.getAddress();
+          document.getElementById("wallet-status").innerText = "Connected Wallet: " + selectedAccount;
+        } catch (err) {
+          alert("Wallet connection error: " + err.message);
+        }
+      } else {
+        alert("No Ethereum provider found. Please use Brave Wallet or MetaMask.");
+      }
+    }
+
+    async function mintNFT() {
+      const tokenId = document.getElementById("nft-select").value;
+      if (!selectedAccount) {
+        alert("Please connect your wallet first.");
+        return;
+      }
+
+      const abi = [
+        {
+          "inputs": [
+            { "internalType": "address", "name": "to", "type": "address" },
+            { "internalType": "uint256", "name": "id", "type": "uint256" },
+            { "internalType": "uint256", "name": "amount", "type": "uint256" },
+            { "internalType": "bytes", "name": "data", "type": "bytes" }
+          ],
+          "name": "mint",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ];
+
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(contractAddress, abi, signer);
+
+        const tx = await contract.mint(selectedAccount, tokenId, 1, "0x");
+        await tx.wait();
+
+        alert("NFT minted successfully to " + selectedAccount);
+      } catch (err) {
+        console.error(err);
+        alert("Minting failed: " + err.message);
+      }
+    }
+
+    function airdropNFT() {
+      const addresses = document.getElementById("airdrop-addresses").value.split(",");
+      alert("Airdrop simulated to: " + addresses.join(", "));
+    }
+
+    function downloadCSV() {
+      const data = "Name,Email,Wallet\\nTester One,test1@example.com,0x123...\\nTester Two,test2@example.com,0x456...";
+      const blob = new Blob([data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', 'beta_testers.csv');
+      a.click();
+    }
+
+    document.getElementById("csv-data").innerText = "Tester One,test1@example.com,0x123...\\nTester Two,test2@example.com,0x456...";
+  </script>
+</body>
+</html>

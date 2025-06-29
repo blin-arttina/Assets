@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Assets Alert Store</title>
+  <style>
+    body { background: #121212; color: white; font-family: sans-serif; padding: 20px; }
+    h1, h2 { text-align: center; color: #ffffff; }
+    .section { margin-bottom: 60px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 20px; }
+    .card {
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+    }
+    .card img { width: 100%; border-radius: 8px; }
+    .title { font-size: 20px; font-weight: bold; margin: 10px 0; }
+    .label { color: #aaa; font-size: 16px; margin-bottom: 8px; }
+    .button {
+      background: #ff3333;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .locked { font-size: 28px; color: red; margin-top: 8px; }
+    .footer-nav { text-align: center; margin-top: 40px; }
+    .footer-nav a {
+      color: white;
+      text-decoration: underline;
+      margin: 0 15px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Assets Alert Store</h1>
+
+  <div class="section">
+    <h2>Available Skins</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="skin_geometric_preview.png">
+        <div class="title">Geometric Blue</div>
+        <div class="label">FREE</div>
+        <button class="button">Apply Skin</button>
+      </div>
+      <div class="card">
+        <img src="skin_music_preview.png">
+        <div class="title">Musical Notes</div>
+        <div class="label">FREE</div>
+        <button class="button">Apply Skin</button>
+      </div>
+      <div class="card">
+        <img src="skin_aliens_preview.png">
+        <div class="title">Aliens 👽</div>
+        <div class="label">$1.99</div>
+        <button class="button">Buy & Apply</button>
+      </div>
+      <div class="card">
+        <img src="skin_solar_preview.png">
+        <div class="title">Solar System 🌌</div>
+        <div class="label">$1.99</div>
+        <button class="button">Buy & Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Live NFT Collection</h2>
+    <div class="grid">
+      <div class="card"><img src="beta_tester_nft.png"><div class="title">Beta Tester NFT</div><div class="label">Minted: 50 / 100</div><button class="button">Mint</button></div>
+      <div class="card"><img src="skater_mouse.png"><div class="title">Skater Mouse</div><div class="label">Minted: 24 / 50</div><button class="button">Mint</button></div>
+      <div class="card"><img src="paid_nft.png"><div class="title">Paid NFT</div><div class="label">$2.99</div><button class="button">Buy & Mint</button></div>
+      <div class="card"><img src="premium_nft.png"><div class="title">Premium NFT</div><div class="label">$4.99</div><button class="button">Buy & Mint</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Upcoming NFTs</h2>
+    <div class="grid">
+      <div class="card"><img src="rocker_mouse.png"><div class="title">Dark Rocker Mouse</div><div class="locked">🔒 Coming Soon</div></div>
+      <div class="card"><img src="mona_mouse.png"><div class="title">Mona Lisa Mouse</div><div class="locked">🔒 Coming Soon</div></div>
+      <div class="card"><img src="glam_guitar_mouse.png"><div class="title">Glam Guitar Mouse</div><div class="locked">🔒 Coming Soon</div></div>
+      <div class="card"><img src="einstein_mouse.png"><div class="title">Genius Mouse</div><div class="locked">🔒 Coming Soon</div></div>
+    </div>
+  </div>
+
+  <div class="footer-nav">
+    <a href="index.html">Go to Web App</a>
+    <a href="admin.html">Admin Page</a>
+    <a href="nft.html">NFT Showcase</a>
+  </div>
+
+</body>
+</html>

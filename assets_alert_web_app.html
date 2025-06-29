@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Assets Alert Web App</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
+    body { font-family: Arial, sans-serif; background: #111; color: white; padding: 20px; }
+    select, input, button { font-size: 1rem; margin: 10px 0; padding: 10px; }
+    .section { margin-bottom: 20px; }
+    label { display: block; margin: 10px 0 5px; }
+  
+input[type="text"], input[type="number"], input[type="email"], textarea {
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid gray;
+    padding: 10px;
+    margin: 5px;
+}
+</style>
+<style>
+body {
+    background-color: #121212;
+    color: white;
+    font-family: sans-serif;
+}
+button, select {
+    background-color: #b00020;
+    color: white;
+    border: 1px solid gray;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+}
+input[type="file"] {
+    color: white;
+}
+.settings-button {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+</style></head>
+<body><button class="settings-button" id="openSkins" onclick="window.location.href='skins.html'">Skins Store</button><button id="connectWallet">Connect Wallet</button>
+<h1>Assets Alert - Add New Asset</h1>
+<div class="section">
+<label for="assetType">Select Asset Type:</label>
+<select id="assetType" onchange="toggleInputType()">
+<option value="crypto">Cryptocurrency</option>
+<option value="stock">Stock</option>
+</select>
+</div>
+<div class="section" id="cryptoSection">
+<label for="cryptoAddress">Enter Crypto Token Address:</label>
+<input id="cryptoAddress" placeholder="e.g. 0x1234..." type="text"/>
+</div>
+<div class="section" id="stockSection" style="display:none;">
+<label for="stockSymbol">Enter Stock Symbol:</label>
+<input id="stockSymbol" placeholder="e.g. AAPL" type="text"/>
+</div>
+<div class="section">
+<button onclick="addAsset()">Add Asset for Alerts</button>
+</div>
+<div class="section">
+<h2>Alert List</h2>
+<ul id="alertList"></ul>
+</div>
+<script>
+    function toggleInputType() {
+      const assetType = document.getElementById("assetType").value;
+      document.getElementById("cryptoSection").style.display = assetType === "crypto" ? "block" : "none";
+      document.getElementById("stockSection").style.display = assetType === "stock" ? "block" : "none";
+    }
+
+    function addAsset() {
+      const assetType = document.getElementById("assetType").value;
+      const list = document.getElementById("alertList");
+
+      let assetValue = "";
+      if (assetType === "crypto") {
+        assetValue = document.getElementById("cryptoAddress").value.trim();
+        if (!assetValue.startsWith("0x")) {
+          alert("Please enter a valid Ethereum token address.");
+          return;
+        }
+      } else {
+        assetValue = document.getElementById("stockSymbol").value.trim().toUpperCase();
+        if (!assetValue.match(/^[A-Z.]{1,6}$/)) {
+          alert("Please enter a valid stock symbol.");
+          return;
+        }
+      }
+
+      const li = document.createElement("li");
+      li.textContent = `${assetType.toUpperCase()}: ${assetValue}`;
+      list.appendChild(li);
+
+      document.getElementById("cryptoAddress").value = "";
+      document.getElementById("stockSymbol").value = "";
+    }
+  </script>
+<label for="alertTimer">Set Timer:</label><select id="alertTimer"><option value="5">5 minutes</option><option value="10">10 minutes</option><option value="15">15 minutes</option><option value="20">20 minutes</option><option value="30">30 minutes</option></select><label for="soundUpload">Upload Custom Sound:</label><input accept="audio/*" id="soundUpload" type="file"/><button id="testSound">Test Sound</button><button id="resetButton">Reset Alerts</button><button id="dismissButton">Dismiss Alerts</button></body>
+</html>
