@@ -1,0 +1,27 @@
+
+body {
+  background-color: #121212;
+  color: white;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+header h1 {
+  color: #ff4444;
+}
+nav a {
+  color: #ccc;
+  text-decoration: none;
+  margin: 0 10px;
+}
+section {
+  border: 1px solid gray;
+  padding: 15px;
+  margin-top: 20px;
+}
+button {
+  background-color: #ff4444;
+  border: 1px solid gray;
+  color: white;
+  padding: 10px;
+  margin-top: 5px;
+}

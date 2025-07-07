@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Assets Alert Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Assets Alert Admin Dashboard</h1>
+    <nav>
+      <a href="index.html">Home</a> |
+      <a href="nft.html">NFT Showcase</a> |
+      <a href="skin_store.html">Skin Store</a> |
+      <a href="app.html">Assets Alert Web App</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Connect Wallet</h2>
+      <button id="connectButton">Connect Wallet</button>
+      <p id="walletAddress">Not connected</p>
+    </section>
+
+    <section>
+      <h2>Mint NFTs</h2>
+      <input type="number" id="mintId" placeholder="Token ID" />
+      <input type="number" id="mintAmount" placeholder="Amount" />
+      <button id="mintButton">Mint</button>
+    </section>
+
+    <section>
+      <h2>Airdrop NFTs</h2>
+      <input type="text" id="airdropAddress" placeholder="Wallet Address" />
+      <input type="number" id="airdropId" placeholder="Token ID" />
+      <input type="number" id="airdropAmount" placeholder="Amount" />
+      <button id="airdropButton">Airdrop</button>
+    </section>
+
+    <section>
+      <h2>Referral Tracking</h2>
+      <input type="text" id="referralAddress" placeholder="User Wallet Address" />
+      <input type="text" id="referralCode" placeholder="Referral Code" />
+      <button id="setReferral">Assign Referral</button>
+    </section>
+
+    <section>
+      <h2>Beta Tester Signups</h2>
+      <iframe src="https://docs.google.com/spreadsheets/d/e/YOUR_SPREADSHEET_ID/pubhtml?widget=true&amp;headers=false" width="100%" height="400"></iframe>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
