@@ -2,92 +2,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Assets Alert Admin Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assets Alert Admin</title>
   <style>
-    body {
-      background-color: #000;
-      color: #fff;
-      font-size: 26px;
-      font-family: Arial, sans-serif;
-    }
-    label, select, input, button {
-      font-size: 26px;
-      margin: 10px 0;
-      display: block;
-      width: 100%;
-      max-width: 500px;
-    }
-    .section {
-      margin-bottom: 40px;
-    }
-    button {
-      background-color: red;
-      border: 1px solid gray;
-      color: white;
-      padding: 10px;
-      cursor: pointer;
-    }
+    body { font-size: 26px; background-color: #1e1e1e; color: white; font-family: Arial, sans-serif; }
+    input, select, textarea { background-color: #333; color: white; font-size: 26px; padding: 10px; border: 1px solid #555; margin-bottom: 10px; width: 90%; }
+    button { font-size: 26px; padding: 10px 20px; background-color: red; color: white; border: none; margin-top: 10px; }
+    .section { margin-bottom: 40px; }
   </style>
 </head>
 <body>
   <h1>Assets Alert Admin Dashboard</h1>
 
   <div class="section">
-    <label for="wallet">Wallet Connect:</label>
-    <button onclick="connectWallet()">Connect Wallet</button>
-    <p id="walletAddress">Not connected</p>
+    <h2>Mint NFTs</h2>
+    <label for="mint-id">Select NFT ID:</label><br>
+    <select id="mint-id">
+      <option value="A1">A1 - Skater Mouse</option>
+      <option value="A2">A2 - Beta Tester</option>
+      <option value="A3">A3 - Paid NFT</option>
+      <option value="A4">A4 - Premium NFT</option>
+      <option value="M1">M1 - Mystery 1</option>
+      <option value="M2">M2 - Mystery 2</option>
+      <option value="S1">S1 - Rapper Mouse</option>
+    </select><br>
+    <input type="text" placeholder="Quantity to Mint"/>
+    <button>Mint NFT</button>
   </div>
 
   <div class="section">
-    <label for="mintNFT">Select NFT to Mint:</label>
-    <select id="mintNFT">
-      <option value="1">A1 - Skater Mouse (Animated)</option>
-      <option value="2">A2 - Beta Tester NFT</option>
-      <option value="3">A3 - Paid NFT (15 MATIC)</option>
-      <option value="4">A4 - Premium NFT (50 MATIC)</option>
-      <option value="5">M1 - Mystery 1 (3D Glasses Mouse)</option>
-      <option value="6">M2 - Mystery 2 (Minor Mouse)</option>
-      <option value="7">S1 - Rapper Mouse</option>
-    </select>
-    <label for="mintAmount">Amount to Mint:</label>
-    <input type="number" id="mintAmount" min="1" value="1">
-    <button onclick="mintNFT()">Mint</button>
+    <h2>Airdrop NFT</h2>
+    <input type="text" placeholder="Wallet Address"/>
+    <input type="text" placeholder="NFT ID"/>
+    <button>Airdrop</button>
   </div>
 
   <div class="section">
-    <label>Airdrop NFT</label>
-    <input type="text" id="airdropAddress" placeholder="Recipient address">
-    <button onclick="airdrop()">Airdrop</button>
+    <h2>Beta Tester Signups</h2>
+    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ21BetaTestSheet/pubhtml?widget=true&amp;headers=false" width="100%" height="400"></iframe>
   </div>
 
   <div class="section">
-    <label>Referral Tracker</label>
-    <iframe src="https://docs.google.com/spreadsheets/d/1kPbSIGNUPFORM_ID_HERE" width="100%" height="300"></iframe>
+    <h2>Referral Tracking</h2>
+    <p>Automatically generated referral codes tied to wallet addresses with link tracking.</p>
   </div>
 
   <div class="section">
-    <label>Purchase Tracker (for A3 & A4)</label>
-    <p>All purchases tracked via smart contract.</p>
+    <h2>Purchase Tracking (NFTs #3 & #4)</h2>
+    <p>Wallet, NFT purchased, amount paid, and date displayed here.</p>
   </div>
 
-  <script>
-    async function connectWallet() {
-      if (window.ethereum) {
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        document.getElementById("walletAddress").textContent = accounts[0];
-      } else {
-        alert("Wallet not found. Use Trust or Brave.");
-      }
-    }
-
-    async function mintNFT() {
-      alert("Minting NFT... This will call the smart contract (to be wired in manually).");
-    }
-
-    async function airdrop() {
-      alert("Airdropping NFT... This will call the smart contract (to be wired in manually).");
-    }
-  </script>
 </body>
 </html>
