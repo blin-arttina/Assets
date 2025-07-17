@@ -1,1 +1,93 @@
-// admin.html - Finalized file content for minting all NFTs
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Assets Alert Admin Dashboard</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-size: 26px;
+      font-family: Arial, sans-serif;
+    }
+    label, select, input, button {
+      font-size: 26px;
+      margin: 10px 0;
+      display: block;
+      width: 100%;
+      max-width: 500px;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+    button {
+      background-color: red;
+      border: 1px solid gray;
+      color: white;
+      padding: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Assets Alert Admin Dashboard</h1>
+
+  <div class="section">
+    <label for="wallet">Wallet Connect:</label>
+    <button onclick="connectWallet()">Connect Wallet</button>
+    <p id="walletAddress">Not connected</p>
+  </div>
+
+  <div class="section">
+    <label for="mintNFT">Select NFT to Mint:</label>
+    <select id="mintNFT">
+      <option value="1">A1 - Skater Mouse (Animated)</option>
+      <option value="2">A2 - Beta Tester NFT</option>
+      <option value="3">A3 - Paid NFT (15 MATIC)</option>
+      <option value="4">A4 - Premium NFT (50 MATIC)</option>
+      <option value="5">M1 - Mystery 1 (3D Glasses Mouse)</option>
+      <option value="6">M2 - Mystery 2 (Minor Mouse)</option>
+      <option value="7">S1 - Rapper Mouse</option>
+    </select>
+    <label for="mintAmount">Amount to Mint:</label>
+    <input type="number" id="mintAmount" min="1" value="1">
+    <button onclick="mintNFT()">Mint</button>
+  </div>
+
+  <div class="section">
+    <label>Airdrop NFT</label>
+    <input type="text" id="airdropAddress" placeholder="Recipient address">
+    <button onclick="airdrop()">Airdrop</button>
+  </div>
+
+  <div class="section">
+    <label>Referral Tracker</label>
+    <iframe src="https://docs.google.com/spreadsheets/d/1kPbSIGNUPFORM_ID_HERE" width="100%" height="300"></iframe>
+  </div>
+
+  <div class="section">
+    <label>Purchase Tracker (for A3 & A4)</label>
+    <p>All purchases tracked via smart contract.</p>
+  </div>
+
+  <script>
+    async function connectWallet() {
+      if (window.ethereum) {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        document.getElementById("walletAddress").textContent = accounts[0];
+      } else {
+        alert("Wallet not found. Use Trust or Brave.");
+      }
+    }
+
+    async function mintNFT() {
+      alert("Minting NFT... This will call the smart contract (to be wired in manually).");
+    }
+
+    async function airdrop() {
+      alert("Airdropping NFT... This will call the smart contract (to be wired in manually).");
+    }
+  </script>
+</body>
+</html>
