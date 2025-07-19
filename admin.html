@@ -2,130 +2,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Assets Alert Admin</title>
-  <style>
-    body {
-      background-color: #000;
-      color: #fff;
-      font-size: 26px;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    input, select, textarea {
-      background-color: #ffff99;
-      color: #000;
-      font-size: 26px;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      width: 100%;
-      margin-bottom: 15px;
-    }
-    button {
-      background-color: red;
-      color: white;
-      padding: 10px 18px;
-      font-size: 26px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    section {
-      margin-bottom: 40px;
-    }
-    iframe {
-      border: 1px solid #ccc;
-      width: 100%;
-      height: 600px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Assets Alert Admin Dashboard</title>
+    <style>
+        body {
+            background-color: #111;
+            color: white;
+            font-size: 26px;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        input, select, button {
+            font-size: 26px;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #ffffcc; /* soft yellow */
+            color: black;
+            border: 1px solid #ccc;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .wallet-status {
+            margin: 10px 0;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        // Placeholder for WalletConnect logic
+        function connectWallet() {
+            document.getElementById("wallet-status").textContent = "Wallet Connected (Simulated)";
+        }
+        function mintNFT() {
+            alert("Mint function triggered (simulate smart contract call)");
+        }
+        function airdropNFT() {
+            alert("Airdrop function triggered (simulate smart contract call)");
+        }
+        function fetchBetaSignups() {
+            document.getElementById("beta-signups").textContent = "Loading beta tester info from Google Form...";
+        }
+    </script>
 </head>
 <body>
-  <h1>Assets Alert Admin Dashboard</h1>
+    <h1>Assets Alert Admin Dashboard</h1>
 
-  <section>
-    <h2>Connect Wallet</h2>
-    <button onclick="connectWallet()">Connect Wallet</button>
-    <p id="wallet-address">Wallet Not Connected</p>
-  </section>
+    <div class="section">
+        <button onclick="connectWallet()">Connect Wallet</button>
+        <div id="wallet-status" class="wallet-status">Not Connected</div>
+    </div>
 
-  <section>
-    <h2>Mint NFT</h2>
-    <select id="mint-id">
-      <option value="1">A1 - Skater Mouse (MP4)</option>
-      <option value="2">A2 - Beta Tester</option>
-      <option value="3">A3 - Paid NFT</option>
-      <option value="4">A4 - Premium NFT</option>
-      <option value="5">M1 - Mystery NFT 1</option>
-      <option value="6">M2 - Mystery NFT 2</option>
-      <option value="7">S1 - Wrapper Mouse</option>
-    </select>
-    <input type="number" id="mint-amount" placeholder="Quantity to Mint" />
-    <button onclick="mintNFT()">Mint</button>
-  </section>
+    <div class="section">
+        <h2>Mint NFT</h2>
+        <select id="mint-nft">
+            <option value="A1">A1 – Skater Mouse (Animated)</option>
+            <option value="A2">A2 – Beta Tester NFT</option>
+            <option value="A3">A3 – Paid NFT (15 MATIC)</option>
+            <option value="A4">A4 – Premium NFT (50 MATIC)</option>
+            <option value="M1">M1 – Mystery NFT 1</option>
+            <option value="M2">M2 – Mystery NFT 2</option>
+            <option value="S1">S1 – Rapper Mouse (with emote)</option>
+        </select>
+        <button onclick="mintNFT()">Mint</button>
+    </div>
 
-  <section>
-    <h2>Airdrop NFT</h2>
-    <input type="text" id="airdrop-address" placeholder="Wallet Address to Airdrop To" />
-    <select id="airdrop-id">
-      <option value="1">A1 - Skater Mouse (MP4)</option>
-      <option value="2">A2 - Beta Tester</option>
-      <option value="3">A3 - Paid NFT</option>
-      <option value="4">A4 - Premium NFT</option>
-      <option value="5">M1 - Mystery NFT 1</option>
-      <option value="6">M2 - Mystery NFT 2</option>
-      <option value="7">S1 - Wrapper Mouse</option>
-    </select>
-    <button onclick="airdrop()">Airdrop</button>
-  </section>
+    <div class="section">
+        <h2>Airdrop NFT</h2>
+        <input type="text" placeholder="Recipient Wallet Address">
+        <input type="text" placeholder="NFT ID (e.g., A2)">
+        <button onclick="airdropNFT()">Airdrop</button>
+    </div>
 
-  <section>
-    <h2>Beta Tester Sign-Ups</h2>
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdAoziRkJYgpmCUZ9zLkZshHgWaazkqAaGp9zLrxtzIDNs2gQ/viewform?embedded=true" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-  </section>
+    <div class="section">
+        <h2>Referral Tracking</h2>
+        <p>Referral codes are generated and emailed upon signup.</p>
+    </div>
 
-  <section>
-    <h2>Purchase Tracking (Coming Soon)</h2>
-    <p>Tracking live purchases via smart contract is under setup.</p>
-  </section>
+    <div class="section">
+        <h2>Beta Tester Sign-Ups</h2>
+        <button onclick="fetchBetaSignups()">Load Beta Testers</button>
+        <pre id="beta-signups">Waiting for Google Form integration...</pre>
+    </div>
 
-  <section>
-    <h2>Referral Tracking (Coming Soon)</h2>
-    <p>Automatic referral tracking via unique wallet-generated links will be configured during signup flow.</p>
-  </section>
-
-  <script>
-    let connectedWallet = null;
-
-    async function connectWallet() {
-      if (window.ethereum) {
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          connectedWallet = accounts[0];
-          document.getElementById("wallet-address").textContent = "Connected: " + connectedWallet;
-        } catch (err) {
-          alert("Connection Failed: " + err.message);
-        }
-      } else {
-        alert("Wallet not detected.");
-      }
-    }
-
-    async function mintNFT() {
-      const id = document.getElementById("mint-id").value;
-      const qty = document.getElementById("mint-amount").value;
-      if (!connectedWallet) return alert("Please connect your wallet first.");
-      alert(`Minting ${qty} of NFT ID ${id}... (Functionality stub for deployment)`); // Placeholder logic
-    }
-
-    async function airdrop() {
-      const address = document.getElementById("airdrop-address").value;
-      const id = document.getElementById("airdrop-id").value;
-      if (!connectedWallet) return alert("Please connect your wallet first.");
-      alert(`Airdropping NFT ID ${id} to ${address}... (Functionality stub for deployment)`); // Placeholder logic
-    }
-  </script>
 </body>
 </html>
