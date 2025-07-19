@@ -2,89 +2,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Assets Alert Admin Dashboard</title>
-    <style>
-        body {
-            background-color: #111;
-            color: white;
-            font-size: 26px;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        input, select, button {
-            font-size: 26px;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #ffffcc; /* soft yellow */
-            color: black;
-            border: 1px solid #ccc;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .section {
-            margin-bottom: 40px;
-        }
-        .wallet-status {
-            margin: 10px 0;
-            font-weight: bold;
-        }
-    </style>
-    <script>
-        // Placeholder for WalletConnect logic
-        function connectWallet() {
-            document.getElementById("wallet-status").textContent = "Wallet Connected (Simulated)";
-        }
-        function mintNFT() {
-            alert("Mint function triggered (simulate smart contract call)");
-        }
-        function airdropNFT() {
-            alert("Airdrop function triggered (simulate smart contract call)");
-        }
-        function fetchBetaSignups() {
-            document.getElementById("beta-signups").textContent = "Loading beta tester info from Google Form...";
-        }
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assets Alert Admin Dashboard</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 26px;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 32px;
+    }
+    button, select, input {
+      font-size: 26px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      padding: 14px;
+      border: none;
+      border-radius: 6px;
+      background-color: red;
+      color: white;
+      width: 100%;
+    }
+    input, select {
+      background-color: #ffffcc;
+      color: black;
+      border: 1px solid #999;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Assets Alert Admin Dashboard</h1>
+  <h1>Assets Alert Admin Dashboard</h1>
 
-    <div class="section">
-        <button onclick="connectWallet()">Connect Wallet</button>
-        <div id="wallet-status" class="wallet-status">Not Connected</div>
-    </div>
+  <div class="section">
+    <button id="connectWallet">Connect Wallet</button>
+    <p id="walletStatus">Wallet Not Connected</p>
+  </div>
 
-    <div class="section">
-        <h2>Mint NFT</h2>
-        <select id="mint-nft">
-            <option value="A1">A1 – Skater Mouse (Animated)</option>
-            <option value="A2">A2 – Beta Tester NFT</option>
-            <option value="A3">A3 – Paid NFT (15 MATIC)</option>
-            <option value="A4">A4 – Premium NFT (50 MATIC)</option>
-            <option value="M1">M1 – Mystery NFT 1</option>
-            <option value="M2">M2 – Mystery NFT 2</option>
-            <option value="S1">S1 – Rapper Mouse (with emote)</option>
-        </select>
-        <button onclick="mintNFT()">Mint</button>
-    </div>
+  <div class="section">
+    <label for="nftSelect">Select NFT to Mint:</label>
+    <select id="nftSelect">
+      <option value="1">A1 - Skater Mouse (Animated)</option>
+      <option value="2">A2 - Beta Tester NFT</option>
+      <option value="3">A3 - Paid NFT</option>
+      <option value="4">A4 - Premium NFT</option>
+    </select>
+    <input type="number" id="mintAmount" value="1" min="1" placeholder="Amount to Mint"/>
+    <button onclick="mintNFT()">Mint</button>
+  </div>
 
-    <div class="section">
-        <h2>Airdrop NFT</h2>
-        <input type="text" placeholder="Recipient Wallet Address">
-        <input type="text" placeholder="NFT ID (e.g., A2)">
-        <button onclick="airdropNFT()">Airdrop</button>
-    </div>
+  <div class="section">
+    <h2>Airdrop NFT</h2>
+    <input type="text" id="airdropAddress" placeholder="Wallet Address to Airdrop To"/>
+    <select id="airdropNFT">
+      <option value="1">A1 - Skater Mouse (MP4)</option>
+      <option value="2">A2 - Beta Tester NFT</option>
+      <option value="3">A3 - Paid NFT</option>
+      <option value="4">A4 - Premium NFT</option>
+    </select>
+    <button onclick="airdropNFT()">Airdrop</button>
+  </div>
 
-    <div class="section">
-        <h2>Referral Tracking</h2>
-        <p>Referral codes are generated and emailed upon signup.</p>
-    </div>
+  <div class="section">
+    <h2>Referral Tracking</h2>
+    <p>Referral codes are generated and emailed upon signup.</p>
+  </div>
 
-    <div class="section">
-        <h2>Beta Tester Sign-Ups</h2>
-        <button onclick="fetchBetaSignups()">Load Beta Testers</button>
-        <pre id="beta-signups">Waiting for Google Form integration...</pre>
-    </div>
+  <div class="section">
+    <h2>Beta Tester Sign-Ups</h2>
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdNRwDJcD93EqAOlbI5k6AEGKL0Xz3JAFgILFMfU3T4qGmLTw/viewform?embedded=true"
+            width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+  </div>
 
+  <script>
+    async function mintNFT() {
+      const amount = document.getElementById('mintAmount').value;
+      const tokenId = document.getElementById('nftSelect').value;
+      alert(`Minting ${amount} of NFT ID ${tokenId}... (Smart contract logic here)`);
+    }
+
+    async function airdropNFT() {
+      const recipient = document.getElementById('airdropAddress').value;
+      const tokenId = document.getElementById('airdropNFT').value;
+      alert(`Airdropping NFT ID ${tokenId} to ${recipient}... (Smart contract logic here)`);
+    }
+
+    document.getElementById('connectWallet').onclick = () => {
+      document.getElementById('walletStatus').innerText = 'Wallet Connected';
+    };
+  </script>
 </body>
 </html>
