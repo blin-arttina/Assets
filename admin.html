@@ -10,6 +10,7 @@
       background-color: #111;
       color: white;
       font-family: Arial, sans-serif;
+    font-size: 26px;
       padding: 20px;
     }
     h1 {
@@ -22,7 +23,8 @@
       color: white;
       border: 2px solid gray;
       border-radius: 5px;
-      font-size: 18px;
+      font-size: 26px;
+      height: 48px;
     }
     button {
       background-color: red;
@@ -163,7 +165,24 @@
 ];
     let web3, accounts, contract;
 
-    // WalletConnect auto-connect initialization
+    
+window.addEventListener("load", async () => {
+  if (window.ethereum) {
+    try {
+      web3 = new Web3(window.ethereum);
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      accounts = await web3.eth.getAccounts();
+      contract = new web3.eth.Contract(contractABI, contractAddress);
+      document.getElementById("walletAddress").innerText = "Connected: " + accounts[0];
+    } catch (e) {
+      console.error("Brave Wallet connection failed:", e);
+      document.getElementById("walletAddress").innerText = "❌ Wallet connection failed.";
+    }
+  } else {
+    document.getElementById("walletAddress").innerText = "❌ No Ethereum provider detected.";
+  }
+});
+
       
 window.addEventListener("load", async () => {
   const provider = new WalletConnectProvider.default({
