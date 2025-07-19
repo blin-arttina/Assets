@@ -18,7 +18,7 @@
     select, input, button {
       padding: 10px;
       margin: 10px 0;
-      background: #222;
+      background: #ffeb3b; color: black;
       color: white;
       border: 2px solid gray;
       border-radius: 5px;
@@ -163,8 +163,26 @@
 ];
     let web3, accounts, contract;
 
-    document.getElementById("connectWallet").onclick = async function () {
-      const provider = new WalletConnectProvider.default({
+    // WalletConnect auto-connect initialization
+      
+window.addEventListener("load", async () => {
+  const provider = new WalletConnectProvider.default({
+    rpc: { 137: "https://polygon-rpc.com" },
+    chainId: 137
+  });
+
+  try {
+    await provider.enable();
+    web3 = new Web3(provider);
+    accounts = await web3.eth.getAccounts();
+    contract = new web3.eth.Contract(contractABI, contractAddress);
+    document.getElementById("walletAddress").innerText = "Connected: " + accounts[0];
+  } catch (e) {
+    console.error("WalletConnect failed:", e);
+    document.getElementById("walletAddress").innerText = "❌ WalletConnect failed.";
+  }
+});
+
         rpc: { 137: "https://polygon-rpc.com" },
         chainId: 137
       });
