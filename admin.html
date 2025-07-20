@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Assets Alert Admin</title>
+  <title>Assets Alert Admin (Polygon Fix)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -32,11 +32,6 @@
       padding: 20px;
       margin-bottom: 30px;
     }
-    iframe {
-      border: none;
-      width: 100%;
-      height: 700px;
-    }
     a.view-link {
       color: #00ccff;
       text-decoration: underline;
@@ -45,7 +40,7 @@
   </style>
 </head>
 <body>
-  <h1>Assets Alert Admin Dashboard</h1>
+  <h1>Assets Alert Admin (Polygon Fix)</h1>
 
   <div class="gray-box">
     <button id="connectWallet">Connect Wallet</button>
@@ -53,38 +48,14 @@
   </div>
 
   <div class="gray-box">
-    <h2>Mint To Address</h2>
-    <label for="mintToAddress">Recipient Address:</label>
-    <input type="text" id="mintToAddress" placeholder="0x...">
+    <h2>Mint To Me (Test)</h2>
     <label for="mintTokenId">Token ID:</label>
-    <input type="number" id="mintTokenId">
+    <input type="number" id="mintTokenId" placeholder="e.g. 1">
     <label for="mintQuantity">Quantity:</label>
     <input type="number" id="mintQuantity" value="1" min="1">
-    <button onclick="mintToAddress()">Mint</button>
+    <button onclick="mintToMe()">Mint</button>
     <p id="mintStatus"></p>
     <p><a id="mintViewLink" class="view-link" href="#" target="_blank" style="display:none;">🔗 View NFT on Polygonscan</a></p>
-  </div>
-
-  <div class="gray-box">
-    <h2>Airdrop NFT</h2>
-    <label for="airdropAddress">Recipient Address:</label>
-    <input type="text" id="airdropAddress">
-    <label for="airdropTokenId">Token ID:</label>
-    <input type="number" id="airdropTokenId">
-    <label for="airdropQuantity">Quantity:</label>
-    <input type="number" id="airdropQuantity" value="1" min="1">
-    <button onclick="airdropNFT()">Airdrop</button>
-    <p id="airdropStatus"></p>
-  </div>
-
-  <div class="gray-box">
-    <h2>Beta Tester Sign-Up Form</h2>
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc1otkufkAHUCxd_NQ97j97KDpAtdZk3DV_EX40eRYW75jb4A/viewform?embedded=true" loading="lazy">Loading…</iframe>
-  </div>
-
-  <div class="gray-box">
-    <h2>View Minted NFTs</h2>
-    <a href="https://opensea.io/assets/matic/0xCdb25eb86266cAA0C175144eF4FB241A2F79390E" target="_blank" class="view-link">🔗 View All NFTs on OpenSea</a>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
@@ -94,7 +65,6 @@
     const abi = [
       {
         "inputs": [
-          { "internalType": "address", "name": "account", "type": "address" },
           { "internalType": "uint256", "name": "id", "type": "uint256" },
           { "internalType": "uint256", "name": "amount", "type": "uint256" }
         ],
@@ -102,20 +72,8 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
-      },
-      {
-        "inputs": [
-          { "internalType": "address", "name": "to", "type": "address" },
-          { "internalType": "uint256", "name": "id", "type": "uint256" },
-          { "internalType": "uint256", "name": "amount", "type": "uint256" }
-        ],
-        "name": "airdrop",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
       }
     ];
-
     let web3, accounts, contract;
 
     document.getElementById("connectWallet").onclick = async function () {
@@ -125,17 +83,22 @@
       });
       await provider.enable();
       web3 = new Web3(provider);
+
+      await provider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: "0x89" }]
+      });
+
       accounts = await web3.eth.getAccounts();
       contract = new web3.eth.Contract(abi, contractAddress);
       document.getElementById("walletStatus").innerText = "Connected: " + accounts[0];
     };
 
-    async function mintToAddress() {
-      const to = document.getElementById("mintToAddress").value;
+    async function mintToMe() {
       const id = parseInt(document.getElementById("mintTokenId").value);
       const amount = parseInt(document.getElementById("mintQuantity").value);
       try {
-        await contract.methods.mint(to, id, amount).send({ from: accounts[0] });
+        await contract.methods.mint(id, amount).send({ from: accounts[0] });
         document.getElementById("mintStatus").innerText = "✅ Mint successful!";
         const viewURL = `https://polygonscan.com/token/${contractAddress}?a=${id}`;
         const link = document.getElementById("mintViewLink");
@@ -144,19 +107,6 @@
       } catch (err) {
         console.error(err);
         document.getElementById("mintStatus").innerText = "❌ Mint failed.";
-      }
-    }
-
-    async function airdropNFT() {
-      const to = document.getElementById("airdropAddress").value;
-      const id = parseInt(document.getElementById("airdropTokenId").value);
-      const amount = parseInt(document.getElementById("airdropQuantity").value);
-      try {
-        await contract.methods.airdrop(to, id, amount).send({ from: accounts[0] });
-        document.getElementById("airdropStatus").innerText = "✅ Airdrop successful!";
-      } catch (err) {
-        console.error(err);
-        document.getElementById("airdropStatus").innerText = "❌ Airdrop failed.";
       }
     }
   </script>
