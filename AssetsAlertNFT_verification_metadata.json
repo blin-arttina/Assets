@@ -1,0 +1,23 @@
+{
+    "language": "Solidity",
+    "sources": {
+        "AssetsAlertNFT_FINAL_FIXED.sol": {
+            "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\nimport \"@openzeppelin/contracts/token/ERC1155/ERC1155.sol\";\nimport \"@openzeppelin/contracts/access/Ownable.sol\";\nimport \"@openzeppelin/contracts/token/common/ERC2981.sol\";\n\ncontract MyMultiToken is ERC1155, Ownable, ERC2981 {\n    mapping(uint256 => uint256) public totalMinted;\n    mapping(uint256 => uint256) public maxSupply;\n\n    address private constant TRUST_WALLET = 0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E;\n\n    constructor() \n        ERC1155(\"https://raw.githubusercontent.com/blin-arttina/AssetsAlert/main/{id}.json\")\n        Ownable(0xB7Acf7F61e360baB855A86742be5273baB69B153)\n    {\n        maxSupply[1] = 6;\n        maxSupply[2] = 100;\n        maxSupply[3] = 50000;\n        maxSupply[4] = 100;\n        maxSupply[5] = 100;\n        maxSupply[6] = 50;\n        maxSupply[7] = 50;\n\n        _mint(owner(), 1, 1, \"\");\n        totalMinted[1] = 1;\n\n        _setDefaultRoyalty(TRUST_WALLET, 500);\n    }\n\n    function mint(address to, uint256 id, uint256 amount) external onlyOwner {\n        require(totalMinted[id] + amount <= maxSupply[id], \"Max supply exceeded\");\n        totalMinted[id] += amount;\n        _mint(to, id, amount, \"\");\n    }\n\n    function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts) external onlyOwner {\n        require(ids.length == amounts.length, \"Mismatched array lengths\");\n        for (uint256 i = 0; i < ids.length; i++) {\n            require(totalMinted[ids[i]] + amounts[i] <= maxSupply[ids[i]], \"Max supply exceeded\");\n            totalMinted[ids[i]] += amounts[i];\n        }\n        _mintBatch(to, ids, amounts, \"\");\n    }\n\n    function airdrop(uint256 id, address[] calldata recipients) external onlyOwner {\n        require(totalMinted[id] + recipients.length <= maxSupply[id], \"Airdrop exceeds max supply\");\n        for (uint256 i = 0; i < recipients.length; i++) {\n            _mint(recipients[i], id, 1, \"\");\n            totalMinted[id] += 1;\n        }\n    }\n\n    function setRoyalty(address receiver, uint96 feeNumerator) external onlyOwner {\n        _setDefaultRoyalty(receiver, feeNumerator);\n    }\n\n    function supportsInterface(bytes4 interfaceId)\n        public\n        view\n        virtual\n        override(ERC1155, ERC2981)\n        returns (bool)\n    {\n        return super.supportsInterface(interfaceId);\n    }\n}\n"
+        }
+    },
+    "settings": {
+        "optimizer": {
+            "enabled": false,
+            "runs": 200
+        },
+        "outputSelection": {
+            "*": {
+                "*": [
+                    "abi",
+                    "evm.bytecode",
+                    "evm.deployedBytecode"
+                ]
+            }
+        }
+    }
+}
