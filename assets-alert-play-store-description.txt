@@ -1,0 +1,31 @@
+
+App Name: Assets Alert
+
+Short Description:
+Real-time crypto & stock alerts with custom sounds and NFT rewards.
+
+Full Description:
+Assets Alert is your ultimate companion for tracking crypto and stock price movements in real-time. Customize your alerts, upload your own sounds, and personalize the app with unique themes — all without needing to sign up or log in.
+
+🚀 Features:
+• Real-time alerts for crypto & stocks
+• Upload your own alert sounds
+• Switch between dark & custom skins
+• NFT showcase for earned or collected rewards
+• Offline usage — no account required
+• Privacy-first: We don’t collect your data
+
+🔓 Upgrade to Pro to unlock:
+• Unlimited alerts
+• Full NFT tracking
+• Exclusive premium themes
+• Bonus NFT drop on lifetime unlock
+
+📈 Whether you’re a casual trader or power user, Assets Alert gives you full control — with no distractions.
+
+Category: Finance
+Content Rating: Everyone
+Privacy Policy URL: [Insert URL to hosted privacy policy]
+Support Contact: [Insert your support email address here]
+
+Version: v15

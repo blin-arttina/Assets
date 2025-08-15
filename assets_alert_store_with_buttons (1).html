@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assets Alert Store</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+    }
+    h1 {
+      font-size: 36px;
+    }
+    .section {
+      margin: 40px 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .card {
+      background: #222;
+      padding: 10px;
+      border: 1px solid #555;
+    }
+    .card img {
+      width: 100%;
+      height: auto;
+      border: 2px solid gray;
+    }
+    .card h3 {
+      margin: 10px 0;
+    }
+    .badge {
+      background: crimson;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 5px;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Assets Alert App Skin Store & NFT Preview</h1>
+
+  <div class="section">
+    <h2>🎨 App Skins</h2>
+    <div class="grid">
+      <div class="card"><img src="skin_geometric_preview.png"><h3>Geometric</h3><div class="badge">Free</div><button onclick="alert('Activated!')">Activate</button></div>
+      <div class="card"><img src="skin_music_preview.png"><h3>Musical Notes</h3><div class="badge">Free</div><button onclick="alert('Activated!')">Activate</button></div>
+      <div class="card"><img src="skin_peace_preview.png"><h3>Peace</h3><div class="badge">Free</div><button onclick="alert('Activated!')">Activate</button></div>
+      <div class="card"><img src="skin_contrast_preview.png"><h3>High Contrast</h3><div class="badge">Free</div><button onclick="alert('Activated!')">Activate</button></div>
+      <div class="card"><img src="skin_aliens_preview.png"><h3>Aliens</h3><div class="badge">Premium</div><button onclick="mintSkin(3)">Buy</button></div>><h3>Aliens 👽</h3><div class="badge">Premium</div></div>
+      <div class="card"><img src="skin_solar_preview.png"><h3>Solar</h3><div class="badge">Premium</div><button onclick="mintSkin(3)">Buy</button></div>><h3>Solar System 🌌</h3><div class="badge">Premium</div></div>
+      <div class="card"><img src="skin_fire_ice_preview.png"><h3>Fire Ice</h3><div class="badge">Premium</div><button onclick="mintSkin(4)">Buy</button></div>><h3>Fire & Ice 🔥❄️</h3><div class="badge">Premium</div></div>
+      <div class="card"><img src="skin_starwars_preview.png"><h3>Starwars</h3><div class="badge">Premium</div><button onclick="mintSkin(4)">Buy</button></div>><h3>Star Wars ⚔️</h3><div class="badge">Premium</div></div>
+      <div class="card"><img src="skin_pokemon_preview.png"><h3>Pokemon</h3><div class="badge">Premium</div><button onclick="mintSkin(4)">Buy</button></div>><h3>Pokémon Inspired</h3><div class="badge">Premium</div></div>
+      <div class="card"><img src="skin_minecraft_preview.png"><h3>Minecraft</h3><div class="badge">Premium</div><button onclick="mintSkin(4)">Buy</button></div>><h3>Minecraft</h3><div class="badge">Premium</div></div>
+      <div class="card"><img src="skin_dnd_preview.png"><h3>Dnd</h3><div class="badge">Premium</div><button onclick="mintSkin(4)">Buy</button></div>><h3>Dungeons & Dragons</h3><div class="badge">Premium</div></div>
+      <div class="card"><img src="skin_wow_preview.png"><h3>Wow</h3><div class="badge">Premium</div><button onclick="mintSkin(4)">Buy</button></div>><h3>World of Warcraft</h3><div class="badge">Premium</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🧬 NFT Collection Preview</h2>
+    <div class="grid">
+      <div class="card"><img src="beta_tester_nft.png"><h3>Beta Tester NFT</h3></div>
+      <div class="card"><img src="skater_mouse.png"><h3>Skater Mouse (Animated)</h3></div>
+      <div class="card"><img src="paid_nft.png"><h3>Paid NFT</h3></div>
+      <div class="card"><img src="premium_nft.png"><h3>Premium NFT</h3></div>
+      <div class="card"><img src="rocker_mouse.png"><h3>Dark Rocker Mouse</h3><div class="badge">Coming Soon</div></div>
+      <div class="card"><img src="mona_mouse.png"><h3>Mona Lisa Mouse</h3><div class="badge">Coming Soon</div></div>
+      <div class="card"><img src="glam_guitar_mouse.png"><h3>Glam Guitar Mouse</h3><div class="badge">Coming Soon</div></div>
+      <div class="card"><img src="einstein_mouse.png"><h3>Genius Mouse</h3><div class="badge">Coming Soon</div></div>
+    </div>
+  </div>
+
+
+<script>
+function mintSkin(tokenId) {
+  if (typeof window.ethereum === 'undefined') {
+    alert("Please connect a Web3 wallet.");
+    return;
+  }
+  alert("This will mint token ID: " + tokenId + " using your wallet.");
+  // Web3 mint logic would go here
+}
+</script>
+
+</body>
+</html>
