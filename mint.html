@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mint Assets Alert NFTs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 26px;
+      padding: 20px;
+    }
+    select, input, button {
+      padding: 10px;
+      font-size: 26px;
+      margin: 10px 0;
+      background-color: #ffeb3b;
+      color: black;
+      border: 2px solid gray;
+      border-radius: 5px;
+      height: 48px;
+    }
+    button {
+      background-color: red;
+      color: white;
+      cursor: pointer;
+    }
+    .gray-box {
+      border: 2px solid gray;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    a {
+      color: #00ccff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mint Paid or Premium NFT</h1>
+
+  <div class="gray-box">
+    <button id="connectWallet">Connect Wallet</button>
+    <p id="walletStatus">Not connected</p>
+  </div>
+
+  <div class="gray-box">
+    <h2>Select NFT to Mint</h2>
+    <label for="tokenSelect">NFT:</label>
+    <select id="tokenSelect">
+      <option value="A3" data-price="15">A3 - Paid NFT (15 MATIC)</option>
+      <option value="A4" data-price="50">A4 - Premium NFT (50 MATIC)</option>
+    </select>
+    <p>Limit: 1 per wallet</p>
+    <button onclick="mint()">Mint</button>
+    <p id="mintStatus"></p>
+  </div>
+
+  <div class="gray-box">
+    <h2>View Your NFTs</h2>
+    <a href="https://opensea.io/account" target="_blank">🔗 View on OpenSea</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+  <script>
+    const contractAddress = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
+    const tokenIds = { A3: 3, A4: 4 };
+    const prices = { A3: "15000000000000000000", A4: "50000000000000000000" }; // 15 & 50 MATIC in wei
+    const minted = { A3: false, A4: false };
+    const abi = [
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "id", "type": "uint256" },
+          { "internalType": "uint256", "name": "amount", "type": "uint256" }
+        ],
+        "name": "publicMint",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+      }
+    ];
+
+    let web3, accounts, contract;
+
+    async function connectWallet() {
+      if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x89" }]
+        });
+        accounts = await web3.eth.getAccounts();
+        contract = new web3.eth.Contract(abi, contractAddress);
+        document.getElementById("walletStatus").innerText = "Connected: " + accounts[0];
+      } else {
+        alert("Please use a browser with MetaMask or Trust Wallet.");
+      }
+    }
+
+    async function mint() {
+      const tokenCode = document.getElementById("tokenSelect").value;
+      const tokenId = tokenIds[tokenCode];
+      const price = prices[tokenCode];
+      const alreadyMinted = minted[tokenCode];
+      const amount = 1;
+
+      if (alreadyMinted) {
+        document.getElementById("mintStatus").innerText = "❌ You've already minted this NFT.";
+        return;
+      }
+
+      try {
+        await contract.methods.publicMint(tokenId, amount).send({
+          from: accounts[0],
+          value: price
+        });
+        minted[tokenCode] = true;
+        document.getElementById("mintStatus").innerText = "✅ Minted successfully!";
+      } catch (err) {
+        console.error(err);
+        document.getElementById("mintStatus").innerText = "❌ Mint failed.";
+      }
+    }
+
+    document.getElementById("connectWallet").onclick = connectWallet;
+  </script>
+</body>
+</html>

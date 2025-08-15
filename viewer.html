@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NFT Ownership Viewer</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    input {
+      padding: 12px;
+      font-size: 18px;
+      width: 80%;
+      margin-bottom: 20px;
+      border: 1px solid gray;
+      background-color: #333;
+      color: white;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: red;
+      color: white;
+      border: 1px solid gray;
+      cursor: pointer;
+    }
+    table {
+      margin: 30px auto;
+      border-collapse: collapse;
+      width: 90%;
+      background-color: #222;
+    }
+    th, td {
+      border: 1px solid gray;
+      padding: 10px;
+    }
+    th {
+      background-color: #444;
+    }
+  </style>
+</head>
+<body>
+  <h1>Assets Alert NFT Ownership Viewer</h1>
+  <p>Enter a wallet address to check NFT balances:</p>
+  <input type="text" id="walletInput" placeholder="0x...">
+  <br>
+  <button onclick="checkOwnership()">Check Ownership</button>
+
+  <div id="results"></div>
+
+  <script>
+    const contractAddress = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
+    const abi = [{
+      "constant": true,
+      "inputs": [
+        { "name": "account", "type": "address" },
+        { "name": "id", "type": "uint256" }
+      ],
+      "name": "balanceOf",
+      "outputs": [{ "name": "", "type": "uint256" }],
+      "type": "function"
+    }];
+
+    async function checkOwnership() {
+      const address = document.getElementById("walletInput").value.trim();
+      if (!address.startsWith("0x") || address.length !== 42) {
+        alert("Please enter a valid wallet address.");
+        return;
+      }
+
+      const web3 = new Web3("https://polygon-rpc.com");
+      const contract = new web3.eth.Contract(abi, contractAddress);
+      const names = {
+        1: "Skater Mouse NFT",
+        2: "Beta Tester NFT",
+        3: "Paid NFT",
+        4: "Premium NFT",
+        5: "Mystery NFT 1",
+        6: "Mystery NFT 2"
+      };
+
+      let html = "<table><tr><th>NFT</th><th>Token ID</th><th>Quantity</th></tr>";
+      for (let i = 1; i <= 6; i++) {
+        const qty = await contract.methods.balanceOf(address, i).call();
+        html += `<tr><td>${names[i]}</td><td>${i}</td><td>${qty}</td></tr>`;
+      }
+      html += "</table>";
+      document.getElementById("results").innerHTML = html;
+    }
+  </script>
+</body>
+</html>

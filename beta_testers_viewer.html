@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Beta Tester Submissions</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      font-size: 18px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid gray;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #1e1e1e;
+    }
+  </style>
+</head>
+<body>
+  <h1>Beta Tester Submissions</h1>
+  <div id="betaTesters">Loading...</div>
+
+  <script>
+    function showTesters(data) {
+      let html = '<table><tr>';
+      for (const key in data[0]) {
+        html += `<th>${key}</th>`;
+      }
+      html += '</tr>';
+      data.forEach(row => {
+        html += '<tr>';
+        for (const key in row) {
+          html += `<td>${row[key]}</td>`;
+        }
+        html += '</tr>';
+      });
+      html += '</table>';
+      document.getElementById('betaTesters').innerHTML = html;
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      Tabletop.init({
+        key: 'https://docs.google.com/spreadsheets/d/1FAIpQLScHhvdnpOoNpodiZuN_Y7bCHlS37v55s9h1_goHWUGX1iNJzw/pubhtml',
+        callback: showTesters,
+        simpleSheet: true
+      });
+    });
+  </script>
+</body>
+</html>
