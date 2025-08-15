@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assets Alert Web App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: white; padding: 20px; font-size: 18px; }
+    select, input, button { font-size: 1rem; margin: 10px 0; padding: 10px; }
+    label { display: block; margin: 10px 0 5px; }
+    input[type="text"], input[type="number"], input[type="email"], textarea {
+      background-color: #2a2a2a; color: white; border: 1px solid gray; padding: 10px; margin: 5px;
+    }
+    button, select {
+      background-color: #b00020; color: white; border: 1px solid gray; padding: 10px; margin: 5px; cursor: pointer;
+    }
+    .section { margin-bottom: 20px; }
+    .settings-button {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <button class="settings-button" id="openSkins" onclick="window.location.href='skins.html'">Skins Store</button>
+  <h1>Assets Alert - Add New Asset</h1>
+  <div class="section">
+    <label for="assetInput">Enter Asset (Crypto Address or Stock Symbol):</label>
+    <input id="assetInput" placeholder="e.g. 0x1234... or AAPL" type="text"/>
+  </div>
+  <div class="section">
+    <label for="targetPrice">Enter Target Price:</label>
+    <input id="targetPrice" type="number" placeholder="e.g. 1500 or 200.50" step="0.01"/>
+  </div>
+  <div class="section">
+    <label for="soundUpload">Upload Custom Sound:</label>
+    <input accept="audio/*" id="soundUpload" type="file"/>
+    <br>
+    <label for="alertDuration">Sound Duration:</label>
+    <select id="alertDuration">
+      <option value="5">5 minutes</option>
+      <option value="10">10 minutes</option>
+      <option value="15">15 minutes</option>
+      <option value="20">20 minutes</option>
+      <option value="30">30 minutes</option>
+    </select>
+    <br>
+    <button onclick="testSound()">Test Sound</button>
+    <button onclick="dismissAlerts()">Dismiss Alerts</button>
+  </div>
+  <div class="section">
+    <button onclick="addAsset()">Add Asset for Alerts</button>
+  </div>
+  <div class="section">
+    <h2>Alert List</h2>
+    <ul id="alertList"></ul>
+  </div>
+  <script>
+    function addAsset() {
+      const assetValue = document.getElementById("assetInput").value.trim();
+      const list = document.getElementById("alertList");
+      if (!assetValue) {
+        alert("Please enter a crypto address or stock symbol.");
+        return;
+      }
+      const li = document.createElement("li");
+      li.textContent = `ALERT SET FOR: ${assetValue}`;
+      list.appendChild(li);
+      document.getElementById("assetInput").value = "";
+    }
+
+    function testSound() {
+      const soundInput = document.getElementById("soundUpload");
+      if (soundInput.files.length === 0) {
+        alert("Please upload a sound file first.");
+        return;
+      }
+      const audio = new Audio(URL.createObjectURL(soundInput.files[0]));
+      audio.play();
+    }
+
+    function dismissAlerts() {
+      alert("Alerts dismissed.");
+    }
+  </script>
+</body>
+</html>
