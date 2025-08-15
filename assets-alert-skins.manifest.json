@@ -1,0 +1,86 @@
+[
+  {
+    "skin": "fire",
+    "slug": "fire",
+    "css": "assets-alert-skin-fire.css",
+    "preview": "assets-alert-skin-fire-preview.png"
+  },
+  {
+    "skin": "geo",
+    "slug": "geo",
+    "css": "assets-alert-skin-geo.css",
+    "preview": "assets-alert-skin-geo-preview.png"
+  },
+  {
+    "skin": "high_coontrst",
+    "slug": "high-coontrst",
+    "css": "assets-alert-skin-high-coontrst.css",
+    "preview": "assets-alert-skin-high-coontrst-preview.png"
+  },
+  {
+    "skin": "solar_system",
+    "slug": "solar-system",
+    "css": "assets-alert-skin-solar-system.css",
+    "preview": "assets-alert-skin-solar-system-preview.png"
+  },
+  {
+    "skin": "poki",
+    "slug": "poki",
+    "css": "assets-alert-skin-poki.css",
+    "preview": "assets-alert-skin-poki-preview.png"
+  },
+  {
+    "skin": "peace1",
+    "slug": "peace1",
+    "css": "assets-alert-skin-peace1.css",
+    "preview": "assets-alert-skin-peace1-preview.png"
+  },
+  {
+    "skin": "peace3",
+    "slug": "peace3",
+    "css": "assets-alert-skin-peace3.css",
+    "preview": "assets-alert-skin-peace3-preview.png"
+  },
+  {
+    "skin": "alien2",
+    "slug": "alien2",
+    "css": "assets-alert-skin-alien2.css",
+    "preview": "assets-alert-skin-alien2-preview.png"
+  },
+  {
+    "skin": "aqua",
+    "slug": "aqua",
+    "css": "assets-alert-skin-aqua.css",
+    "preview": "assets-alert-skin-aqua-preview.png"
+  },
+  {
+    "skin": "str_wars",
+    "slug": "str-wars",
+    "css": "assets-alert-skin-str-wars.css",
+    "preview": "assets-alert-skin-str-wars-preview.png"
+  },
+  {
+    "skin": "music",
+    "slug": "music",
+    "css": "assets-alert-skin-music.css",
+    "preview": "assets-alert-skin-music-preview.png"
+  },
+  {
+    "skin": "peace2",
+    "slug": "peace2",
+    "css": "assets-alert-skin-peace2.css",
+    "preview": "assets-alert-skin-peace2-preview.png"
+  },
+  {
+    "skin": "cosmic",
+    "slug": "cosmic",
+    "css": "assets-alert-skin-cosmic.css",
+    "preview": "assets-alert-skin-cosmic-preview.png"
+  },
+  {
+    "skin": "alien",
+    "slug": "alien",
+    "css": "assets-alert-skin-alien.css",
+    "preview": "assets-alert-skin-alien-preview.png"
+  }
+]

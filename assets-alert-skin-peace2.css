@@ -1,0 +1,21 @@
+:root[data-skin="peace2"] {
+  --bg: #0b0b0d;
+  --surface: #101411;
+  --text: #ffffff;
+  --muted: #b5b8c3;
+  --primary: #66bb6a;
+  --accent: #ffcc80;
+  --border: #2c3b2f;
+  --success: #00c853;
+  --warning: #ffb300;
+  --danger: #ff3d00;
+  --radius: 16px;
+  --font-size: 20px;
+}
+
+html, body { background: var(--bg); color: var(--text); font-size: var(--font-size); }
+button, .button { background: var(--primary); color: #fff; border: 2px solid var(--border); border-radius: var(--radius); padding: 12px 18px; }
+.card { background: var(--surface); border: 2px solid var(--border); border-radius: calc(var(--radius) + 4px); padding: 16px; }
+.card h3 { background: var(--accent); color: #fff; padding: 8px 12px; border-radius: 10px; display: inline-block; }
+input, select { background: var(--surface); color: var(--text); border: 2px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
+hr { border: none; height: 2px; background: var(--border); }
