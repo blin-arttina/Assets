@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Auto Verify (Sourcify)</title>
+<style>
+  :root{--bg:#0b0b0f;--fg:#f5f5f7;--muted:#b9b9c0;--card:#121219;--red:#ef4444;--outline:#6b7280;--ok:#22c55e;--warn:#f59e0b;}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;line-height:1.45}
+  .wrap{max-width:980px;margin:0 auto;padding:20px 14px 64px}
+  h1{margin:0 0 10px;font-size:clamp(22px,4vw,36px)}
+  p.big{margin:0 0 12px;color:var(--muted);font-size:clamp(16px,2.8vw,20px)}
+  .card{background:var(--card);border:2px solid var(--outline);border-radius:16px;padding:16px;margin:18px 0;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+  .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--outline);border-radius:999px;padding:6px 10px;margin:4px 8px 0 0;color:var(--muted);font-size:14px}
+  .dot{width:10px;height:10px;border-radius:50%;background:#ef4444}
+  .ok{background:var(--ok)} .warn{background:var(--warn)}
+  button{cursor:pointer;border:none;border-radius:14px;padding:14px 18px;font-size:18px;font-weight:700}
+  .primary{background:var(--red);color:#fff;box-shadow:0 6px 14px rgba(239,68,68,.3)}
+  .secondary{background:#1f2937;color:#fff;border:2px solid var(--outline)}
+  button:disabled{opacity:.6;cursor:not-allowed}
+  pre{white-space:pre-wrap;word-break:break-word;font-size:14px}
+  textarea{width:100%;min-height:160px;background:#0f0f15;color:var(--fg);border:2px solid var(--outline);border-radius:12px;padding:10px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Auto Verify (Sourcify)</h1>
+  <p class="big">This page fetches your Solidity from GitHub, compiles locally, auto-verifies on Polygon, then lets you download <b>metadata.json</b> and <b>ABI.json</b>.</p>
+
+  <div class="card" id="statusRow">
+    <div class="pill"><span id="dotFetch" class="dot"></span> Load source</div>
+    <div class="pill"><span id="dotCompile" class="dot"></span> Compile</div>
+    <div class="pill"><span id="dotMeta" class="dot"></span> Metadata ready</div>
+    <div class="pill"><span id="dotVerify" class="dot"></span> Sourcify verify</div>
+    <div class="pill"><span id="dotDone" class="dot"></span> Done</div>
+  </div>
+
+  <div class="card" id="manualBox" style="display:none">
+    <b>Couldn’t load the file automatically.</b>
+    <p class="big">Paste the Solidity below and click <i>Start</i>.</p>
+    <textarea id="paste"></textarea>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+      <button id="startBtn" class="primary">Start</button>
+      <button id="speakBtn" class="secondary">Read Aloud</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button id="downloadMeta" class="secondary" disabled>Download metadata.json</button>
+      <button id="downloadAbi"  class="secondary" disabled>Download ABI.json</button>
+      <button id="statusBtn"    class="secondary">Check Status</button>
+      <button id="copyBtn"      class="secondary">Copy Response</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 8px">Output</h2>
+    <pre id="out">Preparing…</pre>
+  </div>
+</div>
+
+<script>
+/*** CONFIG (prefilled) ***/
+const ADDRESS = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E"; // Tina
+const CHAIN   = "137"; // Polygon Mainnet
+const GITHUB_RAW = "https://raw.githubusercontent.com/blin-arttina/Assets/refs/heads/main/AssetsAlertNFT_FINAL_FIXED.sol";
+const COMPILERS = [
+  "v0.8.30+commit.73712a01",
+  "v0.8.26+commit.8a97fa7a",
+  "v0.8.24+commit.e11b9ed9",
+  "v0.8.20+commit.a1b79de6"
+];
+
+/*** helpers ***/
+const $ = (id)=>document.getElementById(id);
+const out = $("out");
+function setOut(obj){ out.textContent = (typeof obj==="string") ? obj : JSON.stringify(obj,null,2); }
+function dot(id, ok){ const el=$(id); el.className="dot "+(ok?"ok":""); }
+function say(t){ try{ const u=new SpeechSynthesisUtterance(t); u.rate=.95; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch{} }
+
+/*** solc loader ***/
+async function loadSolc(v){
+  const url = "https://binaries.soliditylang.org/bin/soljson-" + v + ".js";
+  const r = await fetch(url);
+  if(!r.ok) throw new Error("Compiler fetch failed "+v);
+  const js = await r.text();
+  const blob = new Blob([js], {type:"text/javascript"});
+  const blobURL = URL.createObjectURL(blob);
+  await new Promise((res,rej)=>{
+    const s=document.createElement("script");
+    s.src=blobURL; s.onload=res; s.onerror=()=>rej(new Error("solc load failed"));
+    document.head.appendChild(s);
+  });
+  if(!window.solc) throw new Error("solc missing");
+  return window.solc;
+}
+
+function makeStdJson(filename, source){
+  return {
+    language:"Solidity",
+    settings:{
+      optimizer:{enabled:true, runs:200},
+      metadata:{useLiteralContent:true},
+      outputSelection:{"*":{"*":["abi","evm.bytecode","evm.deployedBytecode","metadata"]}}
+    },
+    sources: { [filename]: { content: source } }
+  };
+}
+
+/*** pipeline ***/
+let metadataBlob=null, abiBlob=null, sourcesForUpload=[];
+
+async function compileAndVerify(filename, source){
+  try{
+    dot("dotFetch", true);
+    setOut("Loading compiler… (If stuck, disable Brave Shields for this page)");
+    let solc=null, used=null, lastErr=null;
+    for(const v of COMPILERS){
+      try{ solc = await loadSolc(v); used=v; break; }catch(e){ lastErr=e; }
+    }
+    if(!solc) throw lastErr || new Error("No compiler available");
+
+    setOut({step:"compile", compiler:used});
+    const input = makeStdJson(filename, source);
+    const output = JSON.parse(solc.compile(JSON.stringify(input)));
+    if(output.errors){
+      const errs = output.errors.filter(e=>e.severity==="error");
+      if(errs.length){ setOut(output.errors); say("Compile error."); return; }
+    }
+    dot("dotCompile", true);
+
+    // pull metadata + abi from the only file
+    let meta=null, abi=null;
+    const contracts = output.contracts[filename] || {};
+    for(const name in contracts){
+      if(contracts[name].metadata) meta = contracts[name].metadata;
+      if(contracts[name].abi)      abi  = JSON.stringify(contracts[name].abi, null, 2);
+      if(meta && abi) break;
+    }
+    if(!meta) throw new Error("No metadata produced");
+    metadataBlob = new Blob([meta], {type:"application/json"});
+    abiBlob      = new Blob([abi || "[]"], {type:"application/json"});
+    $("downloadMeta").disabled = false;
+    $("downloadAbi").disabled  = false;
+    dot("dotMeta", true);
+
+    // Prepare sources for Sourcify
+    sourcesForUpload = [{name: filename, blob: new Blob([source], {type:"text/plain"})}];
+
+    // Auto-verify
+    setOut({step:"verify", note:"Sending metadata + sources to Sourcify…"});
+    const fd = new FormData();
+    fd.append("address", ADDRESS);
+    fd.append("chain", CHAIN);
+    fd.append("files", metadataBlob, "metadata.json");
+    for(const s of sourcesForUpload){ fd.append("files", s.blob, s.name); }
+    const res = await fetch("https://sourcify.dev/server/verify/files", {method:"POST", body:fd});
+    const data = await res.json().catch(()=>({status:res.status, text:"Non-JSON response"}));
+    dot("dotVerify", true);
+    setOut(data);
+    dot("dotDone", true);
+    say("Verification complete.");
+  }catch(e){
+    setOut({error:String(e)});
+    say("There was an error.");
+  }
+}
+
+/*** start up ***/
+async function start(){
+  // 1) Try to fetch your .sol from GitHub
+  setOut("Fetching Solidity from GitHub…");
+  try{
+    const r = await fetch(GITHUB_RAW, {cache:"no-store"});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const src = await r.text();
+    await compileAndVerify("AssetsAlertNFT_FINAL_FIXED.sol", src);
+  }catch(e){
+    // Show manual paste fallback
+    $("manualBox").style.display = "block";
+    setOut({warning:"Could not auto-fetch from GitHub. Paste your Solidity and press Start.", detail:String(e)});
+  }
+}
+
+/*** buttons ***/
+$("startBtn")?.addEventListener("click", ()=>{
+  const txt = $("paste").value.trim();
+  if(!txt){ setOut({error:"Please paste your Solidity source first."}); return; }
+  compileAndVerify("Contract.sol", txt);
+});
+$("downloadMeta").addEventListener("click", ()=>{
+  if(!metadataBlob) return;
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(metadataBlob); a.download="metadata.json";
+  document.body.appendChild(a); a.click(); a.remove();
+});
+$("downloadAbi").addEventListener("click", ()=>{
+  if(!abiBlob) return;
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(abiBlob); a.download="ABI.json";
+  document.body.appendChild(a); a.click(); a.remove();
+});
+$("statusBtn").addEventListener("click", async()=>{
+  try{
+    const url = `https://sourcify.dev/server/check-all-by-addresses?addresses=${ADDRESS}&chainIds=${CHAIN}`;
+    const r = await fetch(url); setOut(await r.json());
+  }catch(e){ setOut({error:String(e)}); }
+});
+$("copyBtn").addEventListener("click", async()=>{
+  try{ await navigator.clipboard.writeText(out.textContent||""); alert("Copied."); }catch(e){ alert("Copy failed: "+e); }
+});
+$("speakBtn").addEventListener("click", ()=>say(out.textContent||"No response yet."));
+
+/*** run on load ***/
+document.addEventListener("DOMContentLoaded", start);
+</script>
+</body>
+</html>
