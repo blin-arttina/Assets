@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tina — Compile & Verify (Sourcify Polygon)</title>
+<style>
+  :root { --bg:#0b0b0f; --fg:#f5f7fb; --muted:#b9c0c8; --card:#12131a; --ok:#22c55e; --err:#ef4444; --border:#334155; --accent:#ef4444 }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif }
+  .wrap { max-width:980px; margin:0 auto; padding:20px 14px 64px }
+  h1 { font-size:clamp(22px,4vw,36px); margin:0 0 10px }
+  p.lead { color:var(--muted); margin:0 0 12px }
+  .card { background:var(--card); border:2px solid var(--border); border-radius:16px; padding:16px; margin:16px 0 }
+  .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius:999px; padding:6px 10px; margin:4px 8px 0 0; color:var(--muted); font-size:14px }
+  .dot { width:10px; height:10px; border-radius:50%; background:var(--err) } .ok { background:var(--ok) }
+  button { cursor:pointer; border:none; border-radius:14px; padding:12px 16px; font-weight:700 }
+  .primary { background:var(--accent); color:#fff } .secondary { background:#1f2937; color:#fff; border:2px solid var(--border) }
+  button:disabled { opacity:.6; cursor:not-allowed }
+  pre { background:#000; color:#0f0; border-radius:12px; padding:10px; white-space:pre-wrap; word-break:break-word; font-size:14px }
+  code.mono { font-family: ui-monospace,Menlo,Consolas,monospace; word-break:break-all }
+</style>
+<script src="https://binaries.soliditylang.org/bin/soljson-v0.8.30+commit.73712a01.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <h1>Compile & Verify on Sourcify (Polygon)</h1>
+  <p class="lead">Everything is prefilled. Click <b>Compile & Verify</b>. If nothing changes after a few seconds, disable ad‑blockers / Brave Shields and reload.</p>
+  <div class="card">
+    <div class="pill"><span id="dotSolc" class="dot"></span> Compiler loaded</div>
+    <div class="pill"><span id="dotCompile" class="dot"></span> Compiled</div>
+    <div class="pill"><span id="dotMeta" class="dot"></span> Metadata ready</div>
+    <div class="pill"><span id="dotVerify" class="dot"></span> Sourcify verify</div>
+    <div class="pill"><span id="dotDone" class="dot"></span> Done</div>
+  </div>
+  <div class="card">
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button id="run" class="primary">Compile & Verify</button>
+      <button id="dlMeta" class="secondary" disabled>Download metadata.json</button>
+      <button id="dlAbi"  class="secondary" disabled>Download ABI.json</button>
+      <button id="check"  class="secondary">Check Status</button>
+    </div>
+    <div style="margin-top:10px;color:var(--muted);font-size:14px">
+      Address: <code class="mono">0xCdb25eb86266cAA0C175144eF4FB241A2F79390E</code> •
+      Chain: <code class="mono">137</code> •
+      File: <code class="mono">AssetsAlertNFT_FINAL_FLATTENED.sol</code>
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="margin:0 0 8px">Output</h3>
+    <pre id="out">Waiting…</pre>
+  </div>
+  <div class="card">
+    <b>Diagnostics</b>
+    <div id="diag" style="color:#b9b9c0;font-size:13px"></div>
+  </div>
+</div>
+<script id="payload" type="application/json"></script>
+<script>
+document.getElementById("payload").textContent = {"address": "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E", "chain": "137", "filename": "AssetsAlertNFT_FINAL_FLATTENED.sol", "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\n// ---- OpenZeppelin Ownable (Minimal) ----\nabstract contract Context {\n    function _msgSender() internal view virtual returns (address) {\n        return msg.sender;\n    }\n}\n\nabstract contract Ownable is Context {\n    address private _owner;\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    constructor() {\n        _transferOwnership(_msgSender());\n    }\n\n    function owner() public view virtual returns (address) {\n        return _owner;\n    }\n\n    modifier onlyOwner() {\n        require(owner() == _msgSender(), \"Ownable: caller is not the owner\");\n        _;\n    }\n\n    function transferOwnership(address newOwner) public virtual onlyOwner {\n        require(newOwner != address(0), \"Ownable: new owner is the zero address\");\n        _transferOwnership(newOwner);\n    }\n\n    function _transferOwnership(address newOwner) internal virtual {\n        address oldOwner = _owner;\n        _owner = newOwner;\n        emit OwnershipTransferred(oldOwner, newOwner);\n    }\n}\n\n// ---- OpenZeppelin ERC1155 (Minimal) ----\ninterface IERC1155 {\n    event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);\n    event TransferBatch(address indexed operator, address indexed from, address indexed to, uint256[] ids, uint256[] values);\n    event URI(string value, uint256 indexed id);\n\n    function balanceOf(address account, uint256 id) external view returns (uint256);\n    function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids) external view returns (uint256[] memory);\n    function setApprovalForAll(address operator, bool approved) external;\n    function isApprovedForAll(address account, address operator) external view returns (bool);\n    function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes calldata data) external;\n    function safeBatchTransferFrom(address from, address to, uint256[] calldata ids, uint256[] calldata amounts, bytes calldata data) external;\n}\n\ncontract ERC1155 is IERC1155 {\n    mapping(uint256 => mapping(address => uint256)) private _balances;\n    mapping(address => mapping(address => bool)) private _operatorApprovals;\n    string private _uri;\n\n    constructor(string memory uri_) {\n        _uri = uri_;\n    }\n\n    function uri(uint256) public view virtual returns (string memory) {\n        return _uri;\n    }\n\n    function balanceOf(address account, uint256 id) public view override returns (uint256) {\n        require(account != address(0), \"ERC1155: address zero is not a valid owner\");\n        return _balances[id][account];\n    }\n\n    function balanceOfBatch(address[] memory accounts, uint256[] memory ids)\n        public view override returns (uint256[] memory)\n    {\n        require(accounts.length == ids.length, \"ERC1155: accounts and ids length mismatch\");\n        uint256[] memory batchBalances = new uint256[](accounts.length);\n        for (uint256 i = 0; i < accounts.length; ++i) {\n            batchBalances[i] = balanceOf(accounts[i], ids[i]);\n        }\n        return batchBalances;\n    }\n\n    function setApprovalForAll(address operator, bool approved) external override {\n        _operatorApprovals[msg.sender][operator] = approved;\n    }\n\n    function isApprovedForAll(address account, address operator) public view override returns (bool) {\n        return _operatorApprovals[account][operator];\n    }\n\n    function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes memory data) external override {\n        require(from == msg.sender || isApprovedForAll(from, msg.sender), \"ERC1155: caller is not owner nor approved\");\n        _balances[id][from] -= amount;\n        _balances[id][to] += amount;\n    }\n\n    function safeBatchTransferFrom(address from, address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data) external override {\n        require(from == msg.sender || isApprovedForAll(from, msg.sender), \"ERC1155: caller is not owner nor approved\");\n        for (uint256 i = 0; i < ids.length; ++i) {\n            _balances[ids[i]][from] -= amounts[i];\n            _balances[ids[i]][to] += amounts[i];\n        }\n    }\n\n    function _mint(address to, uint256 id, uint256 amount, bytes memory) internal virtual {\n        require(to != address(0), \"ERC1155: mint to the zero address\");\n        _balances[id][to] += amount;\n    }\n\n    function _mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory) internal virtual {\n        require(to != address(0), \"ERC1155: mint to the zero address\");\n        for (uint256 i = 0; i < ids.length; ++i) {\n            _balances[ids[i]][to] += amounts[i];\n        }\n    }\n}\n\n// ---- AssetsAlertNFT Contract ----\ncontract AssetsAlertNFT is ERC1155, Ownable {\n    constructor() ERC1155(\"https://blin-arttina.github.io/Assets/{id}.json\") {}\n\n    function mint(address to, uint256 id, uint256 amount, bytes memory data) public onlyOwner {\n        _mint(to, id, amount, data);\n    }\n\n    function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts) public onlyOwner {\n        _mintBatch(to, ids, amounts, \"\");\n    }\n\n    function withdraw() public onlyOwner {\n        payable(owner()).transfer(address(this).balance);\n    }\n\n    receive() external payable {}\n}\n"};
+
+const $ = id => document.getElementById(id);
+const out = $("out"), diag = $("diag");
+function setOut(o){ out.textContent = (typeof o === "string") ? o : JSON.stringify(o,null,2); }
+function dot(id, ok){ const el=$(id); el.className="dot " + (ok?"ok":""); }
+
+function stdInput(filename, src){
+  return {
+    language:"Solidity",
+    settings:{
+      optimizer:{enabled:true, runs:200},
+      metadata:{useLiteralContent:true},
+      outputSelection:{"*":{"*":["abi","evm.bytecode","evm.deployedBytecode","metadata"]}}
+    },
+    sources:{ [filename]:{ content:src } }
+  };
+}
+
+let metaBlob=null, abiBlob=null;
+
+async function run(){
+  try{
+    if(!window.solc) throw new Error("Compiler blocked. Disable ad‑blockers / Brave Shields and reload.");
+    dot("dotSolc", true);
+    const p = JSON.parse(document.getElementById("payload").textContent);
+    const filename=p.filename, src=p.source, address=p.address, chain=p.chain;
+    setOut({step:"compile", filename, address, chain});
+    const compiled = JSON.parse(solc.compile(JSON.stringify(stdInput(filename, src))));
+    if(compiled.errors){
+      const errs = compiled.errors.filter(e=>e.severity==="error");
+      if(errs.length){ setOut(compiled.errors); return; }
+    }
+    dot("dotCompile", true);
+    let meta=null, abi=null, contracts = compiled.contracts[filename] || {};
+    for(const name in contracts){
+      if(contracts[name].metadata) meta = contracts[name].metadata;
+      if(contracts[name].abi)      abi  = JSON.stringify(contracts[name].abi,null,2);
+      if(meta && abi) break;
+    }
+    if(!meta) throw new Error("Compiler did not produce metadata");
+    metaBlob = new Blob([meta], {type:"application/json"});
+    abiBlob  = new Blob([abi||"[]"], {type:"application/json"});
+    $("dlMeta").disabled=false; $("dlAbi").disabled=false;
+    dot("dotMeta", true);
+    const fd = new FormData();
+    fd.append("address", address);
+    fd.append("chain", chain);
+    fd.append("files", metaBlob, "metadata.json");
+    fd.append("files", new Blob([src], {type:"text/plain"}), filename);
+    const res = await fetch("https://sourcify.dev/server/verify/files", { method:"POST", body:fd });
+    let data;
+    try{ data = await res.json(); }
+    catch{ data = { status: res.status, text: "Non‑JSON response" }; }
+    setOut(data);
+    dot("dotVerify", true); dot("dotDone", true);
+  }catch(e){
+    setOut({error:String(e)});
+    diag.innerHTML = "If stuck: turn OFF Brave Shields / ad‑blockers, then hard‑refresh. You can also try Chrome on desktop or Firefox.";
+  }
+}
+$("run").addEventListener("click", run);
+$("dlMeta").addEventListener("click", ()=>{ if(!metaBlob) return; const a=document.createElement("a"); a.href=URL.createObjectURL(metaBlob); a.download="metadata.json"; a.click(); });
+$("dlAbi").addEventListener("click",  ()=>{ if(!abiBlob)  return; const a=document.createElement("a"); a.href=URL.createObjectURL(abiBlob);  a.download="ABI.json";      a.click(); });
+$("check").addEventListener("click", async()=>{
+  const p = JSON.parse(document.getElementById("payload").textContent);
+  const url = `https://sourcify.dev/server/check-all-by-addresses?addresses=${{p.address}}&chainIds=${{p.chain}}`;
+  try{ const r = await fetch(url); setOut(await r.json()); }catch(e){ setOut({error:String(e)}); }
+});
+</script>
+</body>
+</html>
