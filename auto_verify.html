@@ -22,11 +22,13 @@
   textarea{width:100%;min-height:160px;background:#0f0f15;color:var(--fg);border:2px solid var(--outline);border-radius:12px;padding:10px}
   .mono{font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
 </style>
+<!-- STATIC solc include (v0.8.30) so Brave/dynamic loaders can't block it) -->
+<script src="https://binaries.soliditylang.org/bin/soljson-v0.8.30+commit.73712a01.js"></script>
 </head>
 <body>
 <div class="wrap">
   <h1>Auto Verify (Sourcify)</h1>
-  <p class="big">This page fetches your Solidity from GitHub, compiles locally, auto-verifies on Polygon, then lets you download <b>metadata.json</b> and <b>ABI.json</b>.</p>
+  <p class="big">This page fetches your Solidity from GitHub, compiles locally with solc 0.8.30, auto-verifies on Polygon, then lets you download <b>metadata.json</b> and <b>ABI.json</b>.</p>
 
   <div class="card" id="statusRow">
     <div class="pill"><span id="dotFetch" class="dot"></span> Load source</div>
@@ -66,12 +68,6 @@
 const ADDRESS = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E"; // Tina
 const CHAIN   = "137"; // Polygon Mainnet
 const GITHUB_RAW = "https://raw.githubusercontent.com/blin-arttina/Assets/refs/heads/main/AssetsAlertNFT_FINAL_FIXED.sol";
-const COMPILERS = [
-  "v0.8.30+commit.73712a01",
-  "v0.8.26+commit.8a97fa7a",
-  "v0.8.24+commit.e11b9ed9",
-  "v0.8.20+commit.a1b79de6"
-];
 
 /*** helpers ***/
 const $ = (id)=>document.getElementById(id);
@@ -80,23 +76,7 @@ function setOut(obj){ out.textContent = (typeof obj==="string") ? obj : JSON.str
 function dot(id, ok){ const el=$(id); el.className="dot "+(ok?"ok":""); }
 function say(t){ try{ const u=new SpeechSynthesisUtterance(t); u.rate=.95; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch{} }
 
-/*** solc loader ***/
-async function loadSolc(v){
-  const url = "https://binaries.soliditylang.org/bin/soljson-" + v + ".js";
-  const r = await fetch(url);
-  if(!r.ok) throw new Error("Compiler fetch failed "+v);
-  const js = await r.text();
-  const blob = new Blob([js], {type:"text/javascript"});
-  const blobURL = URL.createObjectURL(blob);
-  await new Promise((res,rej)=>{
-    const s=document.createElement("script");
-    s.src=blobURL; s.onload=res; s.onerror=()=>rej(new Error("solc load failed"));
-    document.head.appendChild(s);
-  });
-  if(!window.solc) throw new Error("solc missing");
-  return window.solc;
-}
-
+/*** std-json for solc ***/
 function makeStdJson(filename, source){
   return {
     language:"Solidity",
@@ -115,14 +95,11 @@ let metadataBlob=null, abiBlob=null, sourcesForUpload=[];
 async function compileAndVerify(filename, source){
   try{
     dot("dotFetch", true);
-    setOut("Loading compiler… (If stuck, disable Brave Shields for this page)");
-    let solc=null, used=null, lastErr=null;
-    for(const v of COMPILERS){
-      try{ solc = await loadSolc(v); used=v; break; }catch(e){ lastErr=e; }
-    }
-    if(!solc) throw lastErr || new Error("No compiler available");
+    // Use statically included solc
+    const solc = window.solc;
+    if(!solc){ throw new Error("solc not available (static include)"); }
 
-    setOut({step:"compile", compiler:used});
+    setOut({step:"compile", compiler:"0.8.30"});
     const input = makeStdJson(filename, source);
     const output = JSON.parse(solc.compile(JSON.stringify(input)));
     if(output.errors){
@@ -131,7 +108,7 @@ async function compileAndVerify(filename, source){
     }
     dot("dotCompile", true);
 
-    // pull metadata + abi from the only file
+    // Extract metadata + ABI
     let meta=null, abi=null;
     const contracts = output.contracts[filename] || {};
     for(const name in contracts){
@@ -146,8 +123,8 @@ async function compileAndVerify(filename, source){
     $("downloadAbi").disabled  = false;
     dot("dotMeta", true);
 
-    // Prepare sources for Sourcify
-    sourcesForUpload = [{name: filename, blob: new Blob([source], {type:"text/plain"})}];
+    // Sources for Sourcify (single-file case)
+    sourcesForUpload = [{name: filename, blob:new Blob([source], {type:"text/plain"})}];
 
     // Auto-verify
     setOut({step:"verify", note:"Sending metadata + sources to Sourcify…"});
@@ -170,7 +147,6 @@ async function compileAndVerify(filename, source){
 
 /*** start up ***/
 async function start(){
-  // 1) Try to fetch your .sol from GitHub
   setOut("Fetching Solidity from GitHub…");
   try{
     const r = await fetch(GITHUB_RAW, {cache:"no-store"});
@@ -178,7 +154,6 @@ async function start(){
     const src = await r.text();
     await compileAndVerify("AssetsAlertNFT_FINAL_FIXED.sol", src);
   }catch(e){
-    // Show manual paste fallback
     $("manualBox").style.display = "block";
     setOut({warning:"Could not auto-fetch from GitHub. Paste your Solidity and press Start.", detail:String(e)});
   }
