@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Auto Verify (Sourcify)</title>
+<title>Auto Verify (Flattened, Embedded)</title>
 <style>
   :root{--bg:#0b0b0f;--fg:#f5f5f7;--muted:#b9b9c0;--card:#121219;--red:#ef4444;--outline:#6b7280;--ok:#22c55e;--warn:#f59e0b;}
   html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;line-height:1.45}
@@ -12,48 +12,37 @@
   p.big{margin:0 0 12px;color:var(--muted);font-size:clamp(16px,2.8vw,20px)}
   .card{background:var(--card);border:2px solid var(--outline);border-radius:16px;padding:16px;margin:18px 0;box-shadow:0 6px 18px rgba(0,0,0,.35)}
   .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--outline);border-radius:999px;padding:6px 10px;margin:4px 8px 0 0;color:var(--muted);font-size:14px}
-  .dot{width:10px;height:10px;border-radius:50%;background:#ef4444}
-  .ok{background:var(--ok)} .warn{background:var(--warn)}
+  .dot{width:10px;height:10px;border-radius:50%;background:#ef4444} .ok{background:var(--ok)} .warn{background:var(--warn)}
   button{cursor:pointer;border:none;border-radius:14px;padding:14px 18px;font-size:18px;font-weight:700}
   .primary{background:var(--red);color:#fff;box-shadow:0 6px 14px rgba(239,68,68,.3)}
   .secondary{background:#1f2937;color:#fff;border:2px solid var(--outline)}
   button:disabled{opacity:.6;cursor:not-allowed}
   pre{white-space:pre-wrap;word-break:break-word;font-size:14px}
-  textarea{width:100%;min-height:160px;background:#0f0f15;color:var(--fg);border:2px solid var(--outline);border-radius:12px;padding:10px}
   .mono{font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
 </style>
-<!-- STATIC solc include (v0.8.30) so Brave/dynamic loaders can't block it) -->
+<!-- Static compiler include (v0.8.30) to avoid dynamic loader blocks -->
 <script src="https://binaries.soliditylang.org/bin/soljson-v0.8.30+commit.73712a01.js"></script>
 </head>
 <body>
 <div class="wrap">
-  <h1>Auto Verify (Sourcify)</h1>
-  <p class="big">This page fetches your Solidity from GitHub, compiles locally with solc 0.8.30, auto-verifies on Polygon, then lets you download <b>metadata.json</b> and <b>ABI.json</b>.</p>
+  <h1>Auto Verify (Sourcify) — Embedded Flattened Source</h1>
+  <p class="big">This page compiles the <span class="mono">AssetsAlertNFT_FINAL_FLATTENED.sol</span> contract embedded inside, then automatically verifies it on Polygon. When finished, you can download <b>metadata.json</b> and <b>ABI.json</b>.</p>
 
-  <div class="card" id="statusRow">
-    <div class="pill"><span id="dotFetch" class="dot"></span> Load source</div>
-    <div class="pill"><span id="dotCompile" class="dot"></span> Compile</div>
+  <div class="card">
+    <div class="pill"><span id="dotSolc" class="dot"></span> Compiler loaded</div>
+    <div class="pill"><span id="dotCompile" class="dot"></span> Compiled</div>
     <div class="pill"><span id="dotMeta" class="dot"></span> Metadata ready</div>
     <div class="pill"><span id="dotVerify" class="dot"></span> Sourcify verify</div>
     <div class="pill"><span id="dotDone" class="dot"></span> Done</div>
   </div>
 
-  <div class="card" id="manualBox" style="display:none">
-    <b>Couldn’t load the file automatically.</b>
-    <p class="big">Paste the Solidity below and click <i>Start</i>.</p>
-    <textarea id="paste"></textarea>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
-      <button id="startBtn" class="primary">Start</button>
-      <button id="speakBtn" class="secondary">Read Aloud</button>
-    </div>
-  </div>
-
   <div class="card">
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <button id="downloadMeta" class="secondary" disabled>Download metadata.json</button>
-      <button id="downloadAbi"  class="secondary" disabled>Download ABI.json</button>
-      <button id="statusBtn"    class="secondary">Check Status</button>
-      <button id="copyBtn"      class="secondary">Copy Response</button>
+      <button id="downloadAbi" class="secondary" disabled>Download ABI.json</button>
+      <button id="statusBtn" class="secondary">Check Status</button>
+      <button id="speakBtn" class="secondary">Read Aloud</button>
+      <button id="copyBtn" class="secondary">Copy Response</button>
     </div>
   </div>
 
@@ -63,21 +52,20 @@
   </div>
 </div>
 
-<script>
-/*** CONFIG (prefilled) ***/
-const ADDRESS = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E"; // Tina
-const CHAIN   = "137"; // Polygon Mainnet
-const GITHUB_RAW = "https://raw.githubusercontent.com/blin-arttina/Assets/refs/heads/main/AssetsAlertNFT_FINAL_FIXED.sol";
+<!-- Embedded payload -->
+<script id="embedded" type="application/json">{&quot;filename&quot;: &quot;AssetsAlertNFT_FINAL_FLATTENED.sol&quot;, &quot;source&quot;: &quot;// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\n// ---- OpenZeppelin Ownable (Minimal) ----\nabstract contract Context {\n    function _msgSender() internal view virtual returns (address) {\n        return msg.sender;\n    }\n}\n\nabstract contract Ownable is Context {\n    address private _owner;\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    constructor() {\n        _transferOwnership(_msgSender());\n    }\n\n    function owner() public view virtual returns (address) {\n        return _owner;\n    }\n\n    modifier onlyOwner() {\n        require(owner() == _msgSender(), \&quot;Ownable: caller is not the owner\&quot;);\n        _;\n    }\n\n    function transferOwnership(address newOwner) public virtual onlyOwner {\n        require(newOwner != address(0), \&quot;Ownable: new owner is the zero address\&quot;);\n        _transferOwnership(newOwner);\n    }\n\n    function _transferOwnership(address newOwner) internal virtual {\n        address oldOwner = _owner;\n        _owner = newOwner;\n        emit OwnershipTransferred(oldOwner, newOwner);\n    }\n}\n\n// ---- OpenZeppelin ERC1155 (Minimal) ----\ninterface IERC1155 {\n    event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);\n    event TransferBatch(address indexed operator, address indexed from, address indexed to, uint256[] ids, uint256[] values);\n    event URI(string value, uint256 indexed id);\n\n    function balanceOf(address account, uint256 id) external view returns (uint256);\n    function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids) external view returns (uint256[] memory);\n    function setApprovalForAll(address operator, bool approved) external;\n    function isApprovedForAll(address account, address operator) external view returns (bool);\n    function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes calldata data) external;\n    function safeBatchTransferFrom(address from, address to, uint256[] calldata ids, uint256[] calldata amounts, bytes calldata data) external;\n}\n\ncontract ERC1155 is IERC1155 {\n    mapping(uint256 =&gt; mapping(address =&gt; uint256)) private _balances;\n    mapping(address =&gt; mapping(address =&gt; bool)) private _operatorApprovals;\n    string private _uri;\n\n    constructor(string memory uri_) {\n        _uri = uri_;\n    }\n\n    function uri(uint256) public view virtual returns (string memory) {\n        return _uri;\n    }\n\n    function balanceOf(address account, uint256 id) public view override returns (uint256) {\n        require(account != address(0), \&quot;ERC1155: address zero is not a valid owner\&quot;);\n        return _balances[id][account];\n    }\n\n    function balanceOfBatch(address[] memory accounts, uint256[] memory ids)\n        public view override returns (uint256[] memory)\n    {\n        require(accounts.length == ids.length, \&quot;ERC1155: accounts and ids length mismatch\&quot;);\n        uint256[] memory batchBalances = new uint256[](accounts.length);\n        for (uint256 i = 0; i &lt; accounts.length; ++i) {\n            batchBalances[i] = balanceOf(accounts[i], ids[i]);\n        }\n        return batchBalances;\n    }\n\n    function setApprovalForAll(address operator, bool approved) external override {\n        _operatorApprovals[msg.sender][operator] = approved;\n    }\n\n    function isApprovedForAll(address account, address operator) public view override returns (bool) {\n        return _operatorApprovals[account][operator];\n    }\n\n    function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes memory data) external override {\n        require(from == msg.sender || isApprovedForAll(from, msg.sender), \&quot;ERC1155: caller is not owner nor approved\&quot;);\n        _balances[id][from] -= amount;\n        _balances[id][to] += amount;\n    }\n\n    function safeBatchTransferFrom(address from, address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data) external override {\n        require(from == msg.sender || isApprovedForAll(from, msg.sender), \&quot;ERC1155: caller is not owner nor approved\&quot;);\n        for (uint256 i = 0; i &lt; ids.length; ++i) {\n            _balances[ids[i]][from] -= amounts[i];\n            _balances[ids[i]][to] += amounts[i];\n        }\n    }\n\n    function _mint(address to, uint256 id, uint256 amount, bytes memory) internal virtual {\n        require(to != address(0), \&quot;ERC1155: mint to the zero address\&quot;);\n        _balances[id][to] += amount;\n    }\n\n    function _mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory) internal virtual {\n        require(to != address(0), \&quot;ERC1155: mint to the zero address\&quot;);\n        for (uint256 i = 0; i &lt; ids.length; ++i) {\n            _balances[ids[i]][to] += amounts[i];\n        }\n    }\n}\n\n// ---- AssetsAlertNFT Contract ----\ncontract AssetsAlertNFT is ERC1155, Ownable {\n    constructor() ERC1155(\&quot;https://blin-arttina.github.io/Assets/{id}.json\&quot;) {}\n\n    function mint(address to, uint256 id, uint256 amount, bytes memory data) public onlyOwner {\n        _mint(to, id, amount, data);\n    }\n\n    function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts) public onlyOwner {\n        _mintBatch(to, ids, amounts, \&quot;\&quot;);\n    }\n\n    function withdraw() public onlyOwner {\n        payable(owner()).transfer(address(this).balance);\n    }\n\n    receive() external payable {}\n}\n&quot;}</script>
 
-/*** helpers ***/
+<script>
+const ADDRESS = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
+const CHAIN   = "137"; // Polygon Mainnet
+
 const $ = (id)=>document.getElementById(id);
 const out = $("out");
 function setOut(obj){ out.textContent = (typeof obj==="string") ? obj : JSON.stringify(obj,null,2); }
-function dot(id, ok){ const el=$(id); el.className="dot "+(ok?"ok":""); }
-function say(t){ try{ const u=new SpeechSynthesisUtterance(t); u.rate=.95; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch{} }
+function dot(id, ok){ const el=$(id); el.className = "dot " + (ok?"ok":""); }
+function say(text){ try{ const u=new SpeechSynthesisUtterance(text); u.rate=.95; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
 
-/*** std-json for solc ***/
-function makeStdJson(filename, source){
+function stdInput(filename, src){
   return {
     language:"Solidity",
     settings:{
@@ -85,30 +73,31 @@ function makeStdJson(filename, source){
       metadata:{useLiteralContent:true},
       outputSelection:{"*":{"*":["abi","evm.bytecode","evm.deployedBytecode","metadata"]}}
     },
-    sources: { [filename]: { content: source } }
+    sources: { [filename]: { content: src } }
   };
 }
 
-/*** pipeline ***/
-let metadataBlob=null, abiBlob=null, sourcesForUpload=[];
+let metadataBlob=null, abiBlob=null;
 
-async function compileAndVerify(filename, source){
+async function run(){
   try{
-    dot("dotFetch", true);
-    // Use statically included solc
-    const solc = window.solc;
-    if(!solc){ throw new Error("solc not available (static include)"); }
-
-    setOut({step:"compile", compiler:"0.8.30"});
-    const input = makeStdJson(filename, source);
+    // check compiler
+    if(window.solc) dot("dotSolc", true); else throw new Error("solc not available (static include blocked). If you're using Brave, turn Shields OFF and reload.");
+    // get embedded src
+    const payload = JSON.parse(document.getElementById("embedded").textContent);
+    const filename = payload.filename || "Contract.sol";
+    const source = payload.source || "";
+    if(!source) throw new Error("Embedded source missing.");
+    // compile
+    setOut({step:"compile", filename});
+    const input = stdInput(filename, source);
     const output = JSON.parse(solc.compile(JSON.stringify(input)));
     if(output.errors){
       const errs = output.errors.filter(e=>e.severity==="error");
-      if(errs.length){ setOut(output.errors); say("Compile error."); return; }
+      if(errs.length){ setOut(output.errors); return; }
     }
     dot("dotCompile", true);
-
-    // Extract metadata + ABI
+    // pick first meta+abi
     let meta=null, abi=null;
     const contracts = output.contracts[filename] || {};
     for(const name in contracts){
@@ -116,80 +105,38 @@ async function compileAndVerify(filename, source){
       if(contracts[name].abi)      abi  = JSON.stringify(contracts[name].abi, null, 2);
       if(meta && abi) break;
     }
-    if(!meta) throw new Error("No metadata produced");
+    if(!meta) throw new Error("No metadata generated");
     metadataBlob = new Blob([meta], {type:"application/json"});
-    abiBlob      = new Blob([abi || "[]"], {type:"application/json"});
+    abiBlob = new Blob([abi || "[]"], {type:"application/json"});
     $("downloadMeta").disabled = false;
-    $("downloadAbi").disabled  = false;
+    $("downloadAbi").disabled = false;
     dot("dotMeta", true);
-
-    // Sources for Sourcify (single-file case)
-    sourcesForUpload = [{name: filename, blob:new Blob([source], {type:"text/plain"})}];
-
-    // Auto-verify
-    setOut({step:"verify", note:"Sending metadata + sources to Sourcify…"});
+    // verify
+    setOut({step:"verify", address:ADDRESS, chain:CHAIN});
     const fd = new FormData();
     fd.append("address", ADDRESS);
     fd.append("chain", CHAIN);
     fd.append("files", metadataBlob, "metadata.json");
-    for(const s of sourcesForUpload){ fd.append("files", s.blob, s.name); }
+    fd.append("files", new Blob([source], {type:"text/plain"}), filename);
     const res = await fetch("https://sourcify.dev/server/verify/files", {method:"POST", body:fd});
     const data = await res.json().catch(()=>({status:res.status, text:"Non-JSON response"}));
     dot("dotVerify", true);
     setOut(data);
     dot("dotDone", true);
-    say("Verification complete.");
+    say("Verification complete");
   }catch(e){
     setOut({error:String(e)});
-    say("There was an error.");
+    say("There was an error");
   }
 }
 
-/*** start up ***/
-async function start(){
-  setOut("Fetching Solidity from GitHub…");
-  try{
-    const r = await fetch(GITHUB_RAW, {cache:"no-store"});
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    const src = await r.text();
-    await compileAndVerify("AssetsAlertNFT_FINAL_FIXED.sol", src);
-  }catch(e){
-    $("manualBox").style.display = "block";
-    setOut({warning:"Could not auto-fetch from GitHub. Paste your Solidity and press Start.", detail:String(e)});
-  }
-}
-
-/*** buttons ***/
-$("startBtn")?.addEventListener("click", ()=>{
-  const txt = $("paste").value.trim();
-  if(!txt){ setOut({error:"Please paste your Solidity source first."}); return; }
-  compileAndVerify("Contract.sol", txt);
-});
-$("downloadMeta").addEventListener("click", ()=>{
-  if(!metadataBlob) return;
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(metadataBlob); a.download="metadata.json";
-  document.body.appendChild(a); a.click(); a.remove();
-});
-$("downloadAbi").addEventListener("click", ()=>{
-  if(!abiBlob) return;
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(abiBlob); a.download="ABI.json";
-  document.body.appendChild(a); a.click(); a.remove();
-});
-$("statusBtn").addEventListener("click", async()=>{
-  try{
-    const url = `https://sourcify.dev/server/check-all-by-addresses?addresses=${ADDRESS}&chainIds=${CHAIN}`;
-    const r = await fetch(url); setOut(await r.json());
-  }catch(e){ setOut({error:String(e)}); }
-});
-$("copyBtn").addEventListener("click", async()=>{
-  try{ await navigator.clipboard.writeText(out.textContent||""); alert("Copied."); }catch(e){ alert("Copy failed: "+e); }
-});
+$("downloadMeta").addEventListener("click", ()=>{ if(!metadataBlob) return; const a=document.createElement("a"); a.href=URL.createObjectURL(metadataBlob); a.download="metadata.json"; document.body.appendChild(a); a.click(); a.remove(); });
+$("downloadAbi").addEventListener("click", ()=>{ if(!abiBlob) return; const a=document.createElement("a"); a.href=URL.createObjectURL(abiBlob); a.download="ABI.json"; document.body.appendChild(a); a.click(); a.remove(); });
+$("statusBtn").addEventListener("click", async()=>{ try{ const url = `https://sourcify.dev/server/check-all-by-addresses?addresses=${ADDRESS}&chainIds=${CHAIN}`; const r = await fetch(url); setOut(await r.json()); }catch(e){ setOut({error:String(e)}); } });
+$("copyBtn").addEventListener("click", async()=>{ try{ await navigator.clipboard.writeText(out.textContent||""); alert("Copied."); }catch(e){ alert("Copy failed: "+e); } });
 $("speakBtn").addEventListener("click", ()=>say(out.textContent||"No response yet."));
 
-/*** run on load ***/
-document.addEventListener("DOMContentLoaded", start);
+document.addEventListener("DOMContentLoaded", run);
 </script>
 </body>
 </html>
