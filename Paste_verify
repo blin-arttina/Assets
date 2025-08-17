@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Paste & Verify (Sourcify)</title>
+<style>
+  :root{--bg:#0b0b0f;--fg:#f5f5f7;--muted:#b9b9c0;--card:#121219;--red:#ef4444;--outline:#6b7280;--ok:#22c55e}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;line-height:1.45}
+  .wrap{max-width:980px;margin:0 auto;padding:20px 14px 64px}
+  h1{margin:0 0 10px;font-size:clamp(22px,4vw,36px)}
+  p.big{margin:0 0 12px;color:var(--muted);font-size:clamp(16px,2.8vw,20px)}
+  .card{background:var(--card);border:2px solid var(--outline);border-radius:16px;padding:16px;margin:18px 0;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+  .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--outline);border-radius:999px;padding:6px 10px;margin:4px 8px 0 0;color:var(--muted);font-size:14px}
+  .dot{width:10px;height:10px;border-radius:50%;background:#ef4444}.ok{background:var(--ok)}
+  button{cursor:pointer;border:none;border-radius:14px;padding:12px 16px;font-size:18px;font-weight:700}
+  .primary{background:var(--red);color:#fff}
+  .secondary{background:#1f2937;color:#fff;border:2px solid var(--outline)}
+  button:disabled{opacity:.6;cursor:not-allowed}
+  textarea{width:100%;min-height:220px;background:#0f0f15;color:var(--fg);border:2px solid var(--outline);border-radius:12px;padding:10px;font-size:14px}
+  pre{white-space:pre-wrap;word-break:break-word;font-size:14px}
+  .row{display:flex;flex-wrap:wrap;gap:12px}
+  input,select{background:#0f0f15;color:var(--fg);border:2px solid var(--outline);border-radius:10px;padding:10px;font-size:16px}
+</style>
+<!-- Static compiler include so browsers don’t block the dynamic loader -->
+<script src="https://binaries.soliditylang.org/bin/soljson-v0.8.30+commit.73712a01.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <h1>Paste & Verify (Sourcify)</h1>
+  <p class="big">Paste your Solidity below. This page compiles locally with solc 0.8.30, then auto-verifies on Polygon. You can download <b>metadata.json</b> and <b>ABI.json</b> after.</p>
+
+  <div class="card">
+    <div class="row">
+      <label>Deployed address
+        <input id="address" value="0xCdb25eb86266cAA0C175144eF4FB241A2F79390E" style="min-width:320px" />
+      </label>
+      <label>Network
+        <select id="chain">
+          <option value="137" selected>Polygon Mainnet (137)</option>
+          <option value="1">Ethereum Mainnet (1)</option>
+          <option value="11155111">Ethereum Sepolia (11155111)</option>
+          <option value="80001">Polygon Mumbai (80001)</option>
+        </select>
+      </label>
+      <label>File name used for compile
+        <input id="filename" value="Contract.sol" />
+      </label>
+    </div>
+  </div>
+
+  <div class="card">
+    <b>Your Solidity (paste here):</b>
+    <textarea id="source" placeholder="pragma solidity ^0.8.20; ..."></textarea>
+    <div class="row" style="margin-top:12px">
+      <button id="startBtn" class="primary">Compile & Auto-Verify</button>
+      <button id="downloadMeta" class="secondary" disabled>Download metadata.json</button>
+      <button id="downloadAbi"  class="secondary" disabled>Download ABI.json</button>
+      <button id="statusBtn"    class="secondary">Check Status</button>
+      <button id="speakBtn"     class="secondary">Read Aloud</button>
+      <button id="copyBtn"      class="secondary">Copy Response</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="pill"><span id="dotSolc" class="dot"></span> Compiler loaded</div>
+    <div class="pill"><span id="dotCompile" class="dot"></span> Compiled</div>
+    <div class="pill"><span id="dotMeta" class="dot"></span> Metadata ready</div>
+    <div class="pill"><span id="dotVerify" class="dot"></span> Sourcify verify</div>
+    <div class="pill"><span id="dotDone" class="dot"></span> Done</div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 8px">Output</h2>
+    <pre id="out">Waiting for input…</pre>
+    <div id="diag" style="margin-top:8px;color:#b9b9c0;font-size:13px"></div>
+  </div>
+</div>
+
+<script>
+const $ = (id)=>document.getElementById(id);
+const out = $("out"), diag = $("diag");
+function setOut(o){ out.textContent = (typeof o==="string") ? o : JSON.stringify(o,null,2); }
+function dot(id, ok){ const el=$(id); el.className="dot "+(ok?"ok":""); }
+function say(t){ try{ const u=new SpeechSynthesisUtterance(t); u.rate=.95; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch{} }
+
+// Sanity: confirm compiler presence
+if (window.solc) { dot("dotSolc", true); }
+else { diag.textContent = "Compiler not available. If using Brave, turn Shields OFF and reload."; }
+
+// Build standard JSON for solc
+function stdInput(filename, src){
+  return {
+    language:"Solidity",
+    settings:{
+      optimizer:{enabled:true, runs:200},
+      metadata:{useLiteralContent:true},
+      outputSelection:{"*":{"*":["abi","evm.bytecode","evm.deployedBytecode","metadata"]}}
+    },
+    sources:{ [filename]: { content: src } }
+  };
+}
+
+let metadataBlob=null, abiBlob=null, sourcesForUpload=[];
+
+async function compileAndVerify(){
+  try{
+    const filename = $("filename").value.trim() || "Contract.sol";
+    const src = $("source").value;
+    if(!src.trim()){ setOut({error:"Please paste your Solidity source first."}); say("Please paste your Solidity."); return; }
+    if(!window.solc){ setOut({error:"Compiler not loaded. Disable Shields and reload."}); return; }
+
+    setOut({step:"compile", compiler:"0.8.30"});
+    const input = stdInput(filename, src);
+    const output = JSON.parse(solc.compile(JSON.stringify(input)));
+
+    if(output.errors){
+      const errs = output.errors.filter(e=>e.severity==="error");
+      if(errs.length){ setOut(output.errors); return; }
+    }
+    dot("dotCompile", true);
+
+    // first contract metadata + abi
+    let meta=null, abi=null;
+    const contracts = output.contracts[filename] || {};
+    for(const name in contracts){
+      if(contracts[name].metadata) meta = contracts[name].metadata;
+      if(contracts[name].abi)      abi  = JSON.stringify(contracts[name].abi, null, 2);
+      if(meta && abi) break;
+    }
+    if(!meta){ setOut({error:"No metadata generated"}); return; }
+    metadataBlob = new Blob([meta], {type:"application/json"});
+    abiBlob = new Blob([abi || "[]"], {type:"application/json"});
+    $("downloadMeta").disabled = false;
+    $("downloadAbi").disabled = false;
+    dot("dotMeta", true);
+
+    // prep sources for Sourcify
+    sourcesForUpload = [{name: filename, blob:new Blob([src], {type:"text/plain"})}];
+
+    // Auto-verify
+    const address = $("address").value.trim();
+    const chain = $("chain").value;
+    const fd = new FormData();
+    fd.append("address", address);
+    fd.append("chain", chain);
+    fd.append("files", metadataBlob, "metadata.json");
+    for(const s of sourcesForUpload){ fd.append("files", s.blob, s.name); }
+
+    setOut({step:"verify", address, chain});
+    const res = await fetch("https://sourcify.dev/server/verify/files", {method:"POST", body:fd});
+    const data = await res.json().catch(()=>({status:res.status, text:"Non-JSON response"}));
+    dot("dotVerify", true);
+    setOut(data);
+    dot("dotDone", true);
+  }catch(e){
+    setOut({error:String(e)});
+    diag.textContent = "If this keeps failing, try another browser (Chrome/Safari) or turn Brave Shields OFF.";
+  }
+}
+
+$("startBtn").addEventListener("click", compileAndVerify);
+
+$("downloadMeta").addEventListener("click", ()=>{
+  if(!metadataBlob) return;
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(metadataBlob); a.download="metadata.json";
+  document.body.appendChild(a); a.click(); a.remove();
+});
+$("downloadAbi").addEventListener("click", ()=>{
+  if(!abiBlob) return;
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(abiBlob); a.download="ABI.json";
+  document.body.appendChild(a); a.click(); a.remove();
+});
+$("statusBtn").addEventListener("click", async()=>{
+  try{
+    const address = $("address").value.trim();
+    const chain = $("chain").value;
+    const url = `https://sourcify.dev/server/check-all-by-addresses?addresses=${address}&chainIds=${chain}`;
+    const r = await fetch(url); setOut(await r.json());
+  }catch(e){ setOut({error:String(e)}); }
+});
+$("copyBtn").addEventListener("click", async()=>{
+  try{ await navigator.clipboard.writeText(out.textContent||""); alert("Copied."); }catch(e){ alert("Copy failed: "+e); }
+});
+$("speakBtn").addEventListener("click", ()=>say(out.textContent||"No response yet."));
+</script>
+</body>
+</html>
