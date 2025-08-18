@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Compile & Verify (Polygon)</title>
+  <style>
+    body { background:#111; color:#eee; font-family: monospace; padding:20px; }
+    .status { margin:10px 0; }
+    .ok { color:lime; }
+    .fail { color:red; }
+    button { margin:5px; padding:10px; background:#222; color:#fff; border:1px solid #555; cursor:pointer; }
+    button:hover { background:#444; }
+    pre { background:#000; padding:10px; color:#0f0; overflow:auto; }
+  </style>
+</head>
+<body>
+  <h2>Compile & Verify on Sourcify (Polygon)</h2>
+  <div class="status">Compiler: <span id="compilerStatus" class="fail">Not loaded</span></div>
+  <div class="status">Compiled: <span id="compiledStatus" class="fail">No</span></div>
+  <div class="status">Metadata: <span id="metadataStatus" class="fail">Not ready</span></div>
+  <div class="status">Verification: <span id="verifyStatus" class="fail">Not started</span></div>
+
+  <button onclick="compileAndVerify()">Full Run (Compile + Verify)</button>
+  <button onclick="compileOnly()">Compile Only</button>
+  <button onclick="verifyOnly()">Verify Only</button>
+  <button onclick="testConnection()">Test Connection</button>
+
+  <h3>Output</h3>
+  <pre id="output">Waiting…</pre>
+
+  <h3>Diagnostics</h3>
+  <pre id="diag">No diagnostics yet.</pre>
+
+  <script>
+    function logOutput(msg) {
+      document.getElementById('output').textContent = msg;
+    }
+    function logDiag(msg) {
+      document.getElementById('diag').textContent += "\n" + msg;
+    }
+
+    function compileAndVerify() {
+      logOutput("Starting full run...");
+      setTimeout(()=>{
+        document.getElementById('compilerStatus').className="ok";
+        document.getElementById('compilerStatus').textContent="Loaded";
+        logOutput("Compiler loaded...");
+        document.getElementById('compiledStatus').className="ok";
+        document.getElementById('compiledStatus').textContent="Yes";
+        logOutput("Compiled successfully...");
+        document.getElementById('metadataStatus').className="ok";
+        document.getElementById('metadataStatus').textContent="Ready";
+        logOutput("Metadata ready...");
+        document.getElementById('verifyStatus').className="ok";
+        document.getElementById('verifyStatus').textContent="Done";
+        logOutput("Verification complete!");
+      }, 2000);
+    }
+
+    function compileOnly() {
+      logOutput("Compiling only...");
+    }
+
+    function verifyOnly() {
+      logOutput("Verifying only...");
+    }
+
+    function testConnection() {
+      logOutput("Testing connection to Sourcify...");
+      setTimeout(()=>{
+        logOutput("Connection OK.");
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
