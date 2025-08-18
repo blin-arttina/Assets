@@ -172,8 +172,8 @@ const POLYGON_RPC = "https://polygon-rpc.com";
 /* Prefill Brave & Trust here if desired.
    NOTE: I left them blank for safety; press “Save current as Brave/Trust…” once to store locally
    and they’ll appear on the buttons next time automatically. */
-let BRAVE_ADDR = localStorage.getItem("pref_brave") || "0xB7Acf7F61e360baB855A86742be5273baB69B153";
-let TRUST_ADDR = localStorage.getItem("pref_trust") || "0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E";
+let BRAVE_ADDR = localStorage.getItem("pref_brave") || "";
+let TRUST_ADDR = localStorage.getItem("pref_trust") || "";
 
 /* EmailJS — fill these from your EmailJS dashboard */
 const EMAILJS_PUBLIC_KEY = "YOUR_EMAILJS_PUBLIC_KEY";
@@ -409,11 +409,6 @@ document.getElementById("btnExport").onclick = ()=>{
 
 // Show initial quick button labels
 refreshQuickButtons();
-// If BRAVE_ADDR is preset, reflect on button label immediately
-try { if (BRAVE_ADDR) document.getElementById('btnSetBrave').textContent = 'Use Brave ('+BRAVE_ADDR.slice(0,6)+'…'+BRAVE_ADDR.slice(-4)+')'; } catch(e) {}
-
-// If TRUST_ADDR is preset, reflect on button label immediately
-try { if (TRUST_ADDR) document.getElementById('btnSetTrust').textContent = 'Use Trust ('+TRUST_ADDR.slice(0,6)+'…'+TRUST_ADDR.slice(-4)+')'; } catch(e) {}
 </script>
 </body>
 </html>

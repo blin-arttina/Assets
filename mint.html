@@ -1,130 +1,145 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Mint Assets Alert NFTs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      background-color: #111;
-      color: white;
-      font-family: Arial, sans-serif;
-      font-size: 26px;
-      padding: 20px;
-    }
-    select, input, button {
-      padding: 10px;
-      font-size: 26px;
-      margin: 10px 0;
-      background-color: #ffeb3b;
-      color: black;
-      border: 2px solid gray;
-      border-radius: 5px;
-      height: 48px;
-    }
-    button {
-      background-color: red;
-      color: white;
-      cursor: pointer;
-    }
-    .gray-box {
-      border: 2px solid gray;
-      padding: 20px;
-      margin-bottom: 30px;
-    }
-    a {
-      color: #00ccff;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Assets Alert — Public Mint (A3 & A4)</title>
+<style>
+  :root{ --bg:#000; --fg:#fff; --muted:#cfcfcf; --card:#0b0b0b; --outline:#fff; --btn:#e11d48; --btnText:#fff; }
+  *{ box-sizing:border-box }
+  html,body{ background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, sans-serif; font-size:26px; line-height:1.35 }
+  .wrap{ max-width:900px; margin:0 auto; padding:24px 16px 120px; }
+  h1{ margin:0 0 10px; font-size:1.4em }
+  p.lead{ margin:0 0 16px; color:var(--muted) }
+  .card{ background:var(--card); border:3px solid var(--outline); border-radius:16px; padding:16px; margin:14px 0; }
+  label{ display:block; font-weight:800; margin:10px 0 6px; }
+  select,input{ width:100%; padding:12px; background:#000; color:#fff; border:3px solid var(--outline); border-radius:12px; }
+  .row{ display:flex; flex-wrap:wrap; gap:12px; }
+  .col{ flex:1 1 300px; }
+  button{ cursor:pointer; border:3px solid var(--outline); background:var(--btn); color:var(--btnText); padding:12px 18px; border-radius:14px; font-weight:900 }
+  button.ghost{ background:transparent }
+  .mono{ font-family: ui-monospace, Menlo, Consolas, monospace; }
+  a{ color:#ff8da8 }
+  .hint{ font-size:22px; color:#cfcfcf }
+</style>
 </head>
 <body>
-  <h1>Mint Paid or Premium NFT</h1>
+<div class="wrap">
+  <h1>Assets Alert — Public Mint</h1>
+  <p class="lead">Mint an <b>A3 (Paid)</b> or <b>A4 (Premium)</b> NFT directly, if your wallet has access. Prices are fixed at <b>15&nbsp;MATIC</b> and <b>50&nbsp;MATIC</b> respectively.</p>
 
-  <div class="gray-box">
-    <button id="connectWallet">Connect Wallet</button>
-    <p id="walletStatus">Not connected</p>
+  <div class="card" aria-label="Wallet connection">
+    <div class="row">
+      <div class="col"><button id="connectWallet">Connect Wallet</button></div>
+      <div class="col" style="display:flex; align-items:center; justify-content:flex-end"><span id="walletStatus" class="mono">Not connected</span></div>
+    </div>
+    <div class="hint">Network: Polygon Mainnet (137)</div>
   </div>
 
-  <div class="gray-box">
-    <h2>Select NFT to Mint</h2>
-    <label for="tokenSelect">NFT:</label>
+  <div class="card" aria-label="Mint">
+    <label for="tokenSelect">Select NFT</label>
     <select id="tokenSelect">
-      <option value="A3" data-price="15">A3 - Paid NFT (15 MATIC)</option>
-      <option value="A4" data-price="50">A4 - Premium NFT (50 MATIC)</option>
+      <option value="A3" data-price="15">A3 — Paid NFT (15 MATIC)</option>
+      <option value="A4" data-price="50">A4 — Premium NFT (50 MATIC)</option>
     </select>
-    <p>Limit: 1 per wallet</p>
-    <button onclick="mint()">Mint</button>
-    <p id="mintStatus"></p>
+    <div class="hint">Limit: 1 per wallet per token. We check on‑chain before minting.</div>
+
+    <div class="row" style="margin-top:10px">
+      <button id="btnMint">Mint Now</button>
+      <button id="btnView" class="ghost">View on OpenSea</button>
+    </div>
+    <div id="mintStatus" class="hint" style="margin-top:8px">—</div>
   </div>
 
-  <div class="gray-box">
-    <h2>View Your NFTs</h2>
-    <a href="https://opensea.io/account" target="_blank">🔗 View on OpenSea</a>
+  <div class="card" aria-label="Info">
+    <div>Contract: <a class="mono" id="contractLink" target="_blank" rel="noopener"></a></div>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
-  <script>
-    const contractAddress = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
-    const tokenIds = { A3: 3, A4: 4 };
-    const prices = { A3: "15000000000000000000", A4: "50000000000000000000" }; // 15 & 50 MATIC in wei
-    const minted = { A3: false, A4: false };
-    const abi = [
-      {
-        "inputs": [
-          { "internalType": "uint256", "name": "id", "type": "uint256" },
-          { "internalType": "uint256", "name": "amount", "type": "uint256" }
-        ],
-        "name": "publicMint",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-      }
-    ];
+<script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+<script>
+  // --- Config ---
+  const CONTRACT = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
+  const tokenIds = { A3: 3, A4: 4 };
+  // fixed prices (MATIC) -> wei
+  const priceMatic = { A3: "15", A4: "50" };
 
-    let web3, accounts, contract;
+  // Minimal ABI for payable publicMint + ERC1155 balanceOf check
+  const abi = [
+    { "inputs":[ { "internalType":"uint256","name":"id","type":"uint256" }, { "internalType":"uint256","name":"amount","type":"uint256" } ], "name":"publicMint", "outputs":[], "stateMutability":"payable", "type":"function" },
+    { "inputs":[ { "internalType":"address","name":"account","type":"address" }, { "internalType":"uint256","name":"id","type":"uint256" } ], "name":"balanceOf", "outputs":[ { "internalType":"uint256","name":"","type":"uint256" } ], "stateMutability":"view", "type":"function" }
+  ];
 
-    async function connectWallet() {
-      if (window.ethereum) {
-        web3 = new Web3(window.ethereum);
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x89" }]
-        });
-        accounts = await web3.eth.getAccounts();
-        contract = new web3.eth.Contract(abi, contractAddress);
-        document.getElementById("walletStatus").innerText = "Connected: " + accounts[0];
-      } else {
-        alert("Please use a browser with MetaMask or Trust Wallet.");
-      }
+  let web3, accounts, contract;
+
+  const $ = (id)=>document.getElementById(id);
+  const status = $("mintStatus");
+
+  function setContractLink() {
+    const a = $("contractLink");
+    a.href = "https://polygonscan.com/address/" + CONTRACT;
+    a.textContent = CONTRACT;
+  }
+  setContractLink();
+
+  async function connectWallet() {
+    try {
+      if (!window.ethereum) throw new Error("Web3 wallet not found. Use MetaMask/Brave/Trust.");
+      web3 = new Web3(window.ethereum);
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      // Ensure Polygon mainnet
+      await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x89" }] });
+      accounts = await web3.eth.getAccounts();
+      contract = new web3.eth.Contract(abi, CONTRACT);
+      $("walletStatus").innerText = "Connected: " + accounts[0];
+    } catch(e) {
+      $("walletStatus").innerText = "Connect failed: " + (e?.message || e);
     }
+  }
 
-    async function mint() {
-      const tokenCode = document.getElementById("tokenSelect").value;
-      const tokenId = tokenIds[tokenCode];
-      const price = prices[tokenCode];
-      const alreadyMinted = minted[tokenCode];
-      const amount = 1;
+  async function mint() {
+    if (!accounts || !accounts.length) {
+      status.textContent = "Please connect your wallet first.";
+      return;
+    }
+    const code = $("tokenSelect").value;
+    const id = tokenIds[code];
 
-      if (alreadyMinted) {
-        document.getElementById("mintStatus").innerText = "❌ You've already minted this NFT.";
+    // On-chain 1-per-wallet check
+    try {
+      const bal = await contract.methods.balanceOf(accounts[0], id).call();
+      if (web3.utils.toBN(bal).gt(web3.utils.toBN(0))) {
+        status.textContent = "❌ You already hold this token (limit 1 per wallet).";
         return;
       }
-
-      try {
-        await contract.methods.publicMint(tokenId, amount).send({
-          from: accounts[0],
-          value: price
-        });
-        minted[tokenCode] = true;
-        document.getElementById("mintStatus").innerText = "✅ Minted successfully!";
-      } catch (err) {
-        console.error(err);
-        document.getElementById("mintStatus").innerText = "❌ Mint failed.";
-      }
+    } catch(e) {
+      // If balance check fails, still allow mint but warn
+      console.warn("balanceOf check failed", e);
     }
 
-    document.getElementById("connectWallet").onclick = connectWallet;
-  </script>
+    const priceWei = web3.utils.toWei(priceMatic[code], "ether"); // MATIC uses same decimals as ETH
+
+    try {
+      status.textContent = "Sending mint transaction…";
+      const tx = await contract.methods.publicMint(id, 1).send({
+        from: accounts[0],
+        value: priceWei
+      });
+      const link = "https://polygonscan.com/tx/" + tx.transactionHash;
+      status.innerHTML = "✅ Minted! <a href='" + link + "' target='_blank' rel='noopener'>View tx</a>";
+    } catch (err) {
+      console.error(err);
+      status.textContent = (err?.message || "❌ Mint failed.");
+    }
+  }
+
+  function viewOnOpenSea() {
+    window.open("https://opensea.io/account", "_blank");
+  }
+
+  $("connectWallet").onclick = connectWallet;
+  $("btnMint").onclick = mint;
+  $("btnView").onclick = viewOnOpenSea;
+</script>
 </body>
 </html>

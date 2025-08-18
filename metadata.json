@@ -1,0 +1,19 @@
+{
+  "compiler": { "version": "0.8.20" },
+  "language": "Solidity",
+  "output": {
+    "abi": "See ABI.json",
+    "devdoc": {},
+    "userdoc": {}
+  },
+  "settings": {
+    "optimizer": { "enabled": true, "runs": 200 }
+  },
+  "sources": {
+    "AssetsAlertNFT_FINAL_FLATTENED.sol": {
+      "keccak256": "0x123456789abcdef",
+      "urls": []
+    }
+  },
+  "version": 1
+}
