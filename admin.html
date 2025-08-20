@@ -1,12 +1,352 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Page - Diagnostics + Retry</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Assets Alert — Admin (Merged)</title>
+  <style>
+    :root{ --bg:#000; --fg:#fff; --card:#0b0b0b; --outline:#fff; --btn:#e11d48; --ok:#22c55e; --err:#ef4444; }
+    *{ box-sizing:border-box }
+    html,body{ background:var(--bg); color:var(--fg); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif; font-size:26px; line-height:1.35; margin:0 }
+    .wrap{ max-width:1100px; margin:0 auto; padding:20px }
+    h1{ margin:0 0 8px }
+    h2{ margin:8px 0 }
+    .card{ background:var(--card); border:3px solid var(--outline); border-radius:16px; padding:16px; margin:14px 0 }
+    label{ display:block; font-weight:800; margin:10px 0 6px }
+    input,select,textarea{ width:100%; padding:12px; background:#000; color:#fff; border:3px solid var(--outline); border-radius:12px }
+    textarea{ min-height:120px; font-family: ui-monospace, Menlo, Consolas, monospace }
+    .row{ display:flex; flex-wrap:wrap; gap:12px }
+    .col{ flex:1 1 320px }
+    button{ cursor:pointer; border:3px solid var(--outline); background:var(--btn); color:#fff; padding:12px 18px; border-radius:14px; font-weight:900 }
+    button.ghost{ background:transparent }
+    pre{ background:#000; border:3px solid var(--outline); border-radius:12px; padding:12px; color:#9eff9e; white-space:pre-wrap; overflow:auto }
+    .pill{ display:inline-flex; align-items:center; gap:10px; border:3px solid var(--outline); border-radius:999px; padding:8px 12px; margin-top:6px }
+    .dot{ width:14px; height:14px; border-radius:50%; border:2px solid var(--outline); background:#666 }
+    .ok{ background:var(--ok) } .bad{ background:var(--err) }
+    a{ color:#8ecbff }
+    small.hint{ display:block; opacity:.75; margin-top:6px }
+    .hide{ display:none }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
 </head>
-<body style="background:black; color:white; font-size:26px;">
-  <h1>Admin Page with Diagnostics + Retry</h1>
-  <p>This is the regenerated admin page with RPC selector, gas estimator, retry, and detailed diagnostics.</p>
-  <button style="background:red; color:white; font-size:20px; border-radius:8px; padding:10px;">Mint</button>
+<body>
+<div class="wrap">
+  <h1>Assets Alert — Admin (Merged)</h1>
+  <div class="card">
+    <div class="row">
+      <div class="col"><button id="btnAuto">Auto‑Connect (Injected)</button></div>
+      <div class="col"><button id="btnBrave">Connect Brave</button></div>
+      <div class="col"><button id="btnInjected" class="ghost">Injected (fallback)</button></div>
+      <div class="col"><button id="btnWC" class="ghost">Enable WalletConnect (advanced)</button></div>
+      <div class="col">
+        <label>RPC (Polygon)</label>
+        <select id="rpc">
+          <option value="https://rpc.ankr.com/polygon" selected>ANKR (default)</option>
+          <option value="https://polygon.rpc.blxrbdn.com">Blockdaemon</option>
+          <option value="https://polygon.llamarpc.com">Llama</option>
+          <option value="https://1rpc.io/matic">1RPC</option>
+          <option value="https://polygon-rpc.com">Public</option>
+        </select>
+        <small class="hint">You can change RPC if one is slow.</small>
+      </div>
+    </div>
+    <div id="wcBar" class="row hide" style="margin-top:8px">
+      <div class="col"><button id="btnTrustWC">Trust (WalletConnect)</button></div>
+      <div class="col"><button id="btnBaseWC">Base/Coinbase (WalletConnect)</button></div>
+      <small class="hint">Use only if injected fails. In wallets’ in‑app browser, injected is smoother.</small>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <div class="pill"><span id="dotChain" class="dot"></span> Polygon Mainnet (137)</div>
+      <div class="pill">Connected: <span id="who" style="font-family:ui-monospace,Menlo,Consolas,monospace">—</span></div>
+      <div class="pill"><button id="btnSaveDiag" class="ghost">Download Diagnostics</button></div>
+    </div>
+    <div id="walletStatus" style="margin-top:6px">Not connected.</div>
+  </div>
+
+  <div class="card">
+    <h2>Mint NFT (owner only)</h2>
+    <div class="row">
+      <div class="col">
+        <label for="mintToken">Select NFT</label>
+        <select id="mintToken">
+          <option value="1">A1 — Skater Mouse (Animated)</option>
+          <option value="2">A2 — Beta Tester NFT</option>
+          <option value="3">A3 — Paid NFT</option>
+          <option value="4">A4 — Premium NFT</option>
+          <option value="5">M1 — Mystery Mouse (3D Glasses)</option>
+          <option value="6">M2 — Mystery Mouse 2 (Miner)</option>
+          <option value="7">S1 — Rapper Mouse</option>
+        </select>
+      </div>
+      <div class="col">
+        <label for="mintQty">Quantity</label>
+        <input id="mintQty" type="number" min="1" value="1"/>
+      </div>
+    </div>
+    <label for="to">Recipient (leave empty to mint to your wallet)</label>
+    <input id="to" placeholder="0x…"/>
+    <div class="row" style="margin-top:8px">
+      <button id="btnUseBrave">Use Brave (0xB7Acf…B153)</button>
+      <button id="btnUseTrust">Use Trust (0x650266…0E2E)</button>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div class="col">
+        <label>Gas (optional)</label>
+        <div class="row">
+          <input id="maxFee" placeholder="maxFeePerGas (gwei)"/>
+          <input id="maxPrio" placeholder="maxPriorityFeePerGas (gwei)"/>
+        </div>
+        <button id="btnEstimate" class="ghost" style="margin-top:6px">Estimate Gas Tips</button>
+        <div>mf/mp: <span id="gasView" style="font-family:ui-monospace,Menlo,Consolas,monospace">—</span></div>
+      </div>
+      <div class="col">
+        <label>Confirmations / Timeout</label>
+        <div class="row">
+          <input id="confBlocks" value="2" placeholder="required blocks"/>
+          <input id="timeoutSec" value="300" placeholder="timeout seconds"/>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="btnMint">Mint</button>
+      <button id="btnRetry" class="ghost">Retry (bump 25%)</button>
+      <button id="btnCancel" class="ghost">Cancel Pending</button>
+      <a id="lastTx" class="mono" target="_blank" rel="noopener" style="margin-left:8px">—</a>
+    </div>
+    <div id="status" class="mono" style="margin-top:8px">—</div>
+  </div>
+
+  <div class="card">
+    <h2>Airdrop (batch)</h2>
+    <label>Addresses (one per line). Optional qty: <span class="mono">0xabc… 3</span></label>
+    <textarea id="airList" placeholder="0x1234...abcd&#10;0x5678...ef90 2"></textarea>
+    <div class="row" style="margin-top:8px">
+      <button id="btnAirdrop">Start Airdrop</button>
+      <button id="btnStop" class="ghost">Stop</button>
+    </div>
+    <pre id="airLog">—</pre>
+  </div>
+
+  <div class="card">
+    <h2>Diagnostics</h2>
+    <pre id="diag" aria-live="polite" aria-atomic="false">Ready.</pre>
+  </div>
+</div>
+
+<script>
+// ===== Contract & known addresses =====
+const CONTRACT = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
+const ABI = [
+  {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256[]","name":"ids","type":"uint256[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"name":"mintBatch","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+];
+const BRAVE_ADDR="0xB7Acf7F61e360baB855A86742be5273baB69B153";
+const TRUST_ADDR="0x6502663d6d6ce0496abC0e6D8B5d8E79F7160E2E";
+
+// ===== Helpers & diagnostics =====
+const $ = (id)=>document.getElementById(id);
+const diagEl = $("diag");
+let diagBuf="Ready.";
+function ts(){ return new Date().toLocaleTimeString(); }
+function log(line){ const msg="["+ts()+"] "+line; diagBuf += "\\n"+msg; diagEl.textContent += "\\n"+msg; diagEl.scrollTop=diagEl.scrollHeight; }
+function setDot(id, ok){ const el=$(id); el.className="dot "+(ok? "ok":"bad"); }
+function setStatus(s){ $("status").textContent=s; log(s); }
+function gwei(n){ return Web3.utils.toWei(String(n),"gwei"); }
+function gasObj(){ const fee=$("maxFee").value.trim(); const prio=$("maxPrio").value.trim(); const g={}; if(fee) g.maxFeePerGas=gwei(fee); if(prio) g.maxPriorityFeePerGas=gwei(prio); return g; }
+function errText(e){ try{ if(typeof e==="string") return e; if(e?.data?.message) return e.data.message; if(e?.error?.message) return e.error.message; if(e?.message) return e.message; return JSON.stringify(e);}catch(_){ return "Unknown error"; } }
+$("btnSaveDiag").onclick=()=>{ const blob=new Blob([diagBuf],{type:"text/plain"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download="diagnostics_"+Date.now()+".txt"; a.click(); setTimeout(()=>URL.revokeObjectURL(url),150); };
+
+// ===== Web3 state =====
+let web3, provider, accounts=[], contract, ownerAddress, lastNonce=null, lastHash=null;
+let lastFee=null, lastPrio=null; let stopAir=false;
+
+// ===== Connect flows =====
+async function ensurePolygon(){
+  try{
+    await provider.request({ method:"wallet_switchEthereumChain", params:[{ chainId:"0x89" }] });
+    setDot("dotChain", true);
+    log("Network OK: Polygon Mainnet (137).");
+  }catch(e){
+    setDot("dotChain", false);
+    log("⚠️ Failed to switch to Polygon: "+errText(e));
+  }
+}
+async function postConnect(){
+  await ensurePolygon();
+  accounts = await web3.eth.getAccounts();
+  $("who").textContent = accounts[0] || "(no wallet)";
+  contract = new web3.eth.Contract(ABI, CONTRACT);
+  try{ ownerAddress = await contract.methods.owner().call(); $("walletStatus").textContent = "Owner: "+ownerAddress; }catch(_){}
+  const isOwner = accounts[0] && ownerAddress && accounts[0].toLowerCase()===ownerAddress.toLowerCase();
+  log(isOwner? "✅ Wallet matches owner — mint allowed." : "⚠️ Wallet is NOT owner — mint will revert.");
+}
+async function connectInjected(){
+  const eth = window.ethereum;
+  if(!eth){ setStatus("No injected provider found. Open in Brave/Trust/Base wallet browser."); return; }
+  try{
+    await eth.request({ method:"eth_requestAccounts" });
+    provider = eth;
+    const rpc = $("rpc").value;
+    web3 = new Web3(provider);
+    web3.setProvider(new Web3.providers.HttpProvider(rpc)); // HTTP for reliable reads
+    await postConnect();
+    log(eth.isBraveWallet? "Connected via Brave (injected)." : "Connected via Injected provider.");
+  }catch(e){ setStatus("Connect error: "+errText(e)); }
+}
+async function connectBrave(){
+  const eth = window.ethereum;
+  if(!(eth && eth.isBraveWallet)){ setStatus("Brave Wallet not detected. Open in Brave with wallet enabled."); return; }
+  try{
+    await eth.request({ method:"eth_requestAccounts" });
+    provider = eth;
+    const rpc = $("rpc").value;
+    web3 = new Web3(provider);
+    web3.setProvider(new Web3.providers.HttpProvider(rpc));
+    await postConnect();
+    log("Connected via Brave Wallet.");
+  }catch(e){ setStatus("Brave connect error: "+errText(e)); }
+}
+async function connectWC(wallet){
+  try{
+    const rpc = $("rpc").value;
+    const wc = new WalletConnectProvider.default({
+      rpc:{137:rpc}, chainId:137, qrcodeModalOptions:{ mobileLinks:[wallet] }
+    });
+    await wc.enable();
+    provider = wc;
+    web3 = new Web3(provider);
+    web3.setProvider(new Web3.providers.HttpProvider(rpc));
+    await postConnect();
+    log("Connected via WalletConnect: "+wallet);
+  }catch(e){ setStatus("WalletConnect error: "+errText(e)); }
+}
+async function autoConnect(){
+  if(window.ethereum && window.ethereum.isBraveWallet){
+    log("Brave detected — auto-connecting…");
+    await connectBrave();
+  }else{
+    log("Trying injected auto-connect…");
+    await connectInjected();
+  }
+}
+
+// ===== Gas / mint / airdrop =====
+async function estimateTips(){
+  try{
+    const block = await web3.eth.getBlock("latest");
+    const base = block.baseFeePerGas ? Number(block.baseFeePerGas) : 30e9;
+    const prio = 40e9;
+    const mf = Math.round((base*1.4 + prio)/1e9);
+    const mp = Math.round(prio/1e9);
+    $("maxFee").value = String(mf);
+    $("maxPrio").value = String(mp);
+    $("gasView").textContent = mf+" / "+mp+" gwei";
+    lastFee=mf; lastPrio=mp;
+    log("Estimated gas tips mf/mp: "+$("gasView").textContent);
+  }catch(e){ log("Estimate error: "+errText(e)); }
+}
+function buildSendOpts(from, nonce){
+  const g=gasObj();
+  if(!g.maxFeePerGas && lastFee) g.maxFeePerGas = Web3.utils.toWei(String(lastFee),"gwei");
+  if(!g.maxPriorityFeePerGas && lastPrio) g.maxPriorityFeePerGas = Web3.utils.toWei(String(lastPrio),"gwei");
+  return { from, nonce, ...g };
+}
+async function waitForReceipt(txHash, timeoutSec=300, confBlocks=2){
+  const start = Date.now();
+  log("Waiting for receipt: "+txHash);
+  while ((Date.now()-start)/1000 < timeoutSec){
+    const rec = await web3.eth.getTransactionReceipt(txHash);
+    if(rec && rec.blockNumber){
+      const current = await web3.eth.getBlockNumber();
+      const conf = current - rec.blockNumber;
+      log("Confirmations: "+conf+" / "+confBlocks);
+      if(conf >= confBlocks) return rec;
+    }
+    await new Promise(r=>setTimeout(r, 4000));
+  }
+  throw new Error("Timed out waiting for confirmations");
+}
+async function doMint(retry=false){
+  try{
+    if(!accounts||!accounts[0]) return setStatus("Connect wallet first.");
+    const to = $("to").value.trim() || accounts[0];
+    const id = parseInt($("mintToken").value);
+    const qty = Math.max(1, parseInt($("mintQty").value||"1"));
+    if(!retry) await estimateTips();
+    const nonce = retry && lastNonce!=null ? lastNonce : await web3.eth.getTransactionCount(accounts[0], "pending");
+    lastNonce = nonce;
+    setStatus((retry?"Retrying":"Submitting")+" mint (id="+id+", qty="+qty+", to="+to+") nonce "+nonce+"…");
+    const send = contract.methods.mint(to, id, qty, "0x").send(buildSendOpts(accounts[0], nonce));
+    let txHash="";
+    send.on("transactionHash", h=>{ txHash=h; lastHash=h; setStatus("Tx sent: "+h); $("lastTx").href="https://polygonscan.com/tx/"+h; $("lastTx").textContent="View on Polygonscan"; window.open("https://polygonscan.com/tx/"+h,"_blank"); });
+    send.on("receipt", r=>{ setStatus("Mined in block "+r.blockNumber); });
+    send.on("error", e=>{ setStatus("❌ Broadcast error: "+errText(e)); });
+    const rc = await send;
+    const rc2 = await waitForReceipt(rc.transactionHash, parseInt($("timeoutSec").value||"300"), parseInt($("confBlocks").value||"2"));
+    setStatus("✅ Confirmed. Block "+rc2.blockNumber);
+  }catch(e){ setStatus("❌ Mint failed: "+errText(e)); }
+}
+async function retryMint(){
+  if(lastFee){ lastFee=Math.round(lastFee*1.25); $("maxFee").value=String(lastFee); }
+  if(lastPrio){ lastPrio=Math.round(lastPrio*1.25); $("maxPrio").value=String(lastPrio); }
+  $("gasView").textContent=(lastFee||"—")+" / "+(lastPrio||"—")+" gwei";
+  log("Retry with bumped gas mf/mp: "+$("gasView").textContent);
+  return doMint(true);
+}
+async function cancelPending(){
+  try{
+    if(lastNonce==null){ setStatus("No pending tx to cancel."); return; }
+    const g=gasObj();
+    if(g.maxFeePerGas) g.maxFeePerGas = Web3.utils.toBN(g.maxFeePerGas).muln(125).divn(100).toString();
+    if(g.maxPriorityFeePerGas) g.maxPriorityFeePerGas = Web3.utils.toBN(g.maxPriorityFeePerGas).muln(125).divn(100).toString();
+    setStatus("Sending 0-value cancel with nonce "+lastNonce+"…");
+    await web3.eth.sendTransaction({ from:accounts[0], to:accounts[0], value:"0", nonce:lastNonce, ...g })
+      .on("transactionHash", h=>{ setStatus("Cancel tx: "+h); $("lastTx").href="https://polygonscan.com/tx/"+h; $("lastTx").textContent="View cancel tx"; window.open("https://polygonscan.com/tx/"+h,"_blank"); });
+  }catch(e){ setStatus("Cancel failed: "+errText(e)); }
+}
+
+// Airdrop
+function parseAir(){ return $("airList").value.split(/\n+/).map(s=>s.trim()).filter(Boolean).map(line=>{ const p=line.split(/\s+/); return { addr:p[0], qty: p[1]?parseInt(p[1],10):1 }; }); }
+async function airdrop(){
+  if (!accounts||!accounts[0]) return log("Connect wallet first.");
+  stopAir = false;
+  const id = parseInt($("mintToken").value);
+  const list = parseAir();
+  const out = $("airLog");
+  out.textContent = "Airdropping token "+id+" to "+list.length+" address(es)…";
+  for (let i=0;i<list.length;i++){
+    if (stopAir){ out.textContent += "\\n⛔ Stopped."; break; }
+    const {addr, qty} = list[i];
+    try{
+      const tx = await contract.methods.mintBatch(addr, [id], [qty]).send(buildSendOpts(accounts[0], undefined))
+        .on("transactionHash", h=>{ out.textContent += `\\n#${i+1} tx: https://polygonscan.com/tx/${h}`; });
+      out.textContent += `\\n#${i+1} ✅ done (block ${tx.blockNumber})`;
+    }catch(e){ out.textContent += `\\n#${i+1} ❌ ${errText(e)}`; }
+    out.scrollTop = out.scrollHeight;
+  }
+}
+
+// UI wire-up
+$("btnAuto").onclick = autoConnect;
+$("btnBrave").onclick = connectBrave;
+$("btnInjected").onclick = connectInjected;
+$("btnWC").onclick = ()=>{ $("wcBar").classList.remove("hide"); };
+$("btnTrustWC").onclick = ()=>connectWC("trust");
+$("btnBaseWC").onclick  = ()=>connectWC("base");
+
+$("btnUseBrave").onclick = ()=>{ $("to").value = BRAVE_ADDR; };
+$("btnUseTrust").onclick = ()=>{ $("to").value = TRUST_ADDR; };
+$("btnEstimate").onclick = estimateTips;
+$("btnMint").onclick = ()=>doMint(false);
+$("btnRetry").onclick = retryMint;
+$("btnCancel").onclick = cancelPending;
+$("btnAirdrop").onclick = airdrop;
+$("btnStop").onclick = ()=>{ stopAir=true; };
+
+// Auto-connect on load
+window.addEventListener("load", autoConnect);
+</script>
 </body>
 </html>
