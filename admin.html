@@ -1,74 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Assets Alert — Admin Mint + Airdrop + Beta Signup</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Blind_Art — Admin Mint + Airdrop (Detailed Diagnostics)</title>
 <style>
-  :root{
-    --bg:#000000;
-    --fg:#ffffff;
-    --muted:#c7c7c7;
-    --card:#0b0b0b;
-    --outline:#ffffff;
-    --btn:#e11d48; /* red */
-    --btnText:#ffffff;
-    --accent:#e11d48;
-    --ok:#22c55e; --err:#ef4444; --warn:#eab308;
-  }
+  :root{ --bg:#000; --fg:#fff; --muted:#cfcfcf; --card:#0b0b0b; --outline:#fff;
+         --btn:#e11d48; --btnText:#fff; --ok:#22c55e; --err:#ef4444; --warn:#eab308; }
   *{ box-sizing:border-box }
   html,body{ background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, sans-serif; font-size:26px; line-height:1.35 }
-  .wrap{ max-width:1100px; margin:0 auto; padding:22px 16px 140px; }
-  h1{ margin:0 0 10px; font-size:1.4em }
+  .wrap{ max-width:1100px; margin:0 auto; padding:22px 16px 140px }
+  h1{ margin:0 0 10px; font-size:1.3em }
   h2{ margin:10px 0; font-size:1.1em }
-  p.lead{ margin:0 0 16px; color:var(--muted) }
   .card{ background:var(--card); border:3px solid var(--outline); border-radius:16px; padding:16px; margin:14px 0; }
   label{ display:block; font-weight:800; margin:10px 0 6px; }
-  input,select,textarea{ width:100%; padding:12px 12px; background:#000; color:var(--fg); border:3px solid var(--outline); border-radius:12px; }
-  textarea{ min-height:180px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+  input,select,textarea{ width:100%; padding:12px; background:#000; color:#fff; border:3px solid var(--outline); border-radius:12px; }
+  textarea{ min-height:160px; font-family: ui-monospace, Menlo, Consolas, monospace; }
   .row{ display:flex; flex-wrap:wrap; gap:12px; }
   .col{ flex:1 1 320px; }
   button{ cursor:pointer; border:3px solid var(--outline); background:var(--btn); color:var(--btnText); padding:12px 18px; border-radius:14px; font-weight:900 }
-  button:disabled{ opacity:.6; cursor:not-allowed }
-  .ghost{ background:transparent; color:var(--fg) }
-  .pill{ display:inline-flex; gap:10px; align-items:center; border:3px solid var(--outline); padding:8px 12px; border-radius:999px; margin:6px 8px 0 0; color:var(--fg) }
+  button.ghost{ background:transparent; color:var(--fg) }
+  .mono{ font-family: ui-monospace, Menlo, Consolas, monospace; }
+  pre{ background:#000; border:3px solid var(--outline); border-radius:12px; padding:12px; color:#9eff9e; white-space:pre-wrap; overflow:auto }
+  .pill{ display:inline-flex; gap:10px; align-items:center; border:3px solid var(--outline); padding:8px 12px; border-radius:999px; margin:6px 8px 0 0; color:#fff }
   .dot{ width:14px; height:14px; border-radius:50%; background:#666; border:2px solid var(--outline) }
   .ok{ background:var(--ok) } .bad{ background:var(--err) } .warn{ background:var(--warn) }
-  .mono{ font-family: ui-monospace, Menlo, Consolas, monospace; }
   a{ color:#ff8da8 }
-  pre{ background:#000; border:3px solid var(--outline); border-radius:12px; padding:12px; color:#9eff9e; white-space:pre-wrap; overflow:auto }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
 </head>
 <body>
 <div class="wrap">
-  <h1>Assets Alert — Admin Mint + Airdrop + Beta Tester Signup</h1>
-  <p class="lead">Black background, white text, red buttons, bold outlines. Connect owner wallet (Brave/MetaMask or Trust via WalletConnect), mint or airdrop NFTs, and collect beta tester emails with automatic referral codes.</p>
-
-  <!-- Wallet / Connect -->
-  <div class="card" id="walletCard" aria-label="Wallet connection panel">
-    <h2>Connect</h2>
+  <h1>Blind_Art — Admin Mint + Airdrop</h1>
+  <div class="card">
     <div class="row">
       <div class="col"><button id="btnConnect">Connect Wallet</button></div>
       <div class="col">
-        <div class="pill"><span id="dotChain" class="dot" aria-hidden="true"></span> Polygon (137)</div>
-        <div class="pill"><span id="dotOwner" class="dot" aria-hidden="true"></span> Owner</div>
+        <label>RPC Endpoint</label>
+        <select id="rpc">
+          <option value="https://polygon-rpc.com">polygon-rpc.com</option>
+          <option value="https://rpc.ankr.com/polygon">ankr</option>
+          <option value="https://polygon.llamarpc.com">llama</option>
+          <option value="https://1rpc.io/matic">1rpc</option>
+        </select>
       </div>
     </div>
-    <div style="margin-top:8px">
-      <div>Connected: <span id="who" class="mono">—</span></div>
-      <div>Contract: <a id="addrLink" class="mono" target="_blank" rel="noopener">—</a></div>
+    <div style="margin-top:10px">
+      <div class="pill"><span id="dotChain" class="dot"></span> Network: Polygon Mainnet (137)</div>
+      <div class="pill"><span id="dotOwner" class="dot"></span> Owner match</div>
     </div>
-    <div id="ownerWarn" class="mono" style="margin-top:8px; color:#ffd27d; display:none">
-      ⚠️ This contract is <b>onlyOwner</b>. Connect with the owner wallet to mint.
+    <div style="margin-top:8px">
+      Connected: <span id="who" class="mono">—</span><br/>
+      Owner: <span id="own" class="mono">—</span><br/>
+      Contract: <a id="addrLink" class="mono" target="_blank" rel="noopener">—</a>
     </div>
   </div>
 
-  <!-- Mint -->
-  <div class="card" aria-label="Mint panel">
+  <div class="card">
     <h2>Mint</h2>
     <div class="row">
       <div class="col">
-        <label for="token">Select NFT</label>
+        <label for="token">Token</label>
         <select id="token">
           <option value="1">A1 — Skater Mouse (Animated)</option>
           <option value="2">A2 — Beta Tester NFT</option>
@@ -81,334 +74,242 @@
       </div>
       <div class="col">
         <label for="qty">Quantity</label>
-        <input id="qty" type="number" min="1" value="1">
+        <input id="qty" type="number" min="1" value="1"/>
       </div>
     </div>
-
+    <label for="to">Recipient (leave empty to mint to your wallet)</label>
+    <input id="to" placeholder="0x…"/>
     <div class="row">
       <div class="col">
-        <label for="to">Recipient (leave empty to mint to your connected wallet)</label>
-        <input id="to" placeholder="0x…">
+        <label>Gas (optional)</label>
+        <div class="row">
+          <input id="maxFee" placeholder="maxFeePerGas (gwei)"/>
+          <input id="maxPrio" placeholder="maxPriorityFeePerGas (gwei)"/>
+        </div>
       </div>
       <div class="col">
-        <label>Saved addresses</label>
+        <label>Confirmations / Timeout</label>
         <div class="row">
-          <button id="btnSetBrave">Use Brave</button>
-          <button id="btnSetTrust">Use Trust</button>
-          <button id="btnSaveFavs" class="ghost">Save current as Brave/Trust…</button>
+          <input id="confBlocks" value="2" placeholder="required blocks"/>
+          <input id="timeoutSec" value="300" placeholder="timeout seconds"/>
         </div>
       </div>
     </div>
-
-    <div class="row" style="margin-top:6px">
-      <button id="btnMint">Mint to Recipient</button>
-      <button id="btnBatch">Mint Batch</button>
-      <button id="btnView" class="ghost">View Token on Polygonscan</button>
+    <div class="row" style="margin-top:8px">
+      <button id="btnMint">Mint</button>
+      <button id="btnSpeed" class="ghost">Speed Up</button>
+      <button id="btnCancel" class="ghost">Cancel Pending</button>
     </div>
-    <div id="status" class="mono" style="margin-top:10px">—</div>
+    <div id="status" class="mono" style="margin-top:8px">—</div>
   </div>
 
-  <!-- Airdrop -->
-  <div class="card" aria-label="Airdrop panel">
+  <div class="card">
     <h2>Airdrop</h2>
-    <p class="lead">Paste one address per line. Optional: add a space and quantity, e.g. <span class="mono">0xabc… 3</span>. Uses the selected NFT above.</p>
-    <label for="airdropList">Addresses</label>
-    <textarea id="airdropList" placeholder="0x1234...abcd&#10;0x5678...ef90 2"></textarea>
-    <div class="row" style="margin-top:6px">
+    <label>Addresses (one per line). Optional qty: <span class="mono">0xabc… 3</span></label>
+    <textarea id="airList" placeholder="0x1234...abcd&#10;0x5678...ef90 2"></textarea>
+    <div class="row" style="margin-top:8px">
       <button id="btnAirdrop">Start Airdrop</button>
       <button id="btnStop" class="ghost">Stop</button>
     </div>
     <pre id="airLog">—</pre>
   </div>
 
-  <!-- Beta Tester Signup -->
-  <div class="card" aria-label="Beta tester signup">
-    <h2>Beta Tester Signup (auto email + referral code)</h2>
-    <div class="row">
-      <div class="col">
-        <label for="betaEmail">Email</label>
-        <input id="betaEmail" type="email" placeholder="you@example.com" aria-required="true" />
-      </div>
-      <div class="col">
-        <label for="betaName">Name (optional)</label>
-        <input id="betaName" type="text" placeholder="Your name" />
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <label for="refUsed">Referral code used (optional)</label>
-        <input id="refUsed" type="text" placeholder="Friend's code if any" />
-      </div>
-      <div class="col">
-        <label for="signupNote">Notes (optional)</label>
-        <input id="signupNote" type="text" placeholder="Any note" />
-      </div>
-    </div>
-    <div class="row" style="margin-top:6px">
-      <button id="btnSignup">Sign Up & Email Code</button>
-      <button id="btnExport">Export CSV</button>
-      <button id="btnTestEmail" class="ghost">Test Email Settings</button>
-    </div>
-    <div class="mono" id="betaStatus" style="margin-top:10px">—</div>
-    <div class="mono" id="myCode" style="margin-top:6px"></div>
-  </div>
-
   <div class="card">
-    <b>Diagnostics</b>
-    <pre id="diag">Ready.</pre>
+    <h2>Diagnostics (detailed)</h2>
+    <pre id="diag" aria-live="polite" aria-atomic="false">Ready.</pre>
   </div>
 </div>
 
-<!-- libs -->
-<script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
 <script>
-/* ===================== CONFIG (EDIT THESE) ===================== */
+// ===== CONFIG =====
 const CONTRACT = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
-const POLYGON_RPC = "https://polygon-rpc.com";
-
-/* Prefill Brave & Trust here if desired.
-   NOTE: I left them blank for safety; press “Save current as Brave/Trust…” once to store locally
-   and they’ll appear on the buttons next time automatically. */
-let BRAVE_ADDR = localStorage.getItem("pref_brave") || "";
-let TRUST_ADDR = localStorage.getItem("pref_trust") || "";
-
-/* EmailJS — fill these from your EmailJS dashboard */
-const EMAILJS_PUBLIC_KEY = "YOUR_EMAILJS_PUBLIC_KEY";
-const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";
-const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
-
-/* Optional Google Sheets endpoint (Apps Script) */
-const SHEETS_ENDPOINT = "YOUR_APPS_SCRIPT_WEBAPP_URL"; // leave blank to skip saving to sheet
-/* =============================================================== */
-
+const ABI = [
+  {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256[]","name":"ids","type":"uint256[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"name":"mintBatch","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+];
 document.getElementById("addrLink").href = "https://polygonscan.com/address/" + CONTRACT;
 document.getElementById("addrLink").textContent = CONTRACT;
+// ==================
 
-// Minimal ABI
-const ABI = [
-  { "inputs":[ { "internalType":"address","name":"to","type":"address" }, { "internalType":"uint256","name":"id","type":"uint256" }, { "internalType":"uint256","name":"amount","type":"uint256" }, { "internalType":"bytes","name":"data","type":"bytes" } ], "name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function" },
-  { "inputs":[ { "internalType":"address","name":"to","type":"address" }, { "internalType":"uint256[]","name":"ids","type":"uint256[]" }, { "internalType":"uint256[]","name":"amounts","type":"uint256[]" } ], "name":"mintBatch","outputs":[],"stateMutability":"nonpayable","type":"function" },
-  { "inputs":[],"name":"owner","outputs":[ { "internalType":"address","name":"","type":"address" } ],"stateMutability":"view","type":"function" },
-  { "inputs":[ { "internalType":"uint256","name":"","type":"uint256" } ],"name":"uri","outputs":[ { "internalType":"string","name":"","type":"string" } ],"stateMutability":"view","type":"function" }
-];
+let web3, provider, accounts=[], contract, ownerAddress, lastNonce=null;
+let stopAir=false;
 
-let web3, provider, accounts = [], contract, ownerAddress;
-let stopAirdrop = false;
+const $ = (id)=>document.getElementById(id);
+const diag = $("diag");
+function ts(){ const d=new Date(); return d.toLocaleTimeString(); }
+function log(line){ diag.textContent += "\\n[" + ts() + "] " + line; diag.scrollTop = diag.scrollHeight; }
+function setDot(id, ok){ const el=$(id); el.className = "dot " + (ok? "ok":"bad"); }
+function setStatus(s){ $("status").textContent = s; log(s); }
 
-function setDot(id, good){ const el=document.getElementById(id); el.className="dot " + (good?"ok":"bad"); }
-function log(s){ const d=document.getElementById("diag"); d.textContent += "\\n" + s; d.scrollTop=d.scrollHeight; }
-function air(s){ const d=document.getElementById("airLog"); d.textContent += "\\n" + s; d.scrollTop=d.scrollHeight; }
+function gwei(n){ return Web3.utils.toWei(String(n), "gwei"); }
+function gasObj(){
+  const fee = $("maxFee").value.trim();
+  const prio = $("maxPrio").value.trim();
+  const g = {};
+  if (fee) g.maxFeePerGas = gwei(fee);
+  if (prio) g.maxPriorityFeePerGas = gwei(prio);
+  return g;
+}
+
+function errText(e){
+  try{
+    if (typeof e === "string") return e;
+    if (e?.data?.message) return e.data.message;
+    if (e?.error?.message) return e.error.message;
+    if (e?.message) return e.message;
+    return JSON.stringify(e);
+  }catch(_){ return "Unknown error"; }
+}
 
 async function ensurePolygon(){
-  try { await provider.request({ method:"wallet_switchEthereumChain", params:[{ chainId:"0x89" }] }); setDot("dotChain", true); }
-  catch(e){ log("Switch chain failed: " + e.message); setDot("dotChain", false); }
+  try{
+    await provider.request({ method:"wallet_switchEthereumChain", params:[{ chainId:"0x89" }] });
+    setDot("dotChain", true);
+    log("Network OK: Polygon Mainnet (137).");
+  }catch(e){
+    setDot("dotChain", false);
+    log("⚠️ Failed to switch to Polygon: " + errText(e));
+  }
 }
 
 async function connect(){
   try{
-    if(window.ethereum){
-      provider = window.ethereum; web3 = new Web3(provider);
+    const rpc = $("rpc").value;
+    log("Connecting via RPC: " + rpc);
+    if (window.ethereum){
+      provider = window.ethereum;
+      web3 = new Web3(provider);
       await provider.request({ method:"eth_requestAccounts" });
-    }else{
-      const wc = new WalletConnectProvider.default({ rpc:{ 137: POLYGON_RPC }, chainId:137 });
-      await wc.enable(); provider = wc; web3 = new Web3(provider);
+    } else {
+      // Fallback to WalletConnect if no injected provider
+      const wc = new WalletConnectProvider.default({ rpc:{ 137: rpc }, chainId:137 });
+      await wc.enable();
+      provider = wc;
+      web3 = new Web3(provider);
     }
-    accounts = await web3.eth.getAccounts();
-    document.getElementById("who").textContent = accounts[0];
     await ensurePolygon();
+    accounts = await web3.eth.getAccounts();
+    $("who").textContent = accounts[0] || "(no wallet account)";
     contract = new web3.eth.Contract(ABI, CONTRACT);
     ownerAddress = await contract.methods.owner().call();
-    setDot("dotOwner", accounts[0].toLowerCase() === ownerAddress.toLowerCase());
-    document.getElementById("ownerWarn").style.display = (accounts[0].toLowerCase() === ownerAddress.toLowerCase()) ? "none":"block";
-    log("Connected. Owner: " + ownerAddress);
-    // Show saved quick-fill summaries
-    refreshQuickButtons();
-  }catch(e){ log("Connect error: " + (e?.message||e)); }
-}
-
-function refreshQuickButtons(){
-  const brave = BRAVE_ADDR || localStorage.getItem("pref_brave") || "";
-  const trust = TRUST_ADDR || localStorage.getItem("pref_trust") || "";
-  if(brave){ document.getElementById("btnSetBrave").textContent = "Use Brave ("+brave.slice(0,6)+"…"+brave.slice(-4)+")"; }
-  if(trust){ document.getElementById("btnSetTrust").textContent = "Use Trust ("+trust.slice(0,6)+"…"+trust.slice(-4)+")"; }
-}
-
-async function mint(){
-  if(!contract){ return log("Connect wallet first."); }
-  const id = parseInt(document.getElementById("token").value);
-  const qty = Math.max(1, parseInt(document.getElementById("qty").value||"1"));
-  const toInput = document.getElementById("to").value.trim();
-  const to = toInput || accounts[0];
-  try{
-    document.getElementById("status").textContent = "Sending mint transaction…";
-    const tx = await contract.methods.mint(to, id, qty, "0x").send({ from: accounts[0] });
-    document.getElementById("status").innerHTML = "✅ Minted! Tx: <a target=_blank rel='noopener' href='https://polygonscan.com/tx/" + tx.transactionHash + "'>view</a>";
-  }catch(e){ document.getElementById("status").textContent = "❌ Mint failed: " + (e?.message||e); log("Mint error: " + (e?.message||e)); }
-}
-
-async function mintBatchOnce(to, id, qty){
-  const ids=[id]; const amts=[qty];
-  return await contract.methods.mintBatch(to, ids, amts).send({ from: accounts[0] });
-}
-
-function parseAirdropList(){
-  const raw = document.getElementById("airdropList").value.split(/\n+/).map(s=>s.trim()).filter(Boolean);
-  const items = [];
-  for(const line of raw){
-    const parts = line.split(/\s+/);
-    const addr = parts[0];
-    const q = parts[1]? parseInt(parts[1],10) : 1;
-    items.push({addr, qty: isNaN(q)?1:q});
+    $("own").textContent = ownerAddress;
+    setDot("dotOwner", accounts[0] && ownerAddress && accounts[0].toLowerCase()===ownerAddress.toLowerCase());
+    log("Connected wallet: " + (accounts[0] || "—"));
+    log("Contract owner: " + ownerAddress);
+    if (!(accounts[0] && ownerAddress && accounts[0].toLowerCase()===ownerAddress.toLowerCase())){
+      log("⚠️ Wallet is NOT owner. Mint functions will revert with 'caller is not the owner'.");
+    } else {
+      log("✅ Wallet matches owner. Mint is allowed.");
+    }
+  }catch(e){
+    setStatus("Connect error: " + errText(e));
   }
-  return items;
 }
 
-async function doAirdrop(){
-  if(!contract){ return air("Connect wallet first."); }
-  stopAirdrop = false;
-  const id = parseInt(document.getElementById("token").value);
-  const list = parseAirdropList();
-  if(list.length===0){ return air("No addresses to airdrop."); }
-  air("Starting airdrop of token ID "+id+" to "+list.length+" address(es)…");
-  for(let i=0;i<list.length;i++){
-    if(stopAirdrop){ air("⏹️ Stopped."); break; }
+async function waitForReceipt(txHash, timeoutSec=300, confBlocks=2){
+  const start = Date.now();
+  log("Waiting for receipt: " + txHash);
+  while ((Date.now() - start)/1000 < timeoutSec){
+    const rec = await web3.eth.getTransactionReceipt(txHash);
+    if (rec && rec.blockNumber){
+      const current = await web3.eth.getBlockNumber();
+      const conf = current - rec.blockNumber;
+      log("Confirmations: " + conf + " / " + confBlocks);
+      if (conf >= confBlocks) return rec;
+    }
+    await new Promise(r=>setTimeout(r, 4000));
+  }
+  throw new Error("Timed out waiting for confirmations");
+}
+
+async function doMint(){
+  try{
+    if (!accounts || !accounts[0]) return setStatus("Please connect your wallet first.");
+    const to = $("to").value.trim() || accounts[0];
+    const id = parseInt($("token").value);
+    const qty = Math.max(1, parseInt($("qty").value||"1"));
+    const gas = gasObj();
+    const nonce = await web3.eth.getTransactionCount(accounts[0], "pending");
+    lastNonce = nonce;
+    setStatus("Submitting mint (id="+id+", qty="+qty+", to="+to+") with nonce "+nonce+"…");
+    const send = contract.methods.mint(to, id, qty, "0x").send({ from: accounts[0], nonce, ...gas });
+    let txHash = "";
+    send.on("transactionHash", h=>{ txHash = h; setStatus("Tx sent: "+h+" — opening in Polygonscan…"); window.open("https://polygonscan.com/tx/"+h, "_blank"); });
+    send.on("receipt", r=>{ setStatus("Mined in block "+r.blockNumber); });
+    send.on("error", e=>{ setStatus("❌ Broadcast error: " + errText(e)); });
+    const receipt = await send;
+    const rec2 = await waitForReceipt(receipt.transactionHash, parseInt($("timeoutSec").value||"300"), parseInt($("confBlocks").value||"2"));
+    setStatus("✅ Confirmed. Block " + rec2.blockNumber);
+  }catch(e){
+    setStatus("❌ Mint failed: " + errText(e));
+  }
+}
+
+async function speedUp(){
+  try{
+    if (lastNonce==null) return setStatus("No pending tx to speed up.");
+    const to = $("to").value.trim() || accounts[0];
+    const id = parseInt($("token").value);
+    const qty = Math.max(1, parseInt($("qty").value||"1"));
+    const g = gasObj();
+    // bump by 20% if provided
+    if (g.maxFeePerGas) g.maxFeePerGas = Web3.utils.toBN(g.maxFeePerGas).muln(12).divn(10).toString();
+    if (g.maxPriorityFeePerGas) g.maxPriorityFeePerGas = Web3.utils.toBN(g.maxPriorityFeePerGas).muln(12).divn(10).toString();
+    setStatus("Speeding up with nonce "+lastNonce+"…");
+    await contract.methods.mint(to, id, qty, "0x").send({ from: accounts[0], nonce: lastNonce, ...g })
+      .on("transactionHash", h=>{ setStatus("Speed-up tx: "+h); window.open("https://polygonscan.com/tx/"+h, "_blank"); });
+  }catch(e){
+    setStatus("Speed-up failed: " + errText(e));
+  }
+}
+
+async function cancelPending(){
+  try{
+    if (lastNonce==null) return setStatus("No pending tx to cancel.");
+    const g = gasObj();
+    const toSelf = accounts[0];
+    setStatus("Sending 0-value cancel with nonce "+lastNonce+"…");
+    await web3.eth.sendTransaction({ from: accounts[0], to: toSelf, value: "0", nonce: lastNonce, ...g })
+      .on("transactionHash", h=>{ setStatus("Cancel tx: "+h); window.open("https://polygonscan.com/tx/"+h, "_blank"); });
+  }catch(e){
+    setStatus("Cancel failed: " + errText(e));
+  }
+}
+
+// ===== Airdrop =====
+function parseAir(){
+  const raw = $("airList").value.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  return raw.map(line=>{ const p=line.split(/\s+/); return { addr:p[0], qty: p[1]?parseInt(p[1],10):1 }; });
+}
+async function airdrop(){
+  if (!accounts||!accounts[0]) return log("Connect wallet first.");
+  stopAir = false;
+  const id = parseInt($("token").value);
+  const list = parseAir();
+  const airLog = $("airLog");
+  airLog.textContent = "Airdropping token "+id+" to "+list.length+" address(es)…";
+  for (let i=0;i<list.length;i++){
+    if (stopAir){ airLog.textContent += "\n⛔ Stopped."; break; }
     const {addr, qty} = list[i];
     try{
-      air(`(${i+1}/${list.length}) Minting ${qty} to ${addr} …`);
-      const tx = await mintBatchOnce(addr, id, qty);
-      air(`   ✅ Tx: https://polygonscan.com/tx/${tx.transactionHash}`);
+      const g = gasObj();
+      const tx = await contract.methods.mintBatch(addr, [id], [qty]).send({ from: accounts[0], ...g })
+        .on("transactionHash", h=>{ airLog.textContent += `\n#${i+1} tx: https://polygonscan.com/tx/${h}`; });
+      airLog.textContent += `\n#${i+1} ✅ done (block ${tx.blockNumber})`;
     }catch(e){
-      air(`   ❌ ${e?.message||e}`);
+      airLog.textContent += `\n#${i+1} ❌ ${errText(e)}`;
     }
+    airLog.scrollTop = airLog.scrollHeight;
   }
-  air("Airdrop complete.");
 }
 
-function stopNow(){ stopAirdrop = true; }
-
-// Quick-fill buttons
-document.getElementById("btnSetBrave").onclick = ()=>{
-  const brave = BRAVE_ADDR || localStorage.getItem("pref_brave") || "";
-  document.getElementById("to").value = brave;
-};
-document.getElementById("btnSetTrust").onclick = ()=>{
-  const trust = TRUST_ADDR || localStorage.getItem("pref_trust") || "";
-  document.getElementById("to").value = trust;
-};
-document.getElementById("btnSaveFavs").onclick = ()=>{
-  const addr = document.getElementById("to").value.trim();
-  if(!addr){ return alert("Enter an address in the Recipient box first."); }
-  const which = prompt("Save this address as 'brave' or 'trust'?", "brave");
-  if(which==="brave"){ localStorage.setItem("pref_brave", addr); BRAVE_ADDR=addr; alert("Saved Brave: " + addr); }
-  else if(which==="trust"){ localStorage.setItem("pref_trust", addr); TRUST_ADDR=addr; alert("Saved Trust: " + addr); }
-  refreshQuickButtons();
-};
-
-document.getElementById("btnConnect").onclick = connect;
-document.getElementById("btnMint").onclick = mint;
-document.getElementById("btnBatch").onclick = ()=>{
-  const id = parseInt(document.getElementById("token").value);
-  const qty = Math.max(1, parseInt(document.getElementById("qty").value||"1"));
-  const to = document.getElementById("to").value.trim() || accounts[0];
-  mintBatchOnce(to,id,qty).then(tx=>{
-    document.getElementById("status").innerHTML = "✅ Batch minted! Tx: <a target=_blank rel='noopener' href='https://polygonscan.com/tx/" + tx.transactionHash + "'>view</a>";
-  }).catch(e=>{
-    document.getElementById("status").textContent = "❌ Batch failed: " + (e?.message||e);
-    log("Batch error: " + (e?.message||e));
-  });
-};
-document.getElementById("btnView").onclick = ()=>{
-  const id = parseInt(document.getElementById("token").value);
-  window.open("https://polygonscan.com/token/" + CONTRACT + "?a=" + id, "_blank");
-};
-document.getElementById("btnAirdrop").onclick = doAirdrop;
-document.getElementById("btnStop").onclick = stopNow;
-
-/* =============== BETA SIGNUP + REFERRALS + EMAIL =============== */
-let signups = JSON.parse(localStorage.getItem("beta-signups") || "[]");
-
-function genCode(len=6){
-  const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let s=""; for(let i=0;i<len;i++){ s += chars[Math.floor(Math.random()*chars.length)]; }
-  return s;
-}
-function csvEscape(s){ if(s==null) return ""; s=String(s); if(s.includes(',')||s.includes('\"')||s.includes('\n')){ return '\"' + s.replace(/\"/g,'\"\"') + '\"'; } return s; }
-function toCSV(rows){
-  const header = ["timestamp","email","name","my_code","ref_used","note"].join(",");
-  const lines = rows.map(r => [r.ts, r.email, r.name||"", r.my_code, r.ref_used||"", r.note||""].map(csvEscape).join(","));
-  return header + "\n" + lines.join("\n");
-}
-
-// EmailJS init & send
-function initEmail(){
-  if(!EMAILJS_PUBLIC_KEY || EMAILJS_PUBLIC_KEY.startsWith("YOUR_")) return false;
-  try{ emailjs.init(EMAILJS_PUBLIC_KEY); return true; }catch(e){ log("EmailJS init error: " + e.message); return false; }
-}
-async function sendReferralEmail(toEmail, name, code){
-  const ok = initEmail();
-  if(!ok){ throw new Error("EmailJS not configured. Set PUBLIC_KEY / SERVICE_ID / TEMPLATE_ID in the page."); }
-  const link = "https://blin-arttina.github.io/Assets/?ref=" + encodeURIComponent(code);
-  const params = { to_email: toEmail, to_name: name || toEmail, referral_code: code, referral_link: link };
-  const res = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
-  return res;
-}
-// Optional Google Sheet
-async function saveToSheet(row){
-  if(!SHEETS_ENDPOINT || SHEETS_ENDPOINT.startsWith("YOUR_")) return { skipped:true };
-  const r = await fetch(SHEETS_ENDPOINT, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(row) });
-  try{ return await r.json(); }catch{ return { status:r.status }; }
-}
-
-document.getElementById("btnTestEmail").onclick = async()=>{
-  try{
-    const ok = initEmail();
-    if(!ok) return alert("EmailJS not configured yet. Edit the page and set PUBLIC_KEY / SERVICE_ID / TEMPLATE_ID.");
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { to_email:"you@example.com", to_name:"Tester", referral_code:"TEST123", referral_link:"https://example.com" });
-    alert("EmailJS test sent (check your EmailJS dashboard).");
-  }catch(e){ alert("EmailJS error: " + (e?.text||e?.message||e)); }
-};
-
-document.getElementById("btnSignup").onclick = async()=>{
-  const email = document.getElementById("betaEmail").value.trim();
-  const name  = document.getElementById("betaName").value.trim();
-  const ref   = document.getElementById("refUsed").value.trim();
-  const note  = document.getElementById("signupNote").value.trim();
-  const statusEl = document.getElementById("betaStatus");
-  const code = genCode();
-
-  if(!email){ statusEl.textContent = "Please enter an email."; return; }
-
-  statusEl.textContent = "Generating code and sending email…";
-  document.getElementById("myCode").textContent = "Your code: " + code + "  | Referral link: https://blin-arttina.github.io/Assets/?ref=" + code;
-
-  const row = { ts:new Date().toISOString(), email, name, my_code:code, ref_used:ref, note };
-  signups.push(row);
-  localStorage.setItem("beta-signups", JSON.stringify(signups));
-
-  try{ const resp = await saveToSheet(row); log("Sheet resp: " + JSON.stringify(resp)); }catch(e){ log("Sheet error: " + (e?.message||e)); }
-
-  try{
-    await sendReferralEmail(email, name, code);
-    statusEl.textContent = "✅ Saved & email sent!";
-  }catch(e){
-    statusEl.textContent = "⚠️ Saved locally. Email not sent (configure EmailJS).";
-    log("Email error: " + (e?.text||e?.message||e));
-  }
-};
-
-document.getElementById("btnExport").onclick = ()=>{
-  const csv = toCSV(signups);
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
-  a.download = "beta_signups.csv";
-  a.click();
-};
-
-// Show initial quick button labels
-refreshQuickButtons();
+$("btnConnect").onclick = connect;
+$("btnMint").onclick = doMint;
+$("btnSpeed").onclick = speedUp;
+$("btnCancel").onclick = cancelPending;
+$("btnAirdrop").onclick = airdrop;
+$("btnStop").onclick = ()=>{ stopAir=true; };
 </script>
 </body>
 </html>
