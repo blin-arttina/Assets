@@ -3,30 +3,41 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Blind_Art Admin — Full Page v8 (Verbose + Batch + Airdrop)</title>
+<title>Blind_Art Admin — v8 (Verbose + Multi-CDN)</title>
 <style>
-  body{background:black;color:white;font-family:Arial;padding:20px}
+  body{background:#000;color:#fff;font-family:Arial,system-ui,sans-serif;padding:20px}
   h1{font-size:26px}
-  button{background:red;color:white;border:none;border-radius:12px;padding:10px 16px;margin:5px;font-size:18px}
-  input,select,textarea{background:#111;border:1px solid #333;color:white;border-radius:10px;padding:8px;width:100%}
-  #log{background:#050505;border:1px solid #333;border-radius:10px;padding:10px;margin-top:10px;white-space:pre-wrap;min-height:120px;font-family:monospace;color:#0f0}
+  button{background:#e00;color:#fff;border:0;border-radius:12px;padding:10px 16px;margin:6px 6px 6px 0;font-size:18px;cursor:pointer}
+  input,select,textarea{background:#111;border:1px solid #333;color:#fff;border-radius:10px;padding:8px;width:100%}
+  #log{background:#050505;border:1px solid #333;border-radius:10px;padding:10px;margin-top:10px;white-space:pre-wrap;min-height:140px;font-family:monospace;color:#0f0}
+  .notice{background:#141414;border:1px solid #444;border-radius:10px;padding:10px;margin:10px 0;color:#ffd27f}
 </style>
 </head>
 <body>
-  <h1>Blind_Art Admin (Verbose v8)</h1>
+  <h1>Blind_Art Admin (Verbose v8 • Multi-CDN)</h1>
   <p>Contract: <span id="contractAddr">0xCdb25eb86266cAA0C175144eF4FB241A2F79390E</span> • Chain 137 (Polygon)</p>
+
+  <div class="notice" id="ethersHelp" style="display:none">
+    <b>ethers.js didn’t load.</b> If you opened this file locally, Brave may block CDNs.
+    Please upload this file to your GitHub Pages repo and open it at:
+    <code>https://blin-arttina.github.io/Assets/admin.html</code>
+    (Diagnostics below will show each CDN attempt.)
+  </div>
+
   <div>
     <button onclick="connectInjected('Auto')">Auto-Connect (Injected)</button>
     <button onclick="connectInjected('Brave')">Connect Brave</button>
     <button onclick="connectInjected('Trust')">Connect Trust</button>
     <button onclick="connectInjected('Base')">Connect Base</button>
   </div>
+
   <div>
     <label>RPC URL</label>
     <input id="rpc" value="https://polygon-rpc.com"/>
     <button onclick="testRpc()">Test RPC</button>
     <span id="rpcStatus">—</span>
   </div>
+
   <div>
     <label>Brave wallet</label>
     <input id="addrBrave" value="0xB7Acf7F61e360baB855A86742be5273baB69B153"/>
@@ -35,6 +46,7 @@
     <button onclick="document.getElementById('to').value=document.getElementById('addrBrave').value">Use Brave</button>
     <button onclick="document.getElementById('to').value=document.getElementById('addrTrust').value">Use Trust</button>
   </div>
+
   <div>
     <label>To address</label><input id="to"/>
     <label>NFT ID</label>
@@ -51,63 +63,78 @@
     <button onclick="doMint()">Mint</button>
     <button onclick="doMintBatch()">Mint Batch (same address)</button>
   </div>
+
   <div>
     <h2>Airdrop</h2>
     <p>One address per line, optionally add quantity (e.g. <code>0x123... 2</code>)</p>
     <textarea id="airdropList" rows="6"></textarea>
     <button onclick="doAirdrop()">Run Airdrop</button>
   </div>
+
   <h2>Diagnostics</h2>
   <button onclick="downloadLog()">Download Diagnostics</button>
   <button onclick="copyLog()">Copy Diagnostics</button>
   <div id="log">Starting up…</div>
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js" 
-        onload="log('ethers.js loaded OK')" 
-        onerror="log('ethers.js failed to load')"></script>
+
 <script>
 let logBuf="";
-function log(m){
-  const t=new Date().toLocaleTimeString();
-  logBuf+="["+t+"] "+m+"\\n";
-  document.getElementById('log').textContent=logBuf;
+function log(m){ const t=new Date().toLocaleTimeString(); logBuf+="["+t+"] "+m+"\\n";
+  const el=document.getElementById('log'); el.textContent=logBuf; el.scrollTop=el.scrollHeight; }
+function showEthersHelp(){ document.getElementById('ethersHelp').style.display='block'; }
+log("Page loaded, RPC="+(document.getElementById('rpc')?.value||""));
+
+const cdns=[
+  "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js",
+  "https://unpkg.com/ethers@5.7.2/dist/ethers.min.js"
+];
+let cdnIndex=0;
+function tryLoadEthers(){
+  if(window.ethers){ log("ethers.js already present"); return Promise.resolve(true); }
+  return new Promise((resolve)=>{
+    const url=cdns[cdnIndex++]; if(!url){ log("All CDN attempts failed."); showEthersHelp(); return resolve(false); }
+    const s=document.createElement('script'); s.src=url; s.async=true;
+    s.onload=()=>{ log("Loaded ethers.js from: "+url); resolve(true); };
+    s.onerror=()=>{ log("CDN failed: "+url); setTimeout(()=>resolve(tryLoadEthers()),200); };
+    document.head.appendChild(s);
+  });
 }
-let signer; 
+function getRpc(){ return document.getElementById('rpc').value.trim(); }
+async function testRpc(){
+  try{
+    const r=await fetch(getRpc(),{method:"POST",headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_chainId",params:[]})});
+    const j=await r.json();
+    if(j.result){ document.getElementById('rpcStatus').textContent="OK "+parseInt(j.result,16); log("RPC OK "+j.result); }
+    else throw new Error(j.error?.message||"RPC error");
+  }catch(e){ document.getElementById('rpcStatus').textContent="Error"; log("RPC error: "+(e.message||e)); }
+}
+
+let signer;
 const contractAddr=document.getElementById('contractAddr').textContent.trim();
 const abi=[
   "function mint(address to,uint256 id,uint256 amount,bytes data) public",
   "function mintBatch(address to,uint256[] ids,uint256[] amounts,bytes data) public"
 ];
-function getRpc(){return document.getElementById('rpc').value.trim();}
-async function testRpc(){
-  try{
-    const r=await fetch(getRpc(),{
-      method:"POST",
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_chainId",params:[]})
-    });
-    const j=await r.json();
-    if(j.result){
-      document.getElementById('rpcStatus').textContent="OK "+parseInt(j.result,16);
-      log("RPC OK "+j.result);
-    } else throw new Error(j.error.message);
-  }catch(e){
-    document.getElementById('rpcStatus').textContent="Error";
-    log("RPC error: "+e.message);
-  }
-}
+
+async function ensureEthers(){ const ok=await tryLoadEthers(); if(!ok) log("ethers.js not available; wallet actions disabled."); return ok; }
+
 async function connectInjected(label){
-  if(!window.ethereum){log("No wallet injected");return;}
+  if(!await ensureEthers()) return;
+  if(!window.ethereum){ log("No wallet injected"); return; }
   try{
     await window.ethereum.request({method:"eth_requestAccounts"});
     const prov=new ethers.providers.Web3Provider(window.ethereum);
     signer=prov.getSigner();
     const addr=await signer.getAddress();
     log("Connected ("+label+"): "+addr);
-  }catch(e){log("Connect error: "+e.message);}
+  }catch(e){ log("Connect error: "+(e.message||e)); }
 }
+
 async function doMint(){
+  if(!await ensureEthers()) return;
   try{
-    if(!signer){log("No signer, connect first.");return;}
+    if(!signer){ log("No signer, connect first."); return; }
     const to=document.getElementById('to').value.trim();
     const id=parseInt(document.getElementById('tokenId').value,10);
     const qty=parseInt(document.getElementById('qty').value,10);
@@ -117,11 +144,12 @@ async function doMint(){
     log("Tx hash "+tx.hash);
     const rc=await tx.wait();
     log("Confirmed block "+rc.blockNumber);
-  }catch(e){log("Mint error: "+e.message);}
+  }catch(e){ log("Mint error: "+(e.data?.message||e.message||e)); }
 }
 async function doMintBatch(){
+  if(!await ensureEthers()) return;
   try{
-    if(!signer){log("No signer, connect first.");return;}
+    if(!signer){ log("No signer, connect first."); return; }
     const to=document.getElementById('to').value.trim();
     const id=parseInt(document.getElementById('tokenId').value,10);
     const qty=parseInt(document.getElementById('qty').value,10);
@@ -133,11 +161,12 @@ async function doMintBatch(){
     log("Tx hash "+tx.hash);
     const rc=await tx.wait();
     log("Confirmed block "+rc.blockNumber);
-  }catch(e){log("MintBatch error: "+e.message);}
+  }catch(e){ log("MintBatch error: "+(e.data?.message||e.message||e)); }
 }
 async function doAirdrop(){
+  if(!await ensureEthers()) return;
   try{
-    if(!signer){log("No signer, connect first.");return;}
+    if(!signer){ log("No signer, connect first."); return; }
     const id=parseInt(document.getElementById('tokenId').value,10);
     const lines=document.getElementById('airdropList').value.split(/\\r?\\n/).map(s=>s.trim()).filter(Boolean);
     for(let i=0;i<lines.length;i++){
@@ -151,22 +180,21 @@ async function doAirdrop(){
       const rc=await tx.wait();
       log("Confirmed block "+rc.blockNumber);
     }
-  }catch(e){log("Airdrop error: "+e.message);}
+  }catch(e){ log("Airdrop error: "+(e.data?.message||e.message||e)); }
 }
-function downloadLog(){
-  const blob=new Blob([logBuf],{type:"text/plain"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="diagnostics.txt";
-  a.click();
+function downloadLog(){ const blob=new Blob([logBuf],{type:"text/plain"}); const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download="diagnostics.txt"; a.click(); }
+async function copyLog(){ try{ await navigator.clipboard.writeText(logBuf); log("Diagnostics copied"); }catch(e){ log("Copy failed: "+(e.message||e)); } }
+
+// Try to load ethers immediately
+tryLoadEthers().then(ok=>{ if(!ok) showEthersHelp(); });
+
+// Silent accounts check (no modal)
+if(window.ethereum){
+  window.ethereum.request({method:"eth_accounts"})
+    .then(acc=>{ if(acc && acc[0]) log("Pre-authorized account detected."); })
+    .catch(()=>{});
 }
-async function copyLog(){
-  try{
-    await navigator.clipboard.writeText(logBuf);
-    log("Diagnostics copied");
-  }catch(e){log("Copy failed: "+e.message);}
-}
-log("Page loaded, RPC="+getRpc());
 </script>
 </body>
 </html>
