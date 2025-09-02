@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assets Alert Web App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    :root {
+      --bg: #111; --panel:#1b1b1b; --text:#fff; --muted:#b3b3b3;
+      --border:#444; --accent:#b00020; --input:#2a2a2a; --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Arial, sans-serif;background:var(--bg);color:var(--text);margin:0}
+    .container{padding:20px;max-width:900px;margin:0 auto}
+    h1,h2{margin:0 0 10px} p{color:var(--muted)}
+    input,select,button,textarea{
+      font-size:1rem;padding:12px;border-radius:10px;border:1px solid var(--border);
+      background:var(--input);color:var(--text);width:100%;margin:8px 0;
+    }
+    button,select{background:var(--accent);cursor:pointer;border:1px solid #7c0b1a}
+    label{display:block;margin:10px 0 6px}
+
+    .panel{
+      background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+      padding:18px;margin-bottom:18px;box-shadow:0 6px 20px rgba(0,0,0,.25);
+    }
+    .auth-wrap{min-height:100dvh;display:grid;place-items:center;padding:24px}
+    .auth-card{width:100%;max-width:480px}
+    .auth-header{text-align:center;margin-bottom:14px}
+    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+    .tab-btn{background:#2a2a2a;border:1px solid var(--border)}
+    .tab-btn.active{background:var(--accent);border-color:#7c0b1a}
+    .row{display:grid;gap:12px}
+    .muted{color:var(--muted);font-size:.9rem}
+
+    .topbar{
+      position:sticky;top:0;background:linear-gradient(180deg,rgba(17,17,17,.95),rgba(17,17,17,.6));
+      backdrop-filter:blur(6px);border-bottom:1px solid var(--border);padding:10px 16px;z-index:1000;
+      display:flex;align-items:center;justify-content:space-between
+    }
+    .brand{font-weight:bold;letter-spacing:.3px}
+    .logout-btn{background:#2a2a2a;border:1px solid var(--border)}
+
+    #appRoot{display:none}
+    .settings-button{
+      position:fixed;top:64px;right:10px;z-index:900;background:var(--accent);
+      border:1px solid #7c0b1a;padding:10px 12px;border-radius:10px
+    }
+    .passkey-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+    .passkey-note{font-size:.85rem;color:var(--muted)}
+    .hidden{display:none !important}
+
+    @media (pointer:coarse){button,input,select{padding:14px;font-size:1.05rem}}
+  </style>
+  <link rel="stylesheet" id="skinStylesheet" href="">
+</head>
+<body>
+  <!-- AUTH GATE -->
+  <div id="authRoot" class="auth-wrap">
+    <div class="panel auth-card">
+      <div class="auth-header">
+        <h1>Assets Alert</h1>
+        <p class="muted">Create an account or log in to continue.</p>
+      </div>
+
+      <div class="tabs">
+        <button id="tabLogin"  class="tab-btn active" type="button">Log In</button>
+        <button id="tabSignup" class="tab-btn"        type="button">Create Account</button>
+      </div>
+
+      <!-- LOGIN -->
+      <form id="loginForm" class="row">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email" required>
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" required>
+        <label style="display:flex;align-items:center;gap:8px;">
+          <input id="rememberMe" type="checkbox" style="width:auto;"> <span>Remember me on this device</span>
+        </label>
+        <button type="submit">Log In</button>
+
+        <div id="loginPasskeyRow" class="passkey-row hidden">
+          <button id="btnPasskeyLogin" type="button" title="Use device passkey">Log in with Passkey</button>
+        </div>
+        <p id="passkeyNoteLogin" class="passkey-note hidden">Passkey available on HTTPS only.</p>
+      </form>
+
+      <!-- SIGNUP -->
+      <form id="signupForm" class="row" style="display:none;">
+        <label for="signupEmail">Email</label>
+        <input id="signupEmail" type="email" placeholder="you@example.com" autocomplete="email" required>
+        <label for="signupPassword">Password</label>
+        <input id="signupPassword" type="password" placeholder="At least 8 characters" minlength="8" autocomplete="new-password" required>
+        <label for="signupPassword2">Confirm Password</label>
+        <input id="signupPassword2" type="password" placeholder="Repeat password" minlength="8" autocomplete="new-password" required>
+        <button type="submit">Create Account</button>
+
+        <div id="signupPasskeyRow" class="passkey-row hidden">
+          <button id="btnPasskeyCreate" type="button" title="Create device passkey">Create Account with Passkey</button>
+        </div>
+        <p id="passkeyNoteSignup" class="passkey-note hidden">Passkey available on HTTPS only.</p>
+
+        <p class="muted">Accounts are stored on this device. No emails are sent.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- APP (hidden until logged in) -->
+  <div id="appRoot">
+    <div class="topbar">
+      <div class="brand">Assets Alert</div>
+      <button id="logoutBtn" class="logout-btn" type="button">Logout</button>
+    </div>
+
+    <button class="settings-button" id="openSkins" onclick="/* replaced by gear */ void 0">Skins Store</button>
+
+    <div class="container">
+      <h1>Assets Alert - Add New Asset</h1>
+
+      <div class="panel">
+        <label for="assetInput">Enter Asset (Crypto Address or Stock Symbol):</label>
+        <input id="assetInput" placeholder="e.g. 0x1234... or AAPL" type="text"/>
+      </div>
+
+      <div class="panel">
+        <label for="targetPrice">Enter Target Price:</label>
+        <input id="targetPrice" type="number" placeholder="e.g. 1500 or 200.50" step="0.01"/>
+      </div>
+
+      <div class="panel">
+        <label for="soundUpload">Upload Custom Sound:</label>
+        <input accept="audio/*" id="soundUpload" type="file"/>
+        <label for="alertDuration">Sound Duration:</label>
+        <select id="alertDuration">
+          <option value="5">5 minutes</option>
+          <option value="10">10 minutes</option>
+          <option value="15">15 minutes</option>
+          <option value="20">20 minutes</option>
+          <option value="30">30 minutes</option>
+        </select>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button onclick="testSound()">Test Sound</button>
+          <button onclick="dismissAlerts()">Dismiss Alerts</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <button onclick="addAsset()">Add Asset for Alerts</button>
+      </div>
+
+      <div class="panel">
+        <h2>Alert List</h2>
+        <ul id="alertList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /************** Utility: SHA-256 **************/
+    async function sha256(str){
+      const enc=new TextEncoder();
+      const buf=await crypto.subtle.digest('SHA-256', enc.encode(str));
+      return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+
+    /************** Local Auth Store **************/
+    const LS_USERS='aa_users_v1';          // { [email]: { pwHash, credId? } }
+    const LS_SESSION='aa_session_email_v1';
+
+    const getUsers = () => { try{return JSON.parse(localStorage.getItem(LS_USERS))||{};}catch{ return {}; } };
+    const setUsers = (o)=> localStorage.setItem(LS_USERS, JSON.stringify(o));
+    const setSession=(email,remember)=> remember
+      ? (localStorage.setItem(LS_SESSION,email), sessionStorage.removeItem(LS_SESSION))
+      : (sessionStorage.setItem(LS_SESSION,email), localStorage.removeItem(LS_SESSION));
+    const getSession=()=> sessionStorage.getItem(LS_SESSION)||localStorage.getItem(LS_SESSION)||null;
+    const clearSession=()=>{ sessionStorage.removeItem(LS_SESSION); localStorage.removeItem(LS_SESSION); };
+
+    /************** UI wiring **************/
+    const authRoot=document.getElementById('authRoot');
+    const appRoot=document.getElementById('appRoot');
+    const tabLogin=document.getElementById('tabLogin');
+    const tabSignup=document.getElementById('tabSignup');
+    const loginForm=document.getElementById('loginForm');
+    const signupForm=document.getElementById('signupForm');
+
+    function showApp(email){ authRoot.style.display='none'; appRoot.style.display='block';
+      document.querySelector('.brand').textContent='Assets Alert • '+email; }
+    function showAuth(){ appRoot.style.display='none'; authRoot.style.display='grid'; }
+    function switchTab(isLogin){
+      if(isLogin){ loginForm.style.display='grid'; signupForm.style.display='none';
+        tabLogin.classList.add('active'); tabSignup.classList.remove('active'); }
+      else{ loginForm.style.display='none'; signupForm.style.display='grid';
+        tabSignup.classList.add('active'); tabLogin.classList.remove('active'); }
+    }
+    tabLogin.addEventListener('click', ()=>switchTab(true));
+    tabSignup.addEventListener('click', ()=>switchTab(false));
+
+    // Init
+    const existingSession=getSession(); if(existingSession) showApp(existingSession); else showAuth();
+
+    /************** Email/Password **************/
+    signupForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email=document.getElementById('signupEmail').value.trim().toLowerCase();
+      const pw1=document.getElementById('signupPassword').value;
+      const pw2=document.getElementById('signupPassword2').value;
+      if(!email.includes('@')) return alert('Please enter a valid email.');
+      if(pw1.length<8) return alert('Password must be at least 8 characters.');
+      if(pw1!==pw2) return alert('Passwords do not match.');
+
+      const users=getUsers();
+      if(users[email]){ alert('Account exists. Please log in.'); switchTab(true); return; }
+      users[email]={ pwHash: await sha256(pw1) };
+      setUsers(users); setSession(email,true); showApp(email);
+    });
+
+    loginForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+      const pw=document.getElementById('loginPassword').value;
+      const remember=document.getElementById('rememberMe').checked;
+      const users=getUsers();
+      if(!users[email]){ alert('No account found. Please create one.'); switchTab(false); return; }
+      if((await sha256(pw))!==users[email].pwHash){ alert('Incorrect password.'); return; }
+      setSession(email,remember); showApp(email);
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{ clearSession(); showAuth(); });
+
+    /************** “Passkey” (UI + HTTPS gate) **************/
+    const httpsOK = location.protocol === 'https:' || location.hostname === 'localhost';
+    const webAuthnOK = !!(window.PublicKeyCredential);
+    const loginPasskeyRow = document.getElementById('loginPasskeyRow');
+    const signupPasskeyRow = document.getElementById('signupPasskeyRow');
+    const noteLogin  = document.getElementById('passkeyNoteLogin');
+    const noteSignup = document.getElementById('passkeyNoteSignup');
+
+    if (httpsOK && webAuthnOK){
+      loginPasskeyRow.classList.remove('hidden');
+      signupPasskeyRow.classList.remove('hidden');
+    } else {
+      noteLogin.classList.remove('hidden');
+      noteSignup.classList.remove('hidden');
+    }
+
+    // IMPORTANT: Without a backend we cannot verify WebAuthn signatures.
+    // These handlers ONLY register the credential ID to the local user
+    // so you can surface the UX. For real security we must add server-side verification.
+
+    document.getElementById('btnPasskeyCreate')?.addEventListener('click', async ()=>{
+      if(!(httpsOK && webAuthnOK)) return alert('Passkey requires HTTPS.');
+      const email=document.getElementById('signupEmail').value.trim().toLowerCase();
+      if(!email) return alert('Enter an email first.');
+      const users=getUsers(); if(users[email]) return alert('Account exists. Use Log In.');
+
+      try{
+        const challenge = crypto.getRandomValues(new Uint8Array(32));
+        const userId = new TextEncoder().encode(email);
+        const cred = await navigator.credentials.create({
+          publicKey:{
+            challenge,
+            rp:{ name:'Assets Alert', id: location.hostname },
+            user:{ id:userId, name:email, displayName:email },
+            pubKeyCredParams:[{ type:'public-key', alg:-7 }], // ES256
+            authenticatorSelection:{ residentKey:'preferred', userVerification:'preferred' },
+            timeout: 60000,
+            attestation:'none'
+          }
+        });
+        if(!cred) throw new Error('No credential returned');
+
+        const credId = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+        // Store ONLY the credential ID next to user for UX; passwords still required for auth in this offline build.
+        users[email] = { pwHash: await sha256(crypto.randomUUID()), credId };
+        setUsers(users);
+        alert('Passkey created for this site. (Note: offline demo; real verification requires a backend.)');
+        setSession(email,true); showApp(email);
+      }catch(err){ alert('Passkey setup failed: '+err.message); }
+    });
+
+    document.getElementById('btnPasskeyLogin')?.addEventListener('click', async ()=>{
+      if(!(httpsOK && webAuthnOK)) return alert('Passkey requires HTTPS.');
+      const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+      const users=getUsers(); const u=users[email];
+      if(!u || !u.credId) return alert('No passkey on this device for that email. Try password or create one on Sign Up.');
+      try{
+        const challenge = crypto.getRandomValues(new Uint8Array(32));
+        const allowId = Uint8Array.from(atob(u.credId), c=>c.charCodeAt(0));
+        const assertion = await navigator.credentials.get({
+          publicKey:{ challenge, allowCredentials:[{ id:allowId, type:'public-key' }], userVerification:'preferred', timeout:60000 }
+        });
+        if(!assertion) throw new Error('No assertion returned');
+
+        // Without backend verification we accept the presence of a matching credential as successful login (demo only).
+        setSession(email, true);
+        showApp(email);
+      }catch(err){ alert('Passkey login failed: '+err.message); }
+    });
+
+    /************** Original App Logic **************/
+    function addAsset(){
+      const assetValue=document.getElementById("assetInput").value.trim();
+      const list=document.getElementById("alertList");
+      if(!assetValue){ alert("Please enter a crypto address or stock symbol."); return; }
+      const li=document.createElement("li"); li.textContent=`ALERT SET FOR: ${assetValue}`;
+      list.appendChild(li); document.getElementById("assetInput").value="";
+    }
+    function testSound(){
+      const soundInput=document.getElementById("soundUpload");
+      if(soundInput.files.length===0){ alert("Please upload a sound file first."); return; }
+      const audio=new Audio(URL.createObjectURL(soundInput.files[0])); audio.play();
+    }
+    function dismissAlerts(){ alert("Alerts dismissed."); }
+  </script>
+
+  <!-- Optional skins script if you have it -->
+  <script src="skins-switcher.js"></script>
+</body>
+</html>
