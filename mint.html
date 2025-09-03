@@ -1,145 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Assets Alert — Public Mint (A3 & A4)</title>
-<style>
-  :root{ --bg:#000; --fg:#fff; --muted:#cfcfcf; --card:#0b0b0b; --outline:#fff; --btn:#e11d48; --btnText:#fff; }
-  *{ box-sizing:border-box }
-  html,body{ background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, sans-serif; font-size:26px; line-height:1.35 }
-  .wrap{ max-width:900px; margin:0 auto; padding:24px 16px 120px; }
-  h1{ margin:0 0 10px; font-size:1.4em }
-  p.lead{ margin:0 0 16px; color:var(--muted) }
-  .card{ background:var(--card); border:3px solid var(--outline); border-radius:16px; padding:16px; margin:14px 0; }
-  label{ display:block; font-weight:800; margin:10px 0 6px; }
-  select,input{ width:100%; padding:12px; background:#000; color:#fff; border:3px solid var(--outline); border-radius:12px; }
-  .row{ display:flex; flex-wrap:wrap; gap:12px; }
-  .col{ flex:1 1 300px; }
-  button{ cursor:pointer; border:3px solid var(--outline); background:var(--btn); color:var(--btnText); padding:12px 18px; border-radius:14px; font-weight:900 }
-  button.ghost{ background:transparent }
-  .mono{ font-family: ui-monospace, Menlo, Consolas, monospace; }
-  a{ color:#ff8da8 }
-  .hint{ font-size:22px; color:#cfcfcf }
-</style>
+  <meta charset="utf-8" />
+  <title>Assets Alert — Mint</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --bg:#111; --panel:#1b1b1b; --text:#fff; --muted:#b3b3b3; --border:#444; --accent:#b00020; }
+    *{box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:Arial,sans-serif;margin:0;padding:16px}
+    h1,h2{margin:8px 0 10px}
+    p{color:var(--muted)}
+    .grid{display:grid;gap:12px;max-width:900px;margin:0 auto}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px}
+    label{display:block;margin:8px 0 4px}
+    input,select,button,textarea{
+      width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);
+      background:#222;color:var(--text);font-size:1rem;
+    }
+    button{background:var(--accent);border:1px solid #7c0b1a;cursor:pointer}
+    .row{display:grid;gap:8px}
+    .inline{display:flex;gap:8px;flex-wrap:wrap}
+    .muted{color:var(--muted);font-size:.92rem}
+    .log{white-space:pre-wrap;background:#0e0e0e;border:1px dashed #333;padding:10px;border-radius:8px;max-height:280px;overflow:auto}
+    a{color:#7ec8ff}
+    .ok{color:#89ffa3}
+    .bad{color:#ff9b9b}
+    .kv{display:grid;grid-template-columns:160px 1fr;gap:8px}
+    .small{font-size:.92rem}
+  </style>
+  <!-- ethers v5 UMD with fallback -->
+  <script>
+    (function(){
+      const s=document.createElement('script');
+      s.src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js";
+      s.onload=()=>console.log('[mint] ethers loaded (jsdelivr)');
+      s.onerror=()=>{
+        const s2=document.createElement('script');
+        s2.src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js";
+        s2.onload=()=>console.log('[mint] ethers loaded (cdnjs)');
+        document.head.appendChild(s2);
+      };
+      document.head.appendChild(s);
+    })();
+  </script>
 </head>
 <body>
-<div class="wrap">
-  <h1>Assets Alert — Public Mint</h1>
-  <p class="lead">Mint an <b>A3 (Paid)</b> or <b>A4 (Premium)</b> NFT directly, if your wallet has access. Prices are fixed at <b>15&nbsp;MATIC</b> and <b>50&nbsp;MATIC</b> respectively.</p>
+  <div class="grid">
+    <h1>Mint NFTs</h1>
+    <p class="muted">Connect your wallet, pick network, set your contract & mint function, and mint. This page confirms on-chain and decodes events so you can see the token ID.</p>
 
-  <div class="card" aria-label="Wallet connection">
-    <div class="row">
-      <div class="col"><button id="connectWallet">Connect Wallet</button></div>
-      <div class="col" style="display:flex; align-items:center; justify-content:flex-end"><span id="walletStatus" class="mono">Not connected</span></div>
+    <div class="panel">
+      <div class="inline">
+        <select id="network">
+          <option value="137">Polygon Mainnet (137)</option>
+          <option value="80002">Polygon Amoy Testnet (80002)</option>
+        </select>
+        <button id="btnConnect">Connect Wallet</button>
+        <span id="who" class="muted"></span>
+      </div>
+      <div class="kv small" style="margin-top:8px">
+        <div>Connected Chain:</div><div id="chainLabel">—</div>
+        <div>Wallet:</div><div id="addrLabel">—</div>
+      </div>
     </div>
-    <div class="hint">Network: Polygon Mainnet (137)</div>
-  </div>
 
-  <div class="card" aria-label="Mint">
-    <label for="tokenSelect">Select NFT</label>
-    <select id="tokenSelect">
-      <option value="A3" data-price="15">A3 — Paid NFT (15 MATIC)</option>
-      <option value="A4" data-price="50">A4 — Premium NFT (50 MATIC)</option>
-    </select>
-    <div class="hint">Limit: 1 per wallet per token. We check on‑chain before minting.</div>
+    <div class="panel">
+      <h2>Contract & Mint Settings</h2>
+      <div class="row">
+        <label>Contract Address</label>
+        <input id="contract" placeholder="0x... (your ERC-721/1155 contract)">
 
-    <div class="row" style="margin-top:10px">
-      <button id="btnMint">Mint Now</button>
-      <button id="btnView" class="ghost">View on OpenSea</button>
+        <label>Standard</label>
+        <select id="standard">
+          <option value="erc1155">ERC-1155</option>
+          <option value="erc721">ERC-721</option>
+        </select>
+
+        <label>Mint Function Name (exact)</label>
+        <input id="fnName" value="mint" />
+        <p class="muted small">
+          Examples: Common 1155: <code>mint</code> or <code>mintTo</code> or <code>mint(address,uint256,uint256,bytes)</code>.  
+          Common 721: <code>mint</code> or <code>safeMint</code> or <code>mintTo</code>.
+        </p>
+
+        <label>Mint Arguments (comma-separated)</label>
+        <input id="fnArgs" placeholder='For 1155: "YOUR_ADDRESS, TOKEN_ID, AMOUNT, 0x"' />
+        <p class="muted small">We’ll parse basic types. Addresses must start with 0x. Numbers are auto-parsed. Bytes can be <code>0x</code>.</p>
+
+        <label>Value (ETH/MATIC) to send with tx (optional)</label>
+        <input id="txValue" placeholder="0 (or e.g. 0.015 if your mint costs MATIC)" />
+
+        <button id="btnMint">Mint</button>
+      </div>
     </div>
-    <div id="mintStatus" class="hint" style="margin-top:8px">—</div>
+
+    <div class="panel">
+      <h2>Result</h2>
+      <div class="kv small">
+        <div>Status:</div><div id="status">—</div>
+        <div>Tx Hash:</div><div id="txhash">—</div>
+        <div>Token ID(s):</div><div id="tokenIdOut">—</div>
+        <div>Amount(s):</div><div id="amountOut">—</div>
+        <div>Token URI:</div><div id="uriOut">—</div>
+        <div>Open on PolygonScan:</div><div id="scanOut">—</div>
+      </div>
+      <div id="log" class="log" style="margin-top:10px"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Verify by Transaction Hash</h2>
+      <div class="row">
+        <label>Paste Tx Hash</label>
+        <input id="checkHash" placeholder="0x...">
+        <button id="btnCheck">Check</button>
+      </div>
+      <p class="muted small">This decodes ERC-1155 <code>TransferSingle</code>/<code>TransferBatch</code> and ERC-721 <code>Transfer</code> logs to confirm the mint and show token IDs.</p>
+    </div>
   </div>
 
-  <div class="card" aria-label="Info">
-    <div>Contract: <a class="mono" id="contractLink" target="_blank" rel="noopener"></a></div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
 <script>
-  // --- Config ---
-  const CONTRACT = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
-  const tokenIds = { A3: 3, A4: 4 };
-  // fixed prices (MATIC) -> wei
-  const priceMatic = { A3: "15", A4: "50" };
+  // ------------ helpers ------------
+  const $ = id => document.getElementById(id);
+  const log = (...a)=>{ const el=$('log'); el.textContent += a.join(' ') + '\n'; el.scrollTop = el.scrollHeight; };
 
-  // Minimal ABI for payable publicMint + ERC1155 balanceOf check
-  const abi = [
-    { "inputs":[ { "internalType":"uint256","name":"id","type":"uint256" }, { "internalType":"uint256","name":"amount","type":"uint256" } ], "name":"publicMint", "outputs":[], "stateMutability":"payable", "type":"function" },
-    { "inputs":[ { "internalType":"address","name":"account","type":"address" }, { "internalType":"uint256","name":"id","type":"uint256" } ], "name":"balanceOf", "outputs":[ { "internalType":"uint256","name":"","type":"uint256" } ], "stateMutability":"view", "type":"function" }
-  ];
-
-  let web3, accounts, contract;
-
-  const $ = (id)=>document.getElementById(id);
-  const status = $("mintStatus");
-
-  function setContractLink() {
-    const a = $("contractLink");
-    a.href = "https://polygonscan.com/address/" + CONTRACT;
-    a.textContent = CONTRACT;
+  function ipfsGateway(u){
+    if(!u) return u;
+    if(u.startsWith('ipfs://')) return 'https://ipfs.io/ipfs/' + u.replace('ipfs://','');
+    return u;
   }
-  setContractLink();
 
-  async function connectWallet() {
-    try {
-      if (!window.ethereum) throw new Error("Web3 wallet not found. Use MetaMask/Brave/Trust.");
-      web3 = new Web3(window.ethereum);
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      // Ensure Polygon mainnet
-      await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x89" }] });
-      accounts = await web3.eth.getAccounts();
-      contract = new web3.eth.Contract(abi, CONTRACT);
-      $("walletStatus").innerText = "Connected: " + accounts[0];
-    } catch(e) {
-      $("walletStatus").innerText = "Connect failed: " + (e?.message || e);
+  function parseArgs(csv){
+    if(!csv.trim()) return [];
+    return csv.split(',').map(s=>s.trim()).map(v=>{
+      if(/^0x[0-9a-fA-F]*$/.test(v)) return v;          // address or bytes
+      if(/^\d+$/.test(v)) return ethers.BigNumber.from(v);
+      if(/^\d+\.\d+$/.test(v)) return v;                // keep decimals as string; contract may expect string then parse
+      if(/^".*"$/.test(v) || /^'.*'$/.test(v)) return v.slice(1,-1);
+      return v; // best effort
+    });
+  }
+
+  const ABIS = {
+    erc1155: [
+      // reading
+      "function uri(uint256) view returns (string)",
+      // common emission
+      "event TransferSingle(address indexed operator,address indexed from,address indexed to,uint256 id,uint256 value)",
+      "event TransferBatch(address indexed operator,address indexed from,address indexed to,uint256[] ids,uint256[] values)"
+    ],
+    erc721: [
+      "function tokenURI(uint256) view returns (string)",
+      "event Transfer(address indexed from,address indexed to,uint256 indexed tokenId)"
+    ]
+  };
+
+  const SCANS = {
+    "137":"https://polygonscan.com/tx/",
+    "80002":"https://amoy.polygonscan.com/tx/"
+  };
+
+  let provider, signer, account;
+
+  async function ensureNetwork(targetId){
+    const chainId = (await provider.getNetwork()).chainId.toString();
+    if(chainId !== targetId){
+      log('Switching network to', targetId);
+      await window.ethereum.request({
+        method:'wallet_switchEthereumChain',
+        params:[{ chainId: '0x' + parseInt(targetId,10).toString(16) }]
+      });
     }
   }
 
-  async function mint() {
-    if (!accounts || !accounts.length) {
-      status.textContent = "Please connect your wallet first.";
-      return;
-    }
-    const code = $("tokenSelect").value;
-    const id = tokenIds[code];
+  function updateHeader(){
+    $('chainLabel').textContent = (provider && provider.network) ? provider.network.chainId : '—';
+    $('addrLabel').textContent = account || '—';
+  }
 
-    // On-chain 1-per-wallet check
-    try {
-      const bal = await contract.methods.balanceOf(accounts[0], id).call();
-      if (web3.utils.toBN(bal).gt(web3.utils.toBN(0))) {
-        status.textContent = "❌ You already hold this token (limit 1 per wallet).";
+  async function decodeReceipt(standard, receipt){
+    const iface = new ethers.utils.Interface(ABIS[standard]);
+    const out = { tokenIds:[], amounts:[] };
+    for(const lg of receipt.logs){
+      try{
+        const parsed = iface.parseLog(lg);
+        if(standard==='erc1155'){
+          if(parsed.name==='TransferSingle'){
+            out.tokenIds.push(parsed.args.id.toString());
+            out.amounts.push(parsed.args.value.toString());
+          }else if(parsed.name==='TransferBatch'){
+            parsed.args.ids.forEach((id,i)=>{
+              out.tokenIds.push(id.toString());
+              out.amounts.push(parsed.args.values[i].toString());
+            });
+          }
+        }else if(standard==='erc721' && parsed.name==='Transfer'){
+          out.tokenIds.push(parsed.args.tokenId.toString());
+          out.amounts.push('1');
+        }
+      }catch(_){}
+    }
+    return out;
+  }
+
+  async function readTokenURI(standard, contract, id){
+    try{
+      if(standard==='erc1155'){
+        const u = await contract.uri(id);
+        return ipfsGateway(u);
+      } else {
+        const u = await contract.tokenURI(id);
+        return ipfsGateway(u);
+      }
+    }catch(e){ log('tokenURI read failed:', e.message); return null; }
+  }
+
+  // ------------ connect ------------
+  $('btnConnect').onclick = async ()=>{
+    try{
+      if(!window.ethereum) return alert('No wallet found. Open in Brave/MetaMask/Trust.');
+      await window.ethereum.request({ method:'eth_requestAccounts' });
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer = provider.getSigner();
+      account = await signer.getAddress();
+      await ensureNetwork($('network').value);
+      $('who').textContent = 'Connected';
+      updateHeader();
+      log('Connected:', account);
+    }catch(e){ alert(e.message); log('Connect error:', e.message); }
+  };
+
+  $('network').onchange = async ()=>{
+    if(provider) { try{ await ensureNetwork($('network').value); updateHeader(); }catch(e){ alert(e.message); } }
+  };
+
+  // ------------ mint ------------
+  $('btnMint').onclick = async ()=>{
+    try{
+      if(!signer) return alert('Connect your wallet first.');
+      const netId = $('network').value;
+      await ensureNetwork(netId);
+
+      const caddr = $('contract').value.trim();
+      if(!/^0x[a-fA-F0-9]{40}$/.test(caddr)) return alert('Enter a valid contract address.');
+
+      const standard = $('standard').value;
+      const fn = $('fnName').value.trim();
+      if(!fn) return alert('Enter function name.');
+
+      const args = parseArgs($('fnArgs').value);
+      const value = $('txValue').value.trim() ? ethers.utils.parseEther($('txValue').value.trim()) : undefined;
+
+      const contract = new ethers.Contract(caddr, ABIS[standard], signer);
+
+      log('Calling', fn, 'with args:', JSON.stringify(args));
+      const tx = await contract[fn](...args, ...(value ? [{ value }] : []));
+      $('status').innerHTML = 'Submitted <span class="muted">(waiting for confirmations)</span>';
+      $('txhash').textContent = tx.hash;
+      $('scanOut').innerHTML = `<a target="_blank" href="${SCANS[netId]}${tx.hash}">View on PolygonScan</a>`;
+      log('Tx submitted:', tx.hash);
+
+      const receipt = await tx.wait();
+      log('Receipt status:', receipt.status);
+      if(receipt.status !== 1){
+        $('status').innerHTML = '<span class="bad">Reverted</span>';
         return;
       }
-    } catch(e) {
-      // If balance check fails, still allow mint but warn
-      console.warn("balanceOf check failed", e);
+
+      const decoded = await decodeReceipt(standard, receipt);
+      $('tokenIdOut').textContent = decoded.tokenIds.length ? decoded.tokenIds.join(', ') : '—';
+      $('amountOut').textContent = decoded.amounts.length ? decoded.amounts.join(', ') : '—';
+      $('status').innerHTML = '<span class="ok">Confirmed</span>';
+
+      // Try to fetch a tokenURI for first ID
+      if(decoded.tokenIds.length){
+        const uri = await readTokenURI(standard, contract, decoded.tokenIds[0]);
+        $('uriOut').innerHTML = uri ? `<a target="_blank" href="${uri}">${uri}</a>` : '—';
+      }
+    }catch(e){
+      alert(e.message);
+      log('Mint error:', e.message);
+      $('status').innerHTML = '<span class="bad">Error</span>';
     }
+  };
 
-    const priceWei = web3.utils.toWei(priceMatic[code], "ether"); // MATIC uses same decimals as ETH
+  // ------------ verify by hash ------------
+  $('btnCheck').onclick = async ()=>{
+    try{
+      if(!window.ethereum) return alert('Open in a web3 browser (Brave/MetaMask).');
+      provider = provider || new ethers.providers.Web3Provider(window.ethereum);
+      const netId = $('network').value;
+      await ensureNetwork(netId);
 
-    try {
-      status.textContent = "Sending mint transaction…";
-      const tx = await contract.methods.publicMint(id, 1).send({
-        from: accounts[0],
-        value: priceWei
-      });
-      const link = "https://polygonscan.com/tx/" + tx.transactionHash;
-      status.innerHTML = "✅ Minted! <a href='" + link + "' target='_blank' rel='noopener'>View tx</a>";
-    } catch (err) {
-      console.error(err);
-      status.textContent = (err?.message || "❌ Mint failed.");
+      const h = $('checkHash').value.trim();
+      if(!/^0x([A-Fa-f0-9]{64})$/.test(h)) return alert('Enter a valid tx hash.');
+      const r = await provider.getTransactionReceipt(h);
+      if(!r){ $('status').textContent = 'Pending or not found'; $('txhash').textContent = h; return; }
+
+      $('txhash').textContent = h;
+      $('scanOut').innerHTML = `<a target="_blank" href="${SCANS[netId]}${h}">View on PolygonScan</a>`;
+      $('status').innerHTML = r.status===1 ? '<span class="ok">Confirmed</span>' : '<span class="bad">Reverted</span>';
+
+      // Try both standards when verifying by hash
+      const out1155 = await (async()=>{ try{ return await decodeReceipt('erc1155', r); }catch(_){ return {tokenIds:[],amounts:[]}; }})();
+      const out721  = await (async()=>{ try{ return await decodeReceipt('erc721',  r); }catch(_){ return {tokenIds:[],amounts:[]}; }})();
+      const pick = out1155.tokenIds.length ? {std:'ERC-1155', ...out1155} :
+                   out721.tokenIds.length  ? {std:'ERC-721',  ...out721}  : null;
+
+      if(pick){
+        $('tokenIdOut').textContent = pick.tokenIds.join(', ');
+        $('amountOut').textContent = pick.amounts.join(', ');
+        log('Decoded events as', pick.std, 'IDs:', pick.tokenIds.join(', '), 'Amounts:', pick.amounts.join(', '));
+      }else{
+        $('tokenIdOut').textContent = '—';
+        $('amountOut').textContent  = '—';
+        log('No ERC-721/1155 transfer logs found.');
+      }
+    }catch(e){
+      alert(e.message); log('Verify error:', e.message);
     }
-  }
-
-  function viewOnOpenSea() {
-    window.open("https://opensea.io/account", "_blank");
-  }
-
-  $("connectWallet").onclick = connectWallet;
-  $("btnMint").onclick = mint;
-  $("btnView").onclick = viewOnOpenSea;
+  };
 </script>
 </body>
 </html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assets Alert Web App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    :root {
+      --bg:#111;--panel:#1b1b1b;--text:#fff;--muted:#b3b3b3;
+      --border:#444;--accent:#b00020;--input:#2a2a2a;--radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);margin:0}
+    .container{padding:20px;max-width:900px;margin:0 auto}
+    h1,h2{margin:0 0 10px} p{color:var(--muted)}
+    input,select,button,textarea{
+      font-size:1rem;padding:12px;border-radius:10px;border:1px solid var(--border);
+      background:var(--input);color:var(--text);width:100%;margin:8px 0;
+    }
+    button,select{background:var(--accent);cursor:pointer;border:1px solid #7c0b1a}
+    label{display:block;margin:10px 0 6px}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+      padding:18px;margin-bottom:18px;box-shadow:0 6px 20px rgba(0,0,0,.25);}
+    .auth-wrap{min-height:100dvh;display:grid;place-items:center;padding:24px}
+    .auth-card{width:100%;max-width:480px}
+    .auth-header{text-align:center;margin-bottom:14px}
+    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+    .tab-btn{background:#2a2a2a;border:1px solid var(--border)}
+    .tab-btn.active{background:var(--accent);border-color:#7c0b1a}
+    .row{display:grid;gap:12px}
+    .muted{color:var(--muted);font-size:.9rem}
+    .topbar{position:sticky;top:0;background:linear-gradient(180deg,rgba(17,17,17,.95),rgba(17,17,17,.6));
+      backdrop-filter:blur(6px);border-bottom:1px solid var(--border);padding:10px 16px;z-index:1000;
+      display:flex;align-items:center;justify-content:space-between}
+    .brand{font-weight:bold;letter-spacing:.3px}
+    .logout-btn{background:#2a2a2a;border:1px solid var(--border)}
+    #appRoot{display:none}
+    .footer{margin-top:40px;text-align:center;font-size:18px;color:var(--muted);}
+    @media(pointer:coarse){button,input,select{padding:14px;font-size:1.05rem}}
+  </style>
+</head>
+<body>
+  <!-- Top logo with fallback -->
+  <div style="text-align:center;padding:20px 0;">
+    <img src="logo.gif" alt="Assets Alert Logo" style="max-width:180px;"
+         onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<p>[Logo missing]</p>');">
+  </div>
+
+  <!-- AUTH GATE -->
+  <div id="authRoot" class="auth-wrap">
+    <div class="panel auth-card">
+      <div class="auth-header">
+        <h1>Assets Alert</h1>
+        <p class="muted">Create an account or log in to continue.</p>
+      </div>
+      <div class="tabs">
+        <button id="tabLogin" class="tab-btn active" type="button">Log In</button>
+        <button id="tabSignup" class="tab-btn" type="button">Create Account</button>
+      </div>
+      <!-- LOGIN -->
+      <form id="loginForm" class="row">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" required>
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" required>
+        <label style="display:flex;align-items:center;gap:8px;">
+          <input id="rememberMe" type="checkbox" style="width:auto;"> Remember me
+        </label>
+        <button type="submit">Log In</button>
+      </form>
+      <!-- SIGNUP -->
+      <form id="signupForm" class="row" style="display:none;">
+        <label for="signupEmail">Email</label>
+        <input id="signupEmail" type="email" required>
+        <label for="signupPassword">Password</label>
+        <input id="signupPassword" type="password" minlength="8" required>
+        <label for="signupPassword2">Confirm Password</label>
+        <input id="signupPassword2" type="password" minlength="8" required>
+        <button type="submit">Create Account</button>
+        <p class="muted">Accounts are stored on this device only.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="appRoot">
+    <div class="topbar">
+      <div class="brand">Assets Alert</div>
+      <button id="logoutBtn" class="logout-btn" type="button">Logout</button>
+    </div>
+    <div class="container">
+      <h1>Assets Alert - Add New Asset</h1>
+      <div class="panel">
+        <label for="assetInput">Enter Asset (Crypto Address or Stock Symbol):</label>
+        <input id="assetInput" type="text"/>
+      </div>
+      <div class="panel">
+        <label for="targetPrice">Enter Target Price:</label>
+        <input id="targetPrice" type="number" step="0.01"/>
+      </div>
+      <div class="panel">
+        <label for="soundUpload">Upload Custom Sound:</label>
+        <input accept="audio/*" id="soundUpload" type="file"/>
+        <label for="alertDuration">Sound Duration:</label>
+        <select id="alertDuration">
+          <option value="5">5 minutes</option>
+          <option value="10">10 minutes</option>
+          <option value="15">15 minutes</option>
+          <option value="20">20 minutes</option>
+          <option value="30">30 minutes</option>
+        </select>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button onclick="testSound()">Test Sound</button>
+          <button onclick="dismissAlerts()">Dismiss Alerts</button>
+        </div>
+      </div>
+      <div class="panel">
+        <button onclick="addAsset()">Add Asset for Alerts</button>
+      </div>
+      <div class="panel">
+        <h2>Alert List</h2>
+        <ul id="alertList"></ul>
+      </div>
+      <!-- Footer with fallback -->
+      <div class="footer">
+        <p>Presented by <em>Blind Art</em></p>
+        <img src="blind_art.gif" alt="Blind Art Logo" style="width:160px;"
+             onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<p>[Blind Art logo missing]</p>');">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function sha256(str){
+      const enc=new TextEncoder();
+      const buf=await crypto.subtle.digest('SHA-256',enc.encode(str));
+      return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+    const LS_USERS='aa_users_v1', LS_SESSION='aa_session_email_v1';
+    const getUsers=()=>JSON.parse(localStorage.getItem(LS_USERS)||'{}');
+    const setUsers=o=>localStorage.setItem(LS_USERS,JSON.stringify(o));
+    const setSession=(e,r)=>r?(localStorage.setItem(LS_SESSION,e),sessionStorage.removeItem(LS_SESSION)):
+                              (sessionStorage.setItem(LS_SESSION,e),localStorage.removeItem(LS_SESSION));
+    const getSession=()=>sessionStorage.getItem(LS_SESSION)||localStorage.getItem(LS_SESSION)||null;
+    const clearSession=()=>{sessionStorage.removeItem(LS_SESSION);localStorage.removeItem(LS_SESSION);};
+    const authRoot=document.getElementById('authRoot'), appRoot=document.getElementById('appRoot');
+    const loginForm=document.getElementById('loginForm'), signupForm=document.getElementById('signupForm');
+    document.getElementById('tabLogin').onclick=()=>{loginForm.style.display='grid';signupForm.style.display='none';};
+    document.getElementById('tabSignup').onclick=()=>{signupForm.style.display='grid';loginForm.style.display='none';};
+    function showApp(e){authRoot.style.display='none';appRoot.style.display='block';
+      document.querySelector('.brand').textContent='Assets Alert • '+e;}
+    function showAuth(){appRoot.style.display='none';authRoot.style.display='grid';}
+    const sess=getSession(); if(sess) showApp(sess); else showAuth();
+    signupForm.onsubmit=async e=>{
+      e.preventDefault(); const em=signupEmail.value.trim().toLowerCase();
+      if(!em.includes('@')) return alert('Enter valid email');
+      if(signupPassword.value!==signupPassword2.value) return alert('Passwords do not match');
+      const u=getUsers(); if(u[em]) return alert('Account exists');
+      u[em]={pwHash:await sha256(signupPassword.value)}; setUsers(u); setSession(em,true); showApp(em);
+    };
+    loginForm.onsubmit=async e=>{
+      e.preventDefault(); const em=loginEmail.value.trim().toLowerCase();
+      const u=getUsers(); if(!u[em]) return alert('No account found');
+      if(await sha256(loginPassword.value)!==u[em].pwHash) return alert('Incorrect password');
+      setSession(em,rememberMe.checked); showApp(em);
+    };
+    logoutBtn.onclick=()=>{clearSession();showAuth();};
+    function addAsset(){
+      const v=assetInput.value.trim(); if(!v) return alert("Please enter a crypto address or stock symbol.");
+      const li=document.createElement("li"); li.textContent=`ALERT SET FOR: ${v}`;
+      alertList.appendChild(li); assetInput.value="";
+    }
+    function testSound(){
+      if(!soundUpload.files.length) return alert("Please upload a sound file first.");
+      new Audio(URL.createObjectURL(soundUpload.files[0])).play();
+    }
+    function dismissAlerts(){alert("Alerts dismissed.");}
+  </script>
+</body>
+</html>
