@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assets Alert — NFT Showcase</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body{margin:0;background:#111;color:#fff;font-family:Arial,Helvetica,sans-serif;text-align:center}
+    h1{margin:14px 0 6px}
+    p{color:#b3b3b3;margin:8px 0}
+    .wrap{max-width:960px;margin:0 auto;padding:16px}
+    .logo{max-width:180px;margin:12px auto}
+    .btn{display:inline-block;margin:8px 6px;padding:10px 14px;background:#b00020;
+         border:1px solid #7c0b1a;color:#fff;text-decoration:none;border-radius:10px}
+    .item{margin:26px 0;padding:16px;border:1px solid #444;border-radius:12px;background:#1b1b1b}
+    .item h2{margin:0 0 10px}
+    .media{max-width:560px;margin:0 auto}
+    .media img{width:100%;height:auto;border-radius:10px;border:1px solid #444;box-shadow:0 0 10px rgba(0,0,0,.35)}
+    .media video{width:100%;border-radius:10px;border:1px solid #444;box-shadow:0 0 10px rgba(0,0,0,.35)}
+    .footer{margin:28px 0 8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- Top logo with fallback -->
+    <img src="logo.gif" alt="Assets Alert Logo" class="logo"
+         onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<p>[Logo missing]</p>');">
+
+    <h1>NFT Showcase</h1>
+    <p>Preview our exclusive NFT collection of beta tester rewards and Blind Art originals.</p>
+
+    <div>
+      <a class="btn" href="index.html">← Back to Home</a>
+      <a class="btn" href="mint.html">Mint NFTs</a>
+    </div>
+
+    <!-- A1 — Video first (uses A1.mp4). A1.png is ONLY for index preview, not shown here. -->
+    <div class="item" id="A1">
+      <h2>A1 — Feature Video</h2>
+      <div class="media">
+        <video controls playsinline preload="metadata">
+          <source src="A1.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <p class="note" style="color:#b3b3b3;margin-top:8px">Video NFT (MP4)</p>
+      </div>
+    </div>
+
+    <!-- S1 — Rapper Mouse -->
+    <div class="item" id="S1">
+      <h2>S1 — Rapper Mouse</h2>
+      <div class="media">
+        <a href="S1.png" target="_blank" rel="noopener">
+          <img src="S1.png" alt="S1 — Rapper Mouse"
+               onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<p>[S1.png not found]</p>');">
+        </a>
+        <p class="note">Static artwork (PNG)</p>
+      </div>
+    </div>
+
+    <!-- S1 Emote -->
+    <div class="item" id="S1-emote">
+      <h2>S1 — Rapper Mouse Emote</h2>
+      <div class="media">
+        <a href="S1.gif" target="_blank" rel="noopener">
+          <img src="S1.gif" alt="S1 — Rapper Mouse Emote"
+               onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<p>[S1.gif not found]</p>');">
+        </a>
+        <p class="note">Animated emote (GIF)</p>
+      </div>
+    </div>
+
+    <!-- A2 Beta Tester -->
+    <div class="item" id="A2">
+      <h2>A2 — Beta Tester</h2>
+      <div class="media">
+        <a href="A2.png" target="_blank" rel="noopener">
+          <img src="A2.png" alt="A2 — Beta Tester"
+               onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<p>[A2.png not found]</p>');">
+        </a>
+        <p class="note">Collectible NFT</p>
+      </div>
+    </div>
+
+    <!-- A3 Paid -->
+    <div class="item" id="A3">
+      <h2>A3 — Paid NFT</h2>
+      <div class="media">
+        <a href="A3.png" target="_blank" rel="noopener">
+          <img src="A3.png" alt="A3 — Paid NFT"
+               onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<p>[A3.png not found]</p>');">
+        </a>
+        <p class="note">Price: 15 MATIC</p>
+      </div>
+    </div>
+
+    <!-- A4 Premium -->
+    <div class="item" id="A4">
+      <h2>A4 — Premium NFT</h2>
+      <div class="media">
+        <a href="A4.png" target="_blank" rel="noopener">
+          <img src="A4.png" alt="A4 — Premium NFT"
+               onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<p>[A4.png not found]</p>');">
+        </a>
+        <p class="note">Price: 50 MATIC</p>
+      </div>
+    </div>
+
+    <!-- M1 Mystery -->
+    <div class="item" id="M1">
+      <h2>M1 — Mystery NFT</h2>
+      <div class="media">
+        <a href="M1.png" target="_blank" rel="noopener">
+          <img src="M1.png" alt="M1 — Mystery NFT"
+               onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<p>[M1.png not found]</p>');">
+        </a>
+        <p class="note">3D Glasses Mouse</p>
+      </div>
+    </div>
+
+    <!-- M2 Miner Mouse -->
+    <div class="item" id="M2">
+      <h2>M2 — Miner Mouse</h2>
+      <div class="media">
+        <a href="M2.png" target="_blank" rel="noopener">
+          <img src="M2.png" alt="M2 — Miner Mouse"
+               onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<p>[M2.png not found]</p>');">
+        </a>
+        <p class="note">Collectible NFT</p>
+      </div>
+    </div>
+
+    <!-- Footer with fallback -->
+    <div class="footer">
+      <p>Presented by <em>Blind Art</em></p>
+      <img src="blind_art.gif" alt="Blind Art Logo" style="width:160px"
+           onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<p>[Blind Art logo missing]</p>');">
+    </div>
+
+  </div>
+</body>
+</html>

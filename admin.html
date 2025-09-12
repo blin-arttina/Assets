@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Blind_Art Admin — Mint Console</title>
+<style>
+  :root{--bg:#000;--panel:#111;--text:#fff;--muted:#b3b3b3;--border:#333;--accent:#b00020}
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:Arial,system-ui,sans-serif;padding:18px;margin:0}
+  h1{font-size:24px;margin:0 0 8px}
+  h2{font-size:18px;margin:16px 0 8px}
+  .row{display:grid;gap:8px;margin:10px 0}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px}
+  label{font-size:14px;color:#e8e8e8}
+  input,select,textarea{background:#0b0b0b;border:1px solid var(--border);color:#fff;border-radius:10px;padding:10px;width:100%}
+  button{background:var(--accent);color:#fff;border:1px solid #7c0b1a;border-radius:10px;padding:10px 14px;cursor:pointer}
+  button.secondary{background:#1e1e1e;border-color:#444}
+  .inline{display:flex;gap:8px;flex-wrap:wrap}
+  .muted{color:var(--muted)}
+  #log{background:#050505;border:1px solid var(--border);border-radius:10px;padding:10px;margin-top:10px;white-space:pre-wrap;min-height:140px;font-family:ui-monospace,Consolas,monospace;color:#9cff9c}
+  .kv{display:grid;grid-template-columns:140px 1fr;gap:6px;align-items:center}
+  a{color:#7ec8ff}
+  .warn{background:#141414;border:1px solid #444;border-radius:10px;padding:10px;margin:10px 0;color:#ffd27f}
+  .pill{background:#1d1d1d;border:1px solid #3a3a3a;border-radius:999px;padding:8px 12px;cursor:pointer}
+</style>
+</head>
+<body>
+  <h1>Blind_Art Admin — Mint Console</h1>
+  <div class="muted">Contract: <b id="contractAddr">0xCdb25eb86266cAA0C175144eF4FB241A2F79390E</b> • Chain: <b>137 (Polygon)</b></div>
+
+  <div id="ethersHelp" class="warn" style="display:none">
+    <b>ethers.js didn’t load.</b> If you opened this locally, some wallets block CDNs.
+    Please upload to your site. Diagnostics below will show each CDN attempt.
+  </div>
+
+  <!-- Connect / Network -->
+  <div class="panel">
+    <h2>Wallet</h2>
+    <div class="inline">
+      <button id="btnConnect">Connect Wallet</button>
+      <button id="btnEnsure137" class="secondary">Switch to Polygon (137)</button>
+      <button id="btnFill" class="secondary">Fill My Address</button>
+    </div>
+    <div class="kv" style="margin-top:8px">
+      <div>Connected:</div><div id="who">—</div>
+      <div>Chain ID:</div><div id="chain">—</div>
+    </div>
+  </div>
+
+  <!-- Quick Presets -->
+  <div class="panel">
+    <h2>Quick Presets</h2>
+    <div class="inline" id="presetBar"><!-- buttons by JS --></div>
+    <div class="muted" style="margin-top:6px">
+      Presets set the NFT dropdown & Qty=1. To change which ID a preset uses, edit the <code>NFT_CATALOG</code> list below.
+    </div>
+  </div>
+
+  <!-- Mint controls -->
+  <div class="panel">
+    <h2>Mint</h2>
+    <div class="row">
+      <label>To Address</label>
+      <input id="to" placeholder="0x... (recipient)"/>
+    </div>
+    <div class="row">
+      <label>NFT</label>
+      <select id="tokenId"></select>
+    </div>
+    <div class="row inline">
+      <div style="flex:1">
+        <label>Quantity</label>
+        <input id="qty" type="number" min="1" value="1"/>
+      </div>
+      <div style="flex:1">
+        <label>Value (MATIC, optional)</label>
+        <input id="txValue" placeholder="e.g. 0.015 if mint costs MATIC"/>
+      </div>
+    </div>
+    <div class="inline">
+      <button id="btnMint">Mint</button>
+      <button id="btnMintBatch" class="secondary">Mint Batch (repeat same ID)</button>
+    </div>
+    <div class="muted" style="margin-top:6px">
+      <b>Batch:</b> repeats the selected ID <i>qty</i> times using <code>mintBatch(to, ids[], amounts[], 0x)</code>.
+    </div>
+  </div>
+
+  <!-- Airdrop -->
+  <div class="panel">
+    <h2>Airdrop</h2>
+    <p class="muted">One line per recipient. Formats: <code>0xaddr</code> (uses selected ID, qty=1) •
+      <code>0xaddr ID</code> • <code>0xaddr ID QTY</code></p>
+    <textarea id="airdropList" rows="6" placeholder="0x1234... 1 1&#10;0xABCD... 5 2"></textarea>
+    <div class="inline" style="margin-top:8px">
+      <button id="btnAirdrop">Run Airdrop</button>
+      <button id="btnClearList" class="secondary">Clear</button>
+    </div>
+  </div>
+
+  <!-- Polygonscan Preview -->
+  <div class="panel">
+    <h2>Polygonscan Preview</h2>
+    <div class="kv small">
+      <div>Selected NFT:</div><div id="selPreview">—</div>
+      <div>Last Tx Link:</div><div id="scanPreview">— (appears after you mint)</div>
+    </div>
+  </div>
+
+  <!-- Diagnostics -->
+  <div class="panel">
+    <h2>Diagnostics</h2>
+    <div class="inline">
+      <button id="btnCopy" class="secondary">Copy</button>
+      <button id="btnDownload" class="secondary">Download</button>
+    </div>
+    <div id="log">Starting…</div>
+  </div>
+
+<script>
+/* ---------- Logging & helpers ---------- */
+let logBuf="";
+function log(...m){ const t=new Date().toLocaleTimeString(); logBuf+="["+t+"] "+m.join(" ")+"\\n";
+  const el=document.getElementById('log'); el.textContent=logBuf; el.scrollTop=el.scrollHeight; }
+function showEthersHelp(){ document.getElementById('ethersHelp').style.display='block'; }
+
+/* ---------- ethers loader (multi-CDN) ---------- */
+const cdns=[
+  "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js",
+  "https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"
+];
+let cdnIndex=0;
+async function ensureEthers(){
+  if(window.ethers) return true;
+  return new Promise(res=>{
+    const url=cdns[cdnIndex++]; if(!url){ log("All CDN attempts failed."); showEthersHelp(); return res(false); }
+    const s=document.createElement('script'); s.src=url; s.async=true;
+    s.onload=()=>{ log("Loaded ethers.js from: "+url); res(true); };
+    s.onerror=()=>{ log("CDN failed: "+url); setTimeout(async()=>res(await ensureEthers()),150); };
+    document.head.appendChild(s);
+  });
+}
+
+/* ---------- Config ---------- */
+const CONTRACT = document.getElementById('contractAddr').textContent.trim();
+const ABI = [
+  "function mint(address to,uint256 id,uint256 amount,bytes data) public",
+  "function mintBatch(address to,uint256[] ids,uint256[] amounts,bytes data) public",
+  "function uri(uint256) view returns (string)",
+  "event TransferSingle(address indexed operator,address indexed from,address indexed to,uint256 id,uint256 value)",
+  "event TransferBatch(address indexed operator,address indexed from,address indexed to,uint256[] ids,uint256[] values)"
+];
+const SCAN_BASE = "https://polygonscan.com/tx/";
+
+/* ---------- NFT Catalog (edit this list if you ever need to change IDs) ---------- */
+const NFT_CATALOG = [
+  { id:1, code:"A1",  label:"A1 — Feature Video" },
+  { id:2, code:"S1",  label:"S1 — Rapper Mouse (PNG)" },
+  { id:3, code:"S1E", label:"S1 — Emote (GIF)" },
+  { id:4, code:"A2",  label:"A2 — Beta Tester" },
+  { id:5, code:"A3",  label:"A3 — Paid NFT" },
+  { id:6, code:"A4",  label:"A4 — Premium NFT" },
+  { id:7, code:"M1",  label:"M1 — Mystery (3D Glasses)" },
+  { id:8, code:"M2",  label:"M2 — Miner Mouse" }
+];
+
+/* Populate dropdown + presets */
+const dd=document.getElementById('tokenId');
+const bar=document.getElementById('presetBar');
+const selPreview=document.getElementById('selPreview');
+const scanPreview=document.getElementById('scanPreview');
+
+function updateSelectedPreview(){
+  const id=Number(dd.value);
+  const item = NFT_CATALOG.find(n=>n.id===id);
+  selPreview.textContent = item ? `${item.code} — id ${item.id}` : `id ${id}`;
+}
+
+NFT_CATALOG.forEach(n=>{
+  const o=document.createElement('option');
+  o.value=n.id; o.textContent=`${n.id} — ${n.label}`; dd.appendChild(o);
+
+  const b=document.createElement('button');
+  b.className='pill';
+  b.type='button';
+  b.textContent=n.code;
+  b.onclick=()=>{
+    dd.value=String(n.id);
+    document.getElementById('qty').value=1;
+    updateSelectedPreview();
+    scanPreview.textContent = "— (appears after you mint)";
+    log("Preset:", n.code, "→ id", n.id);
+  };
+  bar.appendChild(b);
+});
+dd.onchange = updateSelectedPreview;
+updateSelectedPreview();
+
+/* ---------- Wallet ---------- */
+let provider, signer, myAddr;
+async function connect(){
+  if(!await ensureEthers()) return;
+  if(!window.ethereum){ log("No injected wallet found."); return; }
+  try{
+    await window.ethereum.request({method:"eth_requestAccounts"});
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer   = provider.getSigner();
+    myAddr   = await signer.getAddress();
+    const net = await provider.getNetwork();
+    document.getElementById('who').textContent = myAddr;
+    document.getElementById('chain').textContent = net.chainId;
+    log("Connected:", myAddr, "chain", net.chainId);
+  }catch(e){ log("Connect error:", e.message||e); }
+}
+async function ensure137(){
+  if(!window.ethereum) return;
+  try{
+    await window.ethereum.request({ method:"wallet_switchEthereumChain", params:[{ chainId:"0x89" }] });
+    const net = await (provider||new ethers.providers.Web3Provider(window.ethereum)).getNetwork();
+    document.getElementById('chain').textContent = net.chainId;
+    log("Switched to chain", net.chainId);
+  }catch(e){ log("Switch chain error:", e.message||e); }
+}
+function fillMyAddr(){
+  if(!myAddr) return alert("Connect wallet first.");
+  document.getElementById('to').value = myAddr;
+}
+
+/* ---------- Actions ---------- */
+function getValueWei(){
+  const v=document.getElementById('txValue').value.trim();
+  if(!v) return undefined;
+  try{ return ethers.utils.parseEther(v); }catch(_){ return undefined; }
+}
+function polyscanTx(txhash){ return `${SCAN_BASE}${txhash}`; }
+
+async function doMint(){
+  if(!await ensureEthers()) return;
+  try{
+    if(!signer) return alert("Connect wallet first.");
+    const to=document.getElementById('to').value.trim();
+    const id=parseInt(document.getElementById('tokenId').value,10);
+    const qty=Math.max(1, parseInt(document.getElementById('qty').value,10)||1);
+    if(!/^0x[0-9a-fA-F]{40}$/.test(to)) return alert("Enter a valid recipient address.");
+    const c=new ethers.Contract(CONTRACT,ABI,signer);
+    log(`Mint → to=${to} id=${id} qty=${qty}`);
+    const tx=await c.mint(to,id,qty,"0x", ...(getValueWei()?[{value:getValueWei()}]:[]));
+    log(`Tx: ${tx.hash}  (open: ${polyscanTx(tx.hash)})`);
+    scanPreview.innerHTML = `<a target="_blank" href="${polyscanTx(tx.hash)}">${tx.hash.slice(0,10)}…</a>`;
+    const rc=await tx.wait();
+    log(`Confirmed in block ${rc.blockNumber}`);
+  }catch(e){ log("Mint error:", e.data?.message||e.message||e); }
+}
+
+async function doMintBatch(){
+  if(!await ensureEthers()) return;
+  try{
+    if(!signer) return alert("Connect wallet first.");
+    const to=document.getElementById('to').value.trim();
+    const id=parseInt(document.getElementById('tokenId').value,10);
+    const qty=Math.max(1, parseInt(document.getElementById('qty').value,10)||1);
+    if(!/^0x[0-9a-fA-F]{40}$/.test(to)) return alert("Enter a valid recipient address.");
+    const ids=Array(qty).fill(id);
+    const amts=Array(qty).fill(1);
+    const c=new ethers.Contract(CONTRACT,ABI,signer);
+    log(`MintBatch → to=${to} id=${id} repeat=${qty}`);
+    const tx=await c.mintBatch(to,ids,amts,"0x", ...(getValueWei()?[{value:getValueWei()}]:[]));
+    log(`Tx: ${tx.hash}  (open: ${polyscanTx(tx.hash)})`);
+    scanPreview.innerHTML = `<a target="_blank" href="${polyscanTx(tx.hash)}">${tx.hash.slice(0,10)}…</a>`;
+    const rc=await tx.wait();
+    log(`Confirmed in block ${rc.blockNumber}`);
+  }catch(e){ log("MintBatch error:", e.data?.message||e.message||e); }
+}
+
+async function doAirdrop(){
+  if(!await ensureEthers()) return;
+  try{
+    if(!signer) return alert("Connect wallet first.");
+    const selectedId=parseInt(document.getElementById('tokenId').value,10);
+    const lines=document.getElementById('airdropList').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    if(!lines.length) return alert("Paste one or more lines first.");
+    const c=new ethers.Contract(CONTRACT,ABI,signer);
+    for(let i=0;i<lines.length;i++){
+      const parts=lines[i].split(/\s+/);
+      const addr=parts[0];
+      const id= parts[1]?parseInt(parts[1],10):selectedId;
+      const qty=parts[2]?Math.max(1,parseInt(parts[2],10)):1;
+      if(!/^0x[0-9a-fA-F]{40}$/.test(addr)){ log(`Skip line ${i+1}: invalid address`); continue; }
+      log(`Airdrop → ${addr} id=${id} qty=${qty}`);
+      const tx=await c.mint(addr,id,qty,"0x");
+      log(`Tx: ${tx.hash}  (open: ${polyscanTx(tx.hash)})`);
+      scanPreview.innerHTML = `<a target="_blank" href="${polyscanTx(tx.hash)}">${tx.hash.slice(0,10)}…</a>`;
+      const rc=await tx.wait();
+      log(`Confirmed line ${i+1} in block ${rc.blockNumber}`);
+    }
+  }catch(e){ log("Airdrop error:", e.data?.message||e.message||e); }
+}
+
+/* ---------- Diagnostics & utilities ---------- */
+async function testRpc(){
+  try{
+    const r=await fetch("https://polygon-rpc.com",{method:"POST",headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_chainId",params:[]})});
+    const j=await r.json();
+    document.getElementById('rpcStatus')?.textContent = j.result ? `OK chain ${parseInt(j.result,16)}` : 'Error';
+    log("RPC test:", JSON.stringify(j));
+  }catch(e){ document.getElementById('rpcStatus')?.textContent='Error'; log("RPC error:", e.message||e); }
+}
+function downloadLog(){ const blob=new Blob([logBuf],{type:"text/plain"}); const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download="mint_diagnostics.txt"; a.click(); }
+async function copyLog(){ try{ await navigator.clipboard.writeText(logBuf); log("Diagnostics copied"); }catch(e){ log("Copy failed:", e.message||e); } }
+
+/* ---------- Wire up ---------- */
+document.getElementById('btnConnect').onclick = connect;
+document.getElementById('btnEnsure137').onclick = ensure137;
+document.getElementById('btnFill').onclick = fillMyAddr;
+
+document.getElementById('btnMint').onclick = doMint;
+document.getElementById('btnMintBatch').onclick = doMintBatch;
+
+document.getElementById('btnAirdrop').onclick = doAirdrop;
+document.getElementById('btnClearList').onclick = ()=>{ document.getElementById('airdropList').value=""; };
+
+document.getElementById('btnCopy').onclick = copyLog;
+document.getElementById('btnDownload').onclick = downloadLog;
+
+/* Try to load ethers immediately & detect preauthorized accounts */
+ensureEthers().then(ok=>{ if(!ok) showEthersHelp(); });
+if(window.ethereum){
+  window.ethereum.request({method:"eth_accounts"})
+    .then(acc=>{ if(acc && acc[0]){ log("Pre-authorized account detected."); } })
+    .catch(()=>{});
+}
+</script>
+</body>
+</html>

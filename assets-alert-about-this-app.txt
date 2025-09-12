@@ -1,0 +1,29 @@
+
+Assets Alert - Crypto & Stock Price Alerts with Custom Audio
+
+Short Description:
+Get real-time crypto and stock price alerts with customizable audio notifications. Monitor your investments across both cryptocurrency and stock markets with ease.
+
+Full Description:
+Assets Alert is a hybrid financial monitoring app designed to help you stay on top of price movements in both the cryptocurrency and stock markets. Whether you're tracking Bitcoin, Ethereum, or traditional stock symbols like AAPL and TSLA, Assets Alert gives you real-time alerts directly to your device.
+
+Key Features:
+- Supports all major cryptocurrencies via CoinGecko API
+- Supports all stock tickers via Yahoo Finance API
+- Real-time price checking with fully dynamic symbol lookup
+- Set your own price targets for any crypto or stock
+- Upload your own custom audio alert sound for triggered notifications
+- Dismiss and control alerts easily when triggered
+- Includes NFT showcase area for Web3 collectors (future-ready)
+- Displays minted supply counts for integrated NFTs
+- Clean, user-friendly interface with dark mode
+- Fully offline capable — data stored locally on device
+- Does not require any user account or login
+
+Legal Disclaimer:
+This app is not intended to provide financial advice. Always consult a qualified financial advisor before making investment decisions. Assets Alert provides price monitoring tools only.
+
+Privacy Notice:
+Assets Alert does not collect any personal data. All price monitoring, alerts, and NFT data are handled locally on your device. No data is sent to external servers or third-party services.
+
+Version: v14 (Production Signed)
