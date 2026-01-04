@@ -14,7 +14,7 @@
         </activity>
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.blindart.assetsalert.MainActivity"
             android:exported="true" />
 
     </application>
