@@ -6,9 +6,11 @@
 
     <ImageView
         android:id="@+id/splashImage"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:layout_gravity="center"
+        android:contentDescription="Assets Alert Splash"
         android:src="@drawable/splash"
-        android:scaleType="fitCenter"
-        android:contentDescription="Splash" />
+        android:scaleType="fitCenter" />
+
 </FrameLayout>
