@@ -5,6 +5,9 @@
     <application
         android:allowBackup="true"
         android:label="Assets Alert"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:supportsRtl="true">
 
         <activity
