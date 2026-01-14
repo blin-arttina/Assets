@@ -1,36 +1,39 @@
 package com.blindart.assetsalert;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
+    private static final String START_URL =
+            "https://blin-arttina.github.io/Alert_app/assets_alert_web_app.html";
+
+    private WebView webView;
+
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(40, 40, 40, 40);
-        layout.setBackgroundColor(0xFF000000); // black background
+        webView = new WebView(this);
+        setContentView(webView);
 
-        TextView title = new TextView(this);
-        title.setText("Assets Alert");
-        title.setTextSize(26);
-        title.setTextColor(0xFFFFFFFF); // white text
+        webView.setWebViewClient(new WebViewClient());
 
-        Button button = new Button(this);
-        button.setText("Start");
-        button.setTextSize(26);
-        button.setTextColor(0xFFFFFFFF); // white text
-        button.setBackgroundColor(0xFFB00020); // red button
+        WebSettings s = webView.getSettings();
+        s.setJavaScriptEnabled(true);
+        s.setDomStorageEnabled(true);
 
-        layout.addView(title);
-        layout.addView(button);
+        webView.loadUrl(START_URL);
+    }
 
-        setContentView(layout);
+    @Override
+    public void onBackPressed() {
+        if (webView != null && webView.canGoBack()) webView.goBack();
+        else super.onBackPressed();
     }
 }
