@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "com.blindart.assetsalert.app-debug-23:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "com.blindart.assetsalert.app-main-25:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.blindart.assetsalert.app-debug-23:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "com.blindart.assetsalert.app-main-25:/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.blindart.assetsalert.app-debug-23:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "com.blindart.assetsalert.app-main-25:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.blindart.assetsalert.app-debug-23:/anim_fade_in.xml.flat",
+        "source": "com.blindart.assetsalert.app-main-25:/anim/fade_in.xml"
+    },
+    {
+        "merged": "com.blindart.assetsalert.app-debug-23:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "com.blindart.assetsalert.app-main-25:/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.blindart.assetsalert.app-debug-23:/drawable_splash.png.flat",
+        "source": "com.blindart.assetsalert.app-main-25:/drawable/splash.png"
+    },
+    {
+        "merged": "com.blindart.assetsalert.app-debug-23:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "com.blindart.assetsalert.app-main-25:/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.blindart.assetsalert.app-debug-23:/anim_fade_out.xml.flat",
+        "source": "com.blindart.assetsalert.app-main-25:/anim/fade_out.xml"
+    },
+    {
+        "merged": "com.blindart.assetsalert.app-debug-23:/layout_activity_splash.xml.flat",
+        "source": "com.blindart.assetsalert.app-main-25:/layout/activity_splash.xml"
+    }
+]

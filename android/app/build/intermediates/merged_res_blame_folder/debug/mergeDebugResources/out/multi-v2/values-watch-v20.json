@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.blindart.assetsalert.app-mergeDebugResources-21:/values-watch-v20/values-watch-v20.xml",
+            "map": [
+                {
+                    "source": "/data/data/com.termux/files/home/Assets/android/.gradle/caches/9.2.0/transforms/0d5fa95e74125b4960e27b5002012fda/transformed/appcompat-1.7.0/res/values-watch-v20/values-watch-v20.xml",
+                    "from": {
+                        "startLines": "2,5,8",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,214,385",
+                        "endLines": "4,7,10",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "209,380,553"
+                    }
+                }
+            ]
+        }
+    ]
+}
